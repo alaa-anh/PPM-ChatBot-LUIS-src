@@ -16,11 +16,16 @@ namespace Microsoft.Bot.Sample.LuisBot
     {
         private string userName;
         private DateTime msgReceivedDate;
+<<<<<<< HEAD
         public PPMDialog(Activity activity) : base(new LuisService(new LuisModelAttribute(
+=======
+        public PPMDialog() : base(new LuisService(new LuisModelAttribute(
+>>>>>>> 78840545589f1711f50284aa1f484c5a0de932e0
             ConfigurationManager.AppSettings["LuisAppId"], 
             ConfigurationManager.AppSettings["LuisAPIKey"], 
             domain: ConfigurationManager.AppSettings["LuisAPIHostName"])))
         {
+<<<<<<< HEAD
             userName = activity.From.Name;
             msgReceivedDate = DateTime.Now;// activity.Timestamp ? ? DateTime.Now;
         }
@@ -31,6 +36,16 @@ namespace Microsoft.Bot.Sample.LuisBot
         //    userName = activity.From.Name;
         //    msgReceivedDate = DateTime.Now;// activity.Timestamp ? ? DateTime.Now;
         //}
+=======
+        }
+
+       
+        public PPMDialog(Activity activity)
+        {
+            userName = activity.From.Name;
+            msgReceivedDate = DateTime.Now;// activity.Timestamp ? ? DateTime.Now;
+        }
+>>>>>>> 78840545589f1711f50284aa1f484c5a0de932e0
 
         [LuisIntent("")]
         [LuisIntent("none")]
