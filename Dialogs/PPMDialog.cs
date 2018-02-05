@@ -7,7 +7,8 @@ using Microsoft.Bot.Builder.Luis;
 using Microsoft.Bot.Builder.Luis.Models;
 using Microsoft.Bot.Connector;
 
-using Common;
+//using Common;
+
 
 namespace Microsoft.Bot.Sample.LuisBot
 {
@@ -16,6 +17,8 @@ namespace Microsoft.Bot.Sample.LuisBot
     {
         private string userName;
         private DateTime msgReceivedDate;
+        private string PPMServerURL;
+
 
         public PPMDialog(Activity activity) : base(new LuisService(new LuisModelAttribute(
 
@@ -27,18 +30,10 @@ namespace Microsoft.Bot.Sample.LuisBot
 
             userName = activity.From.Name;
             msgReceivedDate = DateTime.Now;// activity.Timestamp ? ? DateTime.Now;
+            PPMServerURL = ConfigurationManager.AppSettings["PPMServerURL"];
         }
 
      
-
-       
-        //public PPMDialog(Activity activity)
-        //{
-        //    userName = activity.From.Name;
-        //    msgReceivedDate = DateTime.Now;// activity.Timestamp ? ? DateTime.Now;
-        //}
-
-
         [LuisIntent("")]
         [LuisIntent("none")]
         [LuisIntent("None")]
@@ -63,10 +58,6 @@ namespace Microsoft.Bot.Sample.LuisBot
             {
                 response.Append($"Hey {userName}.. :)");
             }
-
-          //  string sharepointLoginUrl = ConfigurationManager.AppSettings["SHAREPOINT_LOGIN_URI"];
-
-          //  response.Append($"<br>Click <a href='{sharepointLoginUrl}?userName={this.userName}' >here</a> to login");
 
             await context.PostAsync(response.ToString());
             context.Wait(this.MessageReceived);
@@ -108,13 +99,46 @@ namespace Microsoft.Bot.Sample.LuisBot
             }
             else
             {
-                await context.PostAsync(new ProjectServer(this.userName).FindProjectByName(searchTerm_ProjectName));
+                await context.PostAsync(new Common.ProjectServer(this.userName, PPMServerURL).FindProjectByName(searchTerm_ProjectName));
+            }
+
+            context.Wait(this.MessageReceived);
+            }
+
+
+        [LuisIntent("GetAllProjects")]
+        public async Task GetAllProjects(IDialogContext context, LuisResult luisResult)
+        {
+            string searchTerm_ProjectName = string.Empty;
+
+            if (string.IsNullOrWhiteSpace(searchTerm_ProjectName))
+            {
+                await context.PostAsync($"Unable to get search term.");
+            }
+            else
+            {
+                await context.PostAsync(new Common.ProjectServer(this.userName, PPMServerURL).GetAllProjects());
             }
 
             context.Wait(this.MessageReceived);
         }
 
+        [LuisIntent("GetProjectIssues")]
+        public async Task GetProjectIssues(IDialogContext context, LuisResult luisResult)
+        {
+            //string searchTerm_ProjectName = string.Empty;
 
+            //if (string.IsNullOrWhiteSpace(searchTerm_ProjectName))
+            //{
+            //    await context.PostAsync($"Unable to get search term.");
+            //}
+            //else
+            //{
+            //    await context.PostAsync(new ProjectServer(this.userName, PPMServerURL).GetProjectIssues());
+            //}
+
+            //context.Wait(this.MessageReceived);
+        }
 
 
 
