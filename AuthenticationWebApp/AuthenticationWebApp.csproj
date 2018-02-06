@@ -107,22 +107,6 @@
     <Reference Include="Microsoft.SharePoint.Client.Runtime, Version=14.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.SharePoint.Client.14.0.4762.1000\lib\Microsoft.SharePoint.Client.Runtime.dll</HintPath>
     </Reference>
-    <Reference Include="MongoDB.Bson">
-      <HintPath>..\..\..\..\Downloads\chat-bots-master\chat-bots-master\Using-Microsoft-Bot-Framework\DotNet\DLLs\MongoDB.Bson.dll</HintPath>
-    </Reference>
-    <Reference Include="MongoDB.Driver">
-      <HintPath>..\..\..\..\Downloads\chat-bots-master\chat-bots-master\Using-Microsoft-Bot-Framework\DotNet\DLLs\MongoDB.Driver.dll</HintPath>
-    </Reference>
-    <Reference Include="MongoDB.Driver.Core">
-      <HintPath>..\..\..\..\Downloads\chat-bots-master\chat-bots-master\Using-Microsoft-Bot-Framework\DotNet\DLLs\MongoDB.Driver.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="MongoDB.Driver.GridFS, Version=2.2.4.26, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\DLLs\MongoDB.Driver.GridFS.dll</HintPath>
-    </Reference>
-    <Reference Include="MongoDB.Driver.Legacy">
-      <HintPath>..\..\..\..\Downloads\chat-bots-master\chat-bots-master\Using-Microsoft-Bot-Framework\DotNet\DLLs\MongoDB.Driver.Legacy.dll</HintPath>
-    </Reference>
     <Reference Include="Nemiro.OAuth, Version=1.13.0.2828, Culture=neutral, PublicKeyToken=cb06320e362d440b, processorArchitecture=MSIL">
       <HintPath>..\packages\Nemiro.OAuth.1.13.0\lib\net461\Nemiro.OAuth.dll</HintPath>
     </Reference>

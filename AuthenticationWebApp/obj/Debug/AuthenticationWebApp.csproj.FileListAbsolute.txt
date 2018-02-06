@@ -45,7 +45,6 @@ C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\AuthenticationWebApp
 C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\AuthenticationWebApp\bin\MongoDB.Bson.dll
 C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\AuthenticationWebApp\bin\MongoDB.Driver.Core.dll
 C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\AuthenticationWebApp\bin\MongoDB.Driver.dll
-C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\AuthenticationWebApp\bin\MongoDB.Driver.Legacy.dll
 C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\AuthenticationWebApp\bin\Newtonsoft.Json.dll
 C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\AuthenticationWebApp\bin\Owin.dll
 C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\AuthenticationWebApp\bin\System.IdentityModel.Tokens.Jwt.dll
@@ -171,3 +170,6 @@ C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\AuthenticationWebApp
 C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\AuthenticationWebApp\bin\System.Runtime.InteropServices.RuntimeInformation.dll
 C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\AuthenticationWebApp\bin\System.Buffers.dll
 C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\AuthenticationWebApp\bin\DnsClient.xml
+C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\AuthenticationWebApp\bin\MongoDB.Driver.xml
+C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\AuthenticationWebApp\bin\MongoDB.Driver.Core.xml
+C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\AuthenticationWebApp\bin\MongoDB.Bson.xml
