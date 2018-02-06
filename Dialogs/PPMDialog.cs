@@ -7,7 +7,7 @@ using Microsoft.Bot.Builder.Luis;
 using Microsoft.Bot.Builder.Luis.Models;
 using Microsoft.Bot.Connector;
 
-//using Common;
+using Common;
 
 
 namespace Microsoft.Bot.Sample.LuisBot
@@ -58,6 +58,10 @@ namespace Microsoft.Bot.Sample.LuisBot
             {
                 response.Append($"Hey {userName}.. :)");
             }
+
+          //  string sharepointLoginUrl = ConfigurationManager.AppSettings["PPMServerURL"];
+            response.Append($"<br>Click <a href='{PPMServerURL}?userName={this.userName}' >here</a> to login");
+
 
             await context.PostAsync(response.ToString());
             context.Wait(this.MessageReceived);

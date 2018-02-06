@@ -73,20 +73,20 @@
       <HintPath>..\packages\Microsoft.Rest.ClientRuntime.2.3.2\lib\net45\Microsoft.Rest.ClientRuntime.dll</HintPath>
     </Reference>
     <Reference Include="MongoDB.Bson">
-      <HintPath>..\DLLs\MongoDB.Bson.dll</HintPath>
+      <HintPath>..\..\..\..\Downloads\chat-bots-master\chat-bots-master\Using-Microsoft-Bot-Framework\DotNet\DLLs\MongoDB.Bson.dll</HintPath>
     </Reference>
     <Reference Include="MongoDB.Driver">
-      <HintPath>..\DLLs\MongoDB.Driver.dll</HintPath>
+      <HintPath>..\..\..\..\Downloads\chat-bots-master\chat-bots-master\Using-Microsoft-Bot-Framework\DotNet\DLLs\MongoDB.Driver.dll</HintPath>
     </Reference>
     <Reference Include="MongoDB.Driver.Core">
-      <HintPath>..\DLLs\MongoDB.Driver.Core.dll</HintPath>
+      <HintPath>..\..\..\..\Downloads\chat-bots-master\chat-bots-master\Using-Microsoft-Bot-Framework\DotNet\DLLs\MongoDB.Driver.Core.dll</HintPath>
     </Reference>
     <Reference Include="MongoDB.Driver.GridFS, Version=2.2.4.26, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\DLLs\MongoDB.Driver.GridFS.dll</HintPath>
     </Reference>
     <Reference Include="MongoDB.Driver.Legacy">
-      <HintPath>..\DLLs\MongoDB.Driver.Legacy.dll</HintPath>
+      <HintPath>..\..\..\..\Downloads\chat-bots-master\chat-bots-master\Using-Microsoft-Bot-Framework\DotNet\DLLs\MongoDB.Driver.Legacy.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
