@@ -2487,14 +2487,6 @@
             Release the keep alive count reserved by this instance.
             </summary>
         </member>
-        <member name="M:Microsoft.VisualStudio.Threading.AwaitExtensions.ConfigureAwait(System.Runtime.CompilerServices.YieldAwaitable,System.Boolean)">
-            <summary>
-            Converts a <see cref="T:System.Runtime.CompilerServices.YieldAwaitable"/> to a <see cref="T:Microsoft.VisualStudio.Threading.AwaitExtensions.ConfiguredTaskYieldAwaitable"/>.
-            </summary>
-            <param name="yieldAwaitable">The result of <see cref="M:System.Threading.Tasks.Task.Yield"/>.</param>
-            <param name="continueOnCapturedContext">A value indicating whether the continuation should run on the captured <see cref="T:System.Threading.SynchronizationContext"/>, if any.</param>
-            <returns>An awaitable.</returns>
-        </member>
         <member name="T:Microsoft.VisualStudio.Threading.AwaitExtensions.TaskSchedulerAwaitable">
             <summary>
             An awaitable that executes continuations on the specified task scheduler.
@@ -2560,63 +2552,6 @@
             <param name="continuation">The delegate to invoke.</param>
         </member>
         <member name="M:Microsoft.VisualStudio.Threading.AwaitExtensions.TaskSchedulerAwaiter.GetResult">
-            <summary>
-            Does nothing.
-            </summary>
-        </member>
-        <member name="T:Microsoft.VisualStudio.Threading.AwaitExtensions.ConfiguredTaskYieldAwaitable">
-            <summary>
-            An awaitable that will always lead the calling async method to yield,
-            then immediately resume, possibly on the original <see cref="T:System.Threading.SynchronizationContext"/>.
-            </summary>
-        </member>
-        <member name="F:Microsoft.VisualStudio.Threading.AwaitExtensions.ConfiguredTaskYieldAwaitable.continueOnCapturedContext">
-            <summary>
-            A value indicating whether the continuation should run on the captured <see cref="T:System.Threading.SynchronizationContext"/>, if any.
-            </summary>
-        </member>
-        <member name="M:Microsoft.VisualStudio.Threading.AwaitExtensions.ConfiguredTaskYieldAwaitable.#ctor(System.Boolean)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Microsoft.VisualStudio.Threading.AwaitExtensions.ConfiguredTaskYieldAwaitable"/> struct.
-            </summary>
-            <param name="continueOnCapturedContext">A value indicating whether the continuation should run on the captured <see cref="T:System.Threading.SynchronizationContext"/>, if any.</param>
-        </member>
-        <member name="M:Microsoft.VisualStudio.Threading.AwaitExtensions.ConfiguredTaskYieldAwaitable.GetAwaiter">
-            <summary>
-            Gets the awaiter.
-            </summary>
-            <returns>The awaiter.</returns>
-        </member>
-        <member name="T:Microsoft.VisualStudio.Threading.AwaitExtensions.ConfiguredTaskYieldAwaiter">
-            <summary>
-            An awaiter that will always lead the calling async method to yield,
-            then immediately resume, possibly on the original <see cref="T:System.Threading.SynchronizationContext"/>.
-            </summary>
-        </member>
-        <member name="F:Microsoft.VisualStudio.Threading.AwaitExtensions.ConfiguredTaskYieldAwaiter.continueOnCapturedContext">
-            <summary>
-            A value indicating whether the continuation should run on the captured <see cref="T:System.Threading.SynchronizationContext"/>, if any.
-            </summary>
-        </member>
-        <member name="M:Microsoft.VisualStudio.Threading.AwaitExtensions.ConfiguredTaskYieldAwaiter.#ctor(System.Boolean)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Microsoft.VisualStudio.Threading.AwaitExtensions.ConfiguredTaskYieldAwaiter"/> struct.
-            </summary>
-            <param name="continueOnCapturedContext">A value indicating whether the continuation should run on the captured <see cref="T:System.Threading.SynchronizationContext"/>, if any.</param>
-        </member>
-        <member name="P:Microsoft.VisualStudio.Threading.AwaitExtensions.ConfiguredTaskYieldAwaiter.IsCompleted">
-            <summary>
-            Gets a value indicating whether the caller should yield.
-            </summary>
-            <value>Always false.</value>
-        </member>
-        <member name="M:Microsoft.VisualStudio.Threading.AwaitExtensions.ConfiguredTaskYieldAwaiter.OnCompleted(System.Action)">
-            <summary>
-            Schedules a continuation to execute immediately (but not synchronously).
-            </summary>
-            <param name="continuation">The delegate to invoke.</param>
-        </member>
-        <member name="M:Microsoft.VisualStudio.Threading.AwaitExtensions.ConfiguredTaskYieldAwaiter.GetResult">
             <summary>
             Does nothing.
             </summary>
@@ -4766,13 +4701,6 @@
             <summary>
             Gets a value indicating whether the current operating system is Windows 8 or later.
             </summary>
-        </member>
-        <member name="M:Microsoft.VisualStudio.Threading.LightUps.IsAppSettingTrue(System.String)">
-            <summary>
-            Gets the app.config AppSettings entry with the specified name.
-            </summary>
-            <param name="name">The name of the app setting.</param>
-            <returns>The value, or null if it isn't specified.</returns>
         </member>
         <member name="T:Microsoft.VisualStudio.Threading.LightUps`1">
             <summary>
