@@ -122,7 +122,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class1.cs" />
     <Compile Include="Contracts.cs" />
     <Compile Include="Helper.cs" />
     <Compile Include="Mongo.cs" />
@@ -130,11 +129,6 @@
     <Compile Include="ProjectServer.cs" />
     <Compile Include="Sharepoint.cs" />
     <Compile Include="TokenHelper.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="ReferencesDll\Microsoft.ProjectServer.Client.dll" />
-    <Content Include="ReferencesDll\Microsoft.SharePoint.Client.Runtime.dll" />
-    <Content Include="ReferencesDll\Microsoft.SharePoint.dll" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

@@ -4,10 +4,6 @@ C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\Com
 C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\Microsoft.IdentityModel.Extensions.dll
 C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\Microsoft.IdentityModel.Logging.dll
 C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\Microsoft.IdentityModel.Tokens.dll
-C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\Microsoft.ProjectServer.Client.dll
-C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\Microsoft.SharePoint.Client.dll
-C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\Microsoft.SharePoint.Client.Runtime.dll
-C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\Microsoft.SharePoint.dll
 C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\Microsoft.VisualStudio.SharePoint.Commands.dll
 C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\Microsoft.VisualStudio.SharePoint.dll
 C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\Microsoft.VisualStudio.SharePoint.Explorer.Extensions.dll
