@@ -106,3 +106,5 @@ C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\ru\
 C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\tr\Microsoft.VisualStudio.Services.WebApi.resources.dll
 C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\zh-Hans\Microsoft.VisualStudio.Services.WebApi.resources.dll
 C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\zh-Hant\Microsoft.VisualStudio.Services.WebApi.resources.dll
+C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\Microsoft.IdentityModel.Protocol.Extensions.dll
+C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\Microsoft.IdentityModel.Protocol.Extensions.xml
