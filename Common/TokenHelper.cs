@@ -1,10 +1,9 @@
 ﻿using Microsoft.IdentityModel;
 using Microsoft.IdentityModel.S2S.Protocols.OAuth2;
 using Microsoft.IdentityModel.S2S.Tokens;
-//using Microsoft.IdentityModel.S2S.Protocols.OAuth2;
-//using Microsoft.IdentityModel.S2S.Tokens;
 using Microsoft.SharePoint.Client;
 using Microsoft.SharePoint.Client.EventReceivers;
+//using Microsoft.SharePoint.RemoteApp;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

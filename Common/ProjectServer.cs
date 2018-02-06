@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Linq;
+﻿using System.Linq;
 using System.Security;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.SharePoint;
-using Microsoft.SharePoint.Client;
 using Microsoft.ProjectServer.Client;
+using Microsoft.SharePoint.Client;
+
 
 namespace Common
 {
