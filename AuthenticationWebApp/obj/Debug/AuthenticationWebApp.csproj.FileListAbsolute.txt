@@ -168,3 +168,7 @@ C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\AuthenticationWebApp
 C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\AuthenticationWebApp\obj\Debug\AuthenticationWebApp.csproj.CoreCompileInputs.cache
 C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\AuthenticationWebApp\obj\Debug\AuthenticationWebApp.dll
 C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\AuthenticationWebApp\obj\Debug\AuthenticationWebApp.pdb
+C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\AuthenticationWebApp\bin\DnsClient.dll
+C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\AuthenticationWebApp\bin\System.Buffers.dll
+C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\AuthenticationWebApp\bin\DnsClient.xml
+C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\AuthenticationWebApp\bin\System.Buffers.xml
