@@ -85,7 +85,6 @@ C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\AuthenticationWebApp
 C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\AuthenticationWebApp\bin\Microsoft.SharePoint.Client.Runtime.dll
 C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\AuthenticationWebApp\bin\Microsoft.SharePoint.dll
 C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\AuthenticationWebApp\bin\Microsoft.Web.Infrastructure.dll
-C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\AuthenticationWebApp\bin\Nemiro.OAuth.dll
 C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\AuthenticationWebApp\bin\Newtonsoft.Json.dll
 C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\AuthenticationWebApp\bin\Owin.dll
 C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\AuthenticationWebApp\bin\Sandboxable.Microsoft.IdentityModel.Clients.ActiveDirectory.dll
@@ -122,7 +121,6 @@ C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\AuthenticationWebApp
 C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\AuthenticationWebApp\bin\Microsoft.IdentityModel.Protocols.OpenIdConnect.xml
 C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\AuthenticationWebApp\bin\Microsoft.IdentityModel.Tokens.xml
 C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\AuthenticationWebApp\bin\Microsoft.SharePoint.xml
-C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\AuthenticationWebApp\bin\Nemiro.OAuth.xml
 C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\AuthenticationWebApp\bin\Newtonsoft.Json.xml
 C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\AuthenticationWebApp\bin\Sandboxable.Microsoft.IdentityModel.Clients.ActiveDirectory.pdb
 C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\AuthenticationWebApp\bin\System.IdentityModel.Tokens.Jwt.xml

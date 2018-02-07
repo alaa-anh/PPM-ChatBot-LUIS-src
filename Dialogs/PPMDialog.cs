@@ -7,8 +7,6 @@ using Microsoft.Bot.Builder.Luis;
 using Microsoft.Bot.Builder.Luis.Models;
 using Microsoft.Bot.Connector;
 
-using Common;
-
 
 namespace Microsoft.Bot.Sample.LuisBot
 {
