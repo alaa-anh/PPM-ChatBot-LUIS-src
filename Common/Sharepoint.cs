@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Linq;
+﻿using System.Linq;
 using System.Security;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.SharePoint;
 using Microsoft.SharePoint.Client;
 
 
@@ -14,7 +8,7 @@ using Microsoft.SharePoint.Client;
 
 namespace Common
 {
-   public class Sharepoint
+    public class Sharepoint
     {
         private string _userName = "Alaa@M365x671106.onmicrosoft.com";//"admin @M365x671106.onmicrosoft.com";
         private string _siteUri = "https://m365x671106.sharepoint.com/sites/pwa/";
