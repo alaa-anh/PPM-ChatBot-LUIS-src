@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Luis;
 using Microsoft.Bot.Builder.Luis.Models;
+using Microsoft.Bot.Connector;
 
 namespace Microsoft.Bot.Sample.LuisBot
 {
@@ -13,8 +14,8 @@ namespace Microsoft.Bot.Sample.LuisBot
     public class BasicLuisDialog : LuisDialog<object>
     {
         public BasicLuisDialog() : base(new LuisService(new LuisModelAttribute(
-            ConfigurationManager.AppSettings["LuisAppId"], 
-            ConfigurationManager.AppSettings["LuisAPIKey"], 
+            ConfigurationManager.AppSettings["LuisAppId"],
+            ConfigurationManager.AppSettings["LuisAPIKey"],
             domain: ConfigurationManager.AppSettings["LuisAPIHostName"])))
         {
         }
@@ -45,10 +46,12 @@ namespace Microsoft.Bot.Sample.LuisBot
             await this.ShowLuisResult(context, result);
         }
 
-        private async Task ShowLuisResult(IDialogContext context, LuisResult result) 
+        private async Task ShowLuisResult(IDialogContext context, LuisResult result)
         {
             await context.PostAsync($"You have reached {result.Intents[0].Intent}. You said: {result.Query}");
             context.Wait(MessageReceived);
         }
+
+       
     }
 }

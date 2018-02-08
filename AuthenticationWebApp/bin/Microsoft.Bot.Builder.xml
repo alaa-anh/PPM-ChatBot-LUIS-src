@@ -5312,6 +5312,11 @@
             Luis Api Version.
             </summary>
         </member>
+        <member name="P:Microsoft.Bot.Builder.Luis.ILuisModel.Threshold">
+            <summary>
+            Threshold for top scoring intent
+            </summary>
+        </member>
         <member name="M:Microsoft.Bot.Builder.Luis.ILuisModel.ModifyRequest(Microsoft.Bot.Builder.Luis.LuisRequest)">
             <summary>
             Modify a Luis request to specify query parameters like spelling or logging.
@@ -5350,6 +5355,11 @@
             Version of query API to call.
             </summary>
         </member>
+        <member name="P:Microsoft.Bot.Builder.Luis.LuisModelAttribute.Threshold">
+            <summary>
+            Threshold for top scoring intent
+            </summary>
+        </member>
         <member name="P:Microsoft.Bot.Builder.Luis.LuisModelAttribute.Log">
             <summary>
             Indicates if logging of queries to LUIS is allowed.
@@ -5375,7 +5385,12 @@
             The verbose flag.
             </summary>
         </member>
-        <member name="M:Microsoft.Bot.Builder.Luis.LuisModelAttribute.#ctor(System.String,System.String,Microsoft.Bot.Builder.Luis.LuisApiVersion,System.String)">
+        <member name="P:Microsoft.Bot.Builder.Luis.LuisModelAttribute.BingSpellCheckSubscriptionKey">
+            <summary>
+            The Bing Spell Check subscription key.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Bot.Builder.Luis.LuisModelAttribute.#ctor(System.String,System.String,Microsoft.Bot.Builder.Luis.LuisApiVersion,System.String,System.Double)">
             <summary>
             Construct the LUIS model information.
             </summary>
@@ -5383,6 +5398,7 @@
             <param name="subscriptionKey">The LUIS subscription key.</param>
             <param name="apiVersion">The LUIS API version.</param>
             <param name="domain">Domain where LUIS model is located.</param>
+            <param name="threshold">Threshold for the top scoring intent.</param>
         </member>
         <member name="T:Microsoft.Bot.Builder.Luis.ILuisOptions">
             <summary>
@@ -5412,6 +5428,11 @@
         <member name="P:Microsoft.Bot.Builder.Luis.ILuisOptions.Verbose">
             <summary>
             The verbose flag.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Bot.Builder.Luis.ILuisOptions.BingSpellCheckSubscriptionKey">
+            <summary>
+            The Bing Spell Check subscription key.
             </summary>
         </member>
         <member name="T:Microsoft.Bot.Builder.Luis.Models.CompositeChild">
@@ -5757,6 +5778,11 @@
         <member name="P:Microsoft.Bot.Builder.Luis.LuisRequest.Verbose">
             <summary>
             The verbose flag.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Bot.Builder.Luis.LuisRequest.BingSpellCheckSubscriptionKey">
+            <summary>
+            The Bing Spell Check subscription key.
             </summary>
         </member>
         <member name="P:Microsoft.Bot.Builder.Luis.LuisRequest.ExtraParameters">
