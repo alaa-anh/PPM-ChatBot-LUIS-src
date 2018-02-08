@@ -1,5 +1,5 @@
-﻿//using Common;
-//using Common.Contracts;
+﻿using Common;
+using Common.Contracts;
 using Microsoft.Bot.Connector;
 using Newtonsoft.Json.Linq;
 using System;
@@ -33,27 +33,26 @@ namespace AuthenticationWebApp.Controllers
 
         public ActionResult LoginWithSharePoint(string userName)
         {
-            ///// Save User Id to session
-            //Session["SkypeUserID"] = userName;
+            /// Save User Id to session
+            Session["SkypeUserID"] = userName;
 
-            //string spAuth_SiteUri = Convert.ToString(ConfigurationManager.AppSettings["SPAUTH_SITEURI"]);
-            //string spAuth_AppClientId = Convert.ToString(ConfigurationManager.AppSettings["SPAUTH_APPCLIENTID"]);
-            //string spAuth_RedirectUri = Convert.ToString(ConfigurationManager.AppSettings["SPAUTH_REDIRECTURI"]);
+            string spAuth_SiteUri = Convert.ToString(ConfigurationManager.AppSettings["PPMServerURL"]);
+            string spAuth_AppClientId = Convert.ToString(ConfigurationManager.AppSettings["ClientId"]);
+            string spAuth_RedirectUri = Convert.ToString(ConfigurationManager.AppSettings["SPAUTH_REDIRECTURI"]);
 
-            //string url = $"{spAuth_SiteUri}/_layouts/15/appredirect.aspx?client_id={spAuth_AppClientId}&redirect_uri={spAuth_RedirectUri}";
+            string url = $"{spAuth_SiteUri}/_layouts/15/appredirect.aspx?client_id={spAuth_AppClientId}&redirect_uri={spAuth_RedirectUri}";
 
 
-            ///// Redirect to login page
-            //return Redirect(url);
-            return View();
+            /// Redirect to login page
+            return Redirect(url);
         }
 
         public ActionResult LoggedinToSharePoint()
         {
-            //string contextToken = this.Request.Form["SPAppToken"];
-            //string userName = Convert.ToString(Session["SkypeUserID"]);
+            string contextToken = this.Request.Form["SPAppToken"];
+            string userName = Convert.ToString(Session["SkypeUserID"]);
 
-            //new Mongo().Insert("ContextTokens", new Token(userName, contextToken));
+            new Mongo().Insert("ContextTokens", new Token(userName, contextToken));
 
             return View();
         }

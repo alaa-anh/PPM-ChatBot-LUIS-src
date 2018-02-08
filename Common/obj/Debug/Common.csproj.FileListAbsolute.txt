@@ -35,6 +35,7 @@ C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\Mon
 C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\Newtonsoft.Json.xml
 C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\System.IdentityModel.Tokens.Jwt.xml
 C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\System.Net.Http.Formatting.xml
+C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\Common\obj\Debug\Common.csprojResolveAssemblyReference.cache
 C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\Common\obj\Debug\Common.csproj.CoreCompileInputs.cache
 C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\Common\obj\Debug\Common.dll
 C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\Common\obj\Debug\Common.pdb

@@ -37,7 +37,7 @@ namespace Microsoft.Bot.Sample.LuisBot
                     List<CardAction> cardButtons = new List<CardAction>();
                     CardAction plButton = new CardAction()
                     {
-                        Value = $"{System.Configuration.ConfigurationManager.AppSettings["SPAUTH_REDIRECTURI"]}/?userid={HttpUtility.UrlEncode(activity.From.Id)}",
+                        Value = $"{System.Configuration.ConfigurationManager.AppSettings["AuthLogPage"]}?userid={HttpUtility.UrlEncode(activity.From.Id)}",
                         Type = "signin",
                         Title = "Authentication Required"
                     };
