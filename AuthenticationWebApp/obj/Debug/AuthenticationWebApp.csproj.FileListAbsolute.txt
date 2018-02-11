@@ -175,3 +175,4 @@ C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\AuthenticationWebApp
 C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\AuthenticationWebApp\bin\Microsoft.Azure.KeyVault.Core.xml
 C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\AuthenticationWebApp\bin\Microsoft.WindowsAzure.Storage.pdb
 C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\AuthenticationWebApp\bin\Microsoft.WindowsAzure.Storage.xml
+C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\AuthenticationWebApp\bin\Common.dll.config
