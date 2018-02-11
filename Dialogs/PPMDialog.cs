@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Configuration;
+using System.ServiceModel.Description;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
@@ -31,8 +32,10 @@ namespace Microsoft.Bot.Sample.LuisBot
             PPMServerURL = ConfigurationManager.AppSettings["PPMServerURL"];
         }
 
-     
-        [LuisIntent("")]
+
+       
+
+[LuisIntent("")]
         [LuisIntent("none")]
         [LuisIntent("None")]
         public async Task None(IDialogContext context, LuisResult luisResult)

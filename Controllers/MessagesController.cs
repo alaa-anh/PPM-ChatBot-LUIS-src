@@ -9,6 +9,7 @@ using System.Net.Http;
 using System.Diagnostics;
 using System.Collections.Generic;
 using System.Web;
+using Microsoft.Bot.Builder.FormFlow;
 
 namespace Microsoft.Bot.Sample.LuisBot
 {
@@ -23,12 +24,18 @@ namespace Microsoft.Bot.Sample.LuisBot
         [ResponseType(typeof(void))]
         public async Task<HttpResponseMessage> Post([FromBody]Activity activity)
         {
-            if (activity.Type == ActivityTypes.Message)
+            if (activity.GetActivityType() == ActivityTypes.Message)
             {
-                if (activity.Text == "login")
-                {
-                    ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
+                ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
 
+
+                var userLogonName = activity.From.Id;
+                var userToken = activity.From.Name;
+
+                var loggedIn = "false";
+
+                if (userToken.ToLower() == "User".ToLower())
+                {
                     Activity replyToConversation = activity.CreateReply();
                     replyToConversation.Recipient = activity.From;
                     replyToConversation.Type = "message";
@@ -41,35 +48,63 @@ namespace Microsoft.Bot.Sample.LuisBot
                         Type = "signin",
                         Title = "Authentication Required"
                     };
-
-                    //CardAction plButton = new CardAction()
-                    //{
-                    //    Value = $"{System.Configuration.ConfigurationManager.AppSettings["AppWebSite"]}/Home/Login?userid={HttpUtility.UrlEncode(activity.From.Id)}",
-                    //    Type = "signin",
-                    //    Title = "Authentication Required"
-                    //};
                     cardButtons.Add(plButton);
+
                     SigninCard plCard = new SigninCard("Please login to Office 365", new List<CardAction>() { plButton });
                     Attachment plAttachment = plCard.ToAttachment();
                     replyToConversation.Attachments.Add(plAttachment);
 
                     var reply = await connector.Conversations.SendToConversationAsync(replyToConversation);
                 }
-               
-               
-                else
-                {
-                    ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
-                    Activity reply = activity.CreateReply("# Bot Help\n\nType the following command. (You need your Office 365 Exchange Online subscription.)\n\nlogin -- Login to Office 365\n\nget mail -- Get your e-mail from Office 365\n\nrevoke -- Revoke permissions for accessing your e-mail");
-                    await connector.Conversations.ReplyToActivityAsync(reply);
-                }
             }
             else
             {
                 HandleSystemMessage(activity);
             }
+           
+            
 
-            return new HttpResponseMessage(System.Net.HttpStatusCode.Accepted);
+            ////if (activity.Type == ActivityTypes.Message)
+            ////{
+            ////    if (activity.Text == "login")
+            ////    {
+            ////       // ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
+
+            ////        Activity replyToConversation = activity.CreateReply();
+            ////        replyToConversation.Recipient = activity.From;
+            ////        replyToConversation.Type = "message";
+
+            ////        replyToConversation.Attachments = new List<Attachment>();
+            ////        List<CardAction> cardButtons = new List<CardAction>();
+            ////        CardAction plButton = new CardAction()
+            ////        {
+            ////            Value = $"{System.Configuration.ConfigurationManager.AppSettings["AppWebSite"]}/Home/Login?userid={HttpUtility.UrlEncode(activity.From.Id)}",
+            ////            Type = "signin",
+            ////            Title = "Authentication Required"
+            ////        };
+            ////        cardButtons.Add(plButton);
+            ////        SigninCard plCard = new SigninCard("Please login to Office 365", new List<CardAction>() { plButton });
+            ////        Attachment plAttachment = plCard.ToAttachment();
+            ////        replyToConversation.Attachments.Add(plAttachment);
+
+            ////        var reply = await connector.Conversations.SendToConversationAsync(replyToConversation);
+            ////    }
+               
+               
+            ////    else
+            ////    {
+            ////      //  ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
+            ////        Activity reply = activity.CreateReply("# Bot Help\n\nType the following command. (You need your Office 365 Exchange Online subscription.)\n\nlogin -- Login to Office 365\n\nget mail -- Get your e-mail from Office 365\n\nrevoke -- Revoke permissions for accessing your e-mail");
+            ////        await connector.Conversations.ReplyToActivityAsync(reply);
+            ////    }
+            ////}
+            //else
+            //{
+               
+            //}
+
+            var response = Request.CreateResponse(System.Net.HttpStatusCode.OK);
+            return response;
         }
 
         private Activity HandleSystemMessage(Activity message)
@@ -101,4 +136,6 @@ namespace Microsoft.Bot.Sample.LuisBot
             return null;
         }
     }
+
+    
 }
