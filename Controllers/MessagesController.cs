@@ -58,7 +58,7 @@ namespace Microsoft.Bot.Sample.LuisBot
                 }
                 else
                 {
-                    await Conversation.SendAsync(activity, () => new PPMDialog(activity));
+                    await Conversation.SendAsync(activity, () => new BasicLuisDialog());
                 }
             }
             else

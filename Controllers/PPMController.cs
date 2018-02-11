@@ -7,6 +7,8 @@ using Microsoft.Bot.Builder.Dialogs;
 using System.Web.Http.Description;
 using System.Net.Http;
 using System.Diagnostics;
+using System.Collections.Generic;
+using System.Web;
 
 namespace Microsoft.Bot.Sample.LuisBot
 {
@@ -20,16 +22,54 @@ namespace Microsoft.Bot.Sample.LuisBot
         [ResponseType(typeof(void))]
         public virtual async Task<HttpResponseMessage> Post([FromBody] Activity activity)
         {
-            // check if activity is of type message
             if (activity.GetActivityType() == ActivityTypes.Message)
             {
-                await Conversation.SendAsync(activity, () => new PPMDialog(activity));
+                ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
+
+
+                var userLogonName = activity.From.Id;
+                var userToken = activity.From.Name;
+
+                var loggedIn = "false";
+
+                if (userToken.ToLower() == "User".ToLower())
+                {
+                    Activity replyToConversation = activity.CreateReply();
+                    replyToConversation.Recipient = activity.From;
+                    replyToConversation.Type = "message";
+
+                    replyToConversation.Attachments = new List<Attachment>();
+                    List<CardAction> cardButtons = new List<CardAction>();
+                    CardAction plButton = new CardAction()
+                    {
+                        Value = $"{System.Configuration.ConfigurationManager.AppSettings["AuthLogPage"]}?userid={HttpUtility.UrlEncode(activity.From.Id)}",
+                        Type = "signin",
+                        Title = "Authentication Required"
+                    };
+                    cardButtons.Add(plButton);
+
+                    SigninCard plCard = new SigninCard("Please login to Office 365", new List<CardAction>() { plButton });
+                    Attachment plAttachment = plCard.ToAttachment();
+                    replyToConversation.Attachments.Add(plAttachment);
+
+                    var reply = await connector.Conversations.SendToConversationAsync(replyToConversation);
+                }
+                else
+                {
+                    await Conversation.SendAsync(activity, () => new PPMDialog(activity));
+                }
             }
             else
             {
                 HandleSystemMessage(activity);
             }
-            return new HttpResponseMessage(System.Net.HttpStatusCode.Accepted);
+
+
+
+
+
+            var response = Request.CreateResponse(System.Net.HttpStatusCode.OK);
+            return response;
         }
 
         private Activity HandleSystemMessage(Activity message)
