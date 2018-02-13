@@ -42,7 +42,7 @@ namespace Common
             return projects;
         }
 
-        public string GetAllProjects()
+        public string GetAllProjects(bool showCompletion)
         {
             string projects = string.Empty;
             using (ProjectContext context = new ProjectContext(_siteUri))
@@ -57,7 +57,17 @@ namespace Common
                 context.ExecuteQuery();
 
                 ProjectCollection projectDetails = context.Projects;
-                projects = string.Join("<br>", projectDetails.Select(x => x.Name));
+                if (showCompletion == true)
+                {
+                    foreach (PublishedProject pro in projectDetails)
+                    {
+                        projects = projects + pro.Name + "," + pro.PercentComplete +"%" + "<br>";
+
+                    }
+                }
+
+                else
+                    projects = string.Join("<br>", projectDetails.Select(x => x.Name));
             }
             return projects;
         }
@@ -155,23 +165,27 @@ namespace Common
         }
 
 
-        public string GetProjectDates(string pName)
+        public string GetProjectInfo(string pName, bool optionalDate = false, bool optionalDuration = false , bool optionalCompletion = false)
         {
             string strissues = string.Empty;
-            using (ProjectContext context = new ProjectContext(_siteUri + "/Demo"))
+            using (ProjectContext context = new ProjectContext(_siteUri))
             {
                 SecureString passWord = new SecureString();
                 foreach (char c in "Amman@123".ToCharArray()) passWord.AppendChar(c);
                 context.Credentials = new SharePointOnlineCredentials(_userName, passWord);
-                PublishedProject project = GetProjectByName("Demo", context);
+                PublishedProject project = GetProjectByName(pName, context);
 
+                if(optionalDate == true)               
+                    strissues = strissues + project.StartDate + "," + project.FinishDate + ",";
 
-               
-                    strissues = strissues + project.StartDate + "," + project.FinishDate + "<br>";
+                if (optionalDuration == true)
+                {
+                    TimeSpan duration = project.FinishDate - project.StartDate;
+                    strissues = strissues + duration.Days + ",";
+                }
 
-
-                
-
+                if (optionalCompletion == true)
+                    strissues = strissues + project.PercentComplete + "%" + ",";
 
 
 
