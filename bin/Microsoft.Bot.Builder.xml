@@ -5385,6 +5385,11 @@
             The verbose flag.
             </summary>
         </member>
+        <member name="P:Microsoft.Bot.Builder.Luis.LuisModelAttribute.BingSpellCheckSubscriptionKey">
+            <summary>
+            The Bing Spell Check subscription key.
+            </summary>
+        </member>
         <member name="M:Microsoft.Bot.Builder.Luis.LuisModelAttribute.#ctor(System.String,System.String,Microsoft.Bot.Builder.Luis.LuisApiVersion,System.String,System.Double)">
             <summary>
             Construct the LUIS model information.
@@ -5423,6 +5428,11 @@
         <member name="P:Microsoft.Bot.Builder.Luis.ILuisOptions.Verbose">
             <summary>
             The verbose flag.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Bot.Builder.Luis.ILuisOptions.BingSpellCheckSubscriptionKey">
+            <summary>
+            The Bing Spell Check subscription key.
             </summary>
         </member>
         <member name="T:Microsoft.Bot.Builder.Luis.Models.CompositeChild">
@@ -5768,6 +5778,11 @@
         <member name="P:Microsoft.Bot.Builder.Luis.LuisRequest.Verbose">
             <summary>
             The verbose flag.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Bot.Builder.Luis.LuisRequest.BingSpellCheckSubscriptionKey">
+            <summary>
+            The Bing Spell Check subscription key.
             </summary>
         </member>
         <member name="P:Microsoft.Bot.Builder.Luis.LuisRequest.ExtraParameters">

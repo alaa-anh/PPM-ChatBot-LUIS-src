@@ -18,6 +18,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Reflection;
 using System.Collections;
+using Microsoft.Bot.Builder.Resource;
 
 namespace Microsoft.Bot.Sample.LuisBot
 {
@@ -26,8 +27,8 @@ namespace Microsoft.Bot.Sample.LuisBot
     {
         private string userName;
         private DateTime msgReceivedDate;
-        private string PPMServerURL;
-
+        //private string PPMServerURL;
+        protected string prompt { get; }
 
         public PPMDialog(Activity activity) : base(new LuisService(new LuisModelAttribute(
 
@@ -39,7 +40,7 @@ namespace Microsoft.Bot.Sample.LuisBot
 
             userName = activity.From.Name;
             msgReceivedDate = DateTime.Now;// activity.Timestamp ? ? DateTime.Now;
-            PPMServerURL = ConfigurationManager.AppSettings["PPMServerURL"];
+
         }
 
 
@@ -60,7 +61,7 @@ namespace Microsoft.Bot.Sample.LuisBot
         public async Task GreetWelcome(IDialogContext context, LuisResult luisResult)
         {
             StringBuilder response = new StringBuilder();
-
+          
             if (this.msgReceivedDate.ToString("tt") == "AM")
             {
                 response.Append($"Good morning, {userName}.. :)");
@@ -70,7 +71,8 @@ namespace Microsoft.Bot.Sample.LuisBot
                 response.Append($"Hey {userName}.. :)");
             }
 
-
+            string sharepointLoginUrl = ConfigurationManager.AppSettings["AuthLogPage"];
+            response.Append($"<br>Click <a href='{sharepointLoginUrl}?userName={this.userName}' >here</a> to login");
 
             await context.PostAsync(response.ToString());
             context.Wait(this.MessageReceived);
@@ -94,46 +96,18 @@ namespace Microsoft.Bot.Sample.LuisBot
         }
 
 
-        [LuisIntent("Search.Projects")]
-        public async Task SearchProjects(IDialogContext context, LuisResult luisResult)
-        {
-            EntityRecommendation projectname;
-
-            string searchTerm_ProjectName = string.Empty;
-
-            if (luisResult.TryFindEntity("Project.name", out projectname))
-            {
-                searchTerm_ProjectName = projectname.Entity;
-            }
-
-            if (string.IsNullOrWhiteSpace(searchTerm_ProjectName))
-            {
-                await context.PostAsync($"Unable to get search term.");
-            }
-            else
-            {
-                await context.PostAsync(new Common.ProjectServer(this.userName, PPMServerURL).FindProjectByName(searchTerm_ProjectName));
-            }
-
-            context.Wait(this.MessageReceived);
-        }
-
 
         [LuisIntent("GetAllProjectsData")]
         public async Task GetAllProjectsData(IDialogContext context, LuisResult luisResult)
         {
-            EntityRecommendation projects , completion;
+
+            EntityRecommendation projects, completion;
             bool showCompletion = false;
-
-
             if (luisResult.TryFindEntity("Project.Completion", out completion))
-            {
                 showCompletion = true;
-            }
 
-           
-                await context.PostAsync(new Common.ProjectServer(this.userName, PPMServerURL).GetAllProjects(showCompletion));
-            
+            await context.PostAsync(new Common.ProjectServer(this.userName).GetAllProjects(showCompletion));
+
 
             context.Wait(this.MessageReceived);
         }
@@ -159,7 +133,7 @@ namespace Microsoft.Bot.Sample.LuisBot
             }
             else
             {
-                await context.PostAsync(new Common.ProjectServer(this.userName, PPMServerURL).GetProjectIssues(searchTerm_ProjectName));
+                await context.PostAsync(new Common.ProjectServer(this.userName).GetProjectIssues(searchTerm_ProjectName));
             }
 
             context.Wait(this.MessageReceived);
@@ -186,7 +160,7 @@ namespace Microsoft.Bot.Sample.LuisBot
             }
             else
             {
-                await context.PostAsync(new Common.ProjectServer(this.userName, PPMServerURL).GetProjectTasks(searchTerm_ProjectName));
+                await context.PostAsync(new Common.ProjectServer(this.userName).GetProjectTasks(searchTerm_ProjectName));
             }
 
             context.Wait(this.MessageReceived);
@@ -196,15 +170,14 @@ namespace Microsoft.Bot.Sample.LuisBot
         [LuisIntent("GetProjectInfo")]
         public async Task GetProjectInfo(IDialogContext context, LuisResult luisResult)
         {
-            EntityRecommendation projectname , projectSDate , projectEDate , projectDuration , projectCompletion;
-            
+            EntityRecommendation projectname, projectSDate, projectEDate, projectDuration, projectCompletion;
+
 
 
             string searchTerm_ProjectName = string.Empty;
             bool Pdate = false;
             bool pDuration = false;
             bool PCompletion = false;
-
 
             if (luisResult.TryFindEntity("Project.name", out projectname))
                 searchTerm_ProjectName = projectname.Entity;
@@ -224,7 +197,7 @@ namespace Microsoft.Bot.Sample.LuisBot
             }
             else
             {
-                await context.PostAsync(new Common.ProjectServer(this.userName, PPMServerURL).GetProjectInfo(searchTerm_ProjectName , Pdate , pDuration , PCompletion));
+                await context.PostAsync(new Common.ProjectServer(this.userName).GetProjectInfo(searchTerm_ProjectName, Pdate, pDuration, PCompletion));
             }
 
             context.Wait(this.MessageReceived);
@@ -250,7 +223,7 @@ namespace Microsoft.Bot.Sample.LuisBot
             }
             else
             {
-                await context.PostAsync(new Common.ProjectServer(this.userName, PPMServerURL).GetProjectRiskResources(searchTerm_ProjectName));
+                await context.PostAsync(new Common.ProjectServer(this.userName).GetProjectRiskResources(searchTerm_ProjectName));
             }
 
             context.Wait(this.MessageReceived);
@@ -277,7 +250,7 @@ namespace Microsoft.Bot.Sample.LuisBot
             }
             else
             {
-                await context.PostAsync(new Common.ProjectServer(this.userName, PPMServerURL).GetProjectRiskStatus(searchTerm_ProjectName));
+                await context.PostAsync(new Common.ProjectServer(this.userName).GetProjectRiskStatus(searchTerm_ProjectName));
             }
 
             context.Wait(this.MessageReceived);
@@ -293,13 +266,13 @@ namespace Microsoft.Bot.Sample.LuisBot
 
 
             string ProjectSDate = string.Empty;
-            string ProjectEDate= string.Empty;
+            string ProjectEDate = string.Empty;
 
-             var filterDate = (object)null;
+            var filterDate = (object)null;
 
-            EntityRecommendation dateTimeEntity, dateRangeEntity , ProjectS , ProjectE;
+            EntityRecommendation dateTimeEntity, dateRangeEntity, ProjectS, ProjectE;
 
-            
+
             if (luisResult.TryFindEntity("builtin.datetimeV2.daterange", out dateRangeEntity))
             {
                 filterDate = dateRangeEntity.Resolution.Values.Select(x => x).OfType<List<object>>().SelectMany(i => i).FirstOrDefault();
@@ -315,7 +288,7 @@ namespace Microsoft.Bot.Sample.LuisBot
 
                     ProjectSDate = Datevalues(filterDate, "start");
                 }
-                ProjectEDate = Datevalues(filterDate, "end");               
+                ProjectEDate = Datevalues(filterDate, "end");
 
             }
             else if (luisResult.TryFindEntity("Project.Start", out ProjectS))
@@ -328,8 +301,8 @@ namespace Microsoft.Bot.Sample.LuisBot
             }
 
 
-           if(filterDate !=null)
-                await context.PostAsync(new Common.ProjectServer(this.userName, PPMServerURL).FilterProjectsByDate(FilterType , ProjectSDate , ProjectEDate , ProjectSEdateFlag));
+            if (filterDate != null)
+                await context.PostAsync(new Common.ProjectServer(this.userName).FilterProjectsByDate(FilterType, ProjectSDate, ProjectEDate, ProjectSEdateFlag));
 
 
 
@@ -339,7 +312,7 @@ namespace Microsoft.Bot.Sample.LuisBot
 
 
 
-        public string Datevalues(object obj , string keyNeed)
+        public string Datevalues(object obj, string keyNeed)
         {
             string keyval = string.Empty;
             if (typeof(IDictionary).IsAssignableFrom(obj.GetType()))
@@ -358,12 +331,38 @@ namespace Microsoft.Bot.Sample.LuisBot
                 }
             }
             return keyval;
-            
+
         }
 
-       
-    }
+        [LuisIntent("Search.Projects")]
+        public async Task SearchProjects(IDialogContext context, LuisResult luisResult)
+        {
+            EntityRecommendation projectname;
 
+            string searchTerm_ProjectName = string.Empty;
+
+            if (luisResult.TryFindEntity("Project.name", out projectname))
+            {
+                searchTerm_ProjectName = projectname.Entity;
+            }
+
+            if (string.IsNullOrWhiteSpace(searchTerm_ProjectName))
+            {
+                await context.PostAsync($"Unable to get search term.");
+            }
+            else
+            {
+                await context.PostAsync(new Common.ProjectServer(this.userName).FindProjectByName(searchTerm_ProjectName));
+            }
+
+            context.Wait(this.MessageReceived);
+        }
+
+
+              
+
+        
+    }
 
 }
 

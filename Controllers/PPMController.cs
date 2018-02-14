@@ -9,12 +9,18 @@ using System.Net.Http;
 using System.Diagnostics;
 using System.Collections.Generic;
 using System.Web;
+using Common.Contracts;
+using Common;
+using Microsoft.Bot.Builder.Dialogs.Internals;
+using Autofac;
 
 namespace Microsoft.Bot.Sample.LuisBot
 {
     [BotAuthentication]
     public class PPMController : ApiController
     {
+
+        protected string prompt { get; }
         /// <summary>
         /// POST: api/Messages
         /// Receive a message from a user and reply to it
@@ -34,53 +40,42 @@ namespace Microsoft.Bot.Sample.LuisBot
 
             //if (activity.GetActivityType() == ActivityTypes.Message)
             //{
-            //    ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
-
-
-            //    var userLogonName = activity.From.Id;
-            //    var userToken = activity.From.Name;
-
-            //    var loggedIn = "false";
-
-            //    if (userToken.ToLower() == "User".ToLower())
+            //    if (activity.From.Name == "User")
             //    {
+            //        ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
             //        Activity replyToConversation = activity.CreateReply();
             //        replyToConversation.Recipient = activity.From;
             //        replyToConversation.Type = "message";
-
             //        replyToConversation.Attachments = new List<Attachment>();
             //        List<CardAction> cardButtons = new List<CardAction>();
             //        CardAction plButton = new CardAction()
             //        {
             //            Value = $"{System.Configuration.ConfigurationManager.AppSettings["AuthLogPage"]}?userid={HttpUtility.UrlEncode(activity.From.Id)}",
-            //            Type = "signin",
-            //            Title = "Authentication Required"
+            //                Type = "signin",
+            //                Title = "Authentication Required"
             //        };
             //        cardButtons.Add(plButton);
-
             //        SigninCard plCard = new SigninCard("Please login to Office 365", new List<CardAction>() { plButton });
             //        Attachment plAttachment = plCard.ToAttachment();
             //        replyToConversation.Attachments.Add(plAttachment);
 
-            //        var reply = await connector.Conversations.SendToConversationAsync(replyToConversation);
+            //            var reply = await connector.Conversations.SendToConversationAsync(replyToConversation);
+            //        }
+            //        else
+            //        {
+            //            await Conversation.SendAsync(activity, () => new PPMDialog(activity));
+            //        }
             //    }
             //    else
             //    {
-            //        await Conversation.SendAsync(activity, () => new PPMDialog(activity));
+            //        HandleSystemMessage(activity);
             //    }
-            //}
-            //else
-            //{
-            //    HandleSystemMessage(activity);
-            //}
-
-
-
-
 
             var response = Request.CreateResponse(System.Net.HttpStatusCode.OK);
             return response;
         }
+
+       
 
         private Activity HandleSystemMessage(Activity message)
         {

@@ -1,5 +1,6 @@
 ﻿using Common;
 using Common.Contracts;
+using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Connector;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Newtonsoft.Json.Linq;
@@ -33,7 +34,7 @@ namespace AuthenticationWebApp.Controllers
             return View();
         }
 
-        public async Task<ActionResult> LoginWithSharePointAsync(string userName)
+        public ActionResult LoginWithSharePoint(string userName)
         {
 
 
@@ -51,39 +52,13 @@ namespace AuthenticationWebApp.Controllers
         }
 
 
-        //public async Task<ActionResult> Authorize(string code)
-        //{
-        //    // Get access token
-        //    var authContext = new AuthenticationContext("https://login.microsoftonline.com/common");
-        //    var authResult = await authContext.AcquireTokenByAuthorizationCodeAsync(
-        //        code,
-        //        new Uri($"{ConfigurationManager.AppSettings["AppWebSite"]}/Home/Authorize"),
-        //        new ClientCredential(
-        //            ConfigurationManager.AppSettings["ClientId"],
-        //            ConfigurationManager.AppSettings["ClientSecret"]));
-
-        //    // Store access token to bot state
-        //    ///// Here we store the only access token.
-        //    ///// Please store refresh token, too.
-        //    var botCred = new MicrosoftAppCredentials(
-        //        ConfigurationManager.AppSettings["MicrosoftAppId"],
-        //        ConfigurationManager.AppSettings["MicrosoftAppPassword"]);
-        //    var stateClient = new StateClient(botCred);
-        //    BotState botState = new BotState(stateClient);
-        //    BotData botData = new BotData(eTag: "*");
-        //    botData.SetProperty<string>("AccessToken", authResult.AccessToken);
-        //    await stateClient.BotState.SetUserDataAsync("skype", Session["skypeuserid"].ToString(), botData);
-
-        //    return View();
-        //}
+        
 
         public ActionResult LoggedinToSharePoint()
         {
             string contextToken = this.Request.Form["SPAppToken"];
             string userName = Convert.ToString(Session["SkypeUserID"]);
-
-           // new Mongo().Insert("ContextTokens", new Token(userName, contextToken));
-
+            new Mongo().Insert("ContextTokens", new Token(userName, contextToken));
             return View();
         }
 

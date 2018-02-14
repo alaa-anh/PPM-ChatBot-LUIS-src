@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Security;
+using Common.Contracts;
 using Microsoft.ProjectServer.Client;
 using Microsoft.SharePoint.Client;
 
@@ -12,14 +15,16 @@ namespace Common
     public class ProjectServer
     {
         private string _userName;
+        private string _userPassword = "Amman@123";
+
         private string _siteUri;
 
 
 
-        public ProjectServer(string userName, string ppmsiteurl)
+        public ProjectServer(string userName)
         {
-            _userName = "Alaa@M365x671106.onmicrosoft.com";
-            _siteUri = ppmsiteurl;
+            _userName = userName;
+            _siteUri = ConfigurationManager.AppSettings["PPMServerURL"];
         }
 
         public string FindProjectByName(string searchTermName)
@@ -45,29 +50,35 @@ namespace Common
         public string GetAllProjects(bool showCompletion)
         {
             string projects = string.Empty;
-            using (ProjectContext context = new ProjectContext(_siteUri))
+            Token token = new Mongo().Get<Token>("ContextTokens", "UserName", this._userName);
+
+            using (ClientContext contextah = TokenHelper.GetClientContextWithContextToken(_siteUri, token.ContextToken, _siteUri))
             {
-                SecureString passWord = new SecureString();
-                foreach (char c in "Amman@123".ToCharArray()) passWord.AppendChar(c);
-                context.Credentials = new SharePointOnlineCredentials(_userName, passWord);
-                CamlQuery query = new CamlQuery();
 
-
-                context.Load(context.Projects);
-                context.ExecuteQuery();
-
-                ProjectCollection projectDetails = context.Projects;
-                if (showCompletion == true)
+                using (ProjectContext context = new ProjectContext(_siteUri))
                 {
-                    foreach (PublishedProject pro in projectDetails)
+                    //SecureString passWord = new SecureString();
+                    //foreach (char c in "Amman@123".ToCharArray()) passWord.AppendChar(c);
+                    //context.Credentials = new SharePointOnlineCredentials(_userName, passWord);
+                    CamlQuery query = new CamlQuery();
+
+
+                    context.Load(context.Projects);
+                    context.ExecuteQuery();
+
+                    ProjectCollection projectDetails = context.Projects;
+                    if (showCompletion == true)
                     {
-                        projects = projects + pro.Name + "," + pro.PercentComplete +"%" + "<br>";
+                        foreach (PublishedProject pro in projectDetails)
+                        {
+                            projects = projects + pro.Name + "," + pro.PercentComplete + "%" + "<br>";
 
+                        }
                     }
-                }
 
-                else
-                    projects = string.Join("<br>", projectDetails.Select(x => x.Name));
+                    else
+                        projects = string.Join("<br>", projectDetails.Select(x => x.Name));
+                }
             }
             return projects;
         }
@@ -76,7 +87,7 @@ namespace Common
         public string GetProjectIssues(string pName)
         {
             string strissues = string.Empty;
-            using (ProjectContext context = new ProjectContext(_siteUri+"/Demo"))
+            using (ProjectContext context = new ProjectContext(_siteUri + "/Demo"))
             {
                 SecureString passWord = new SecureString();
                 foreach (char c in "Amman@123".ToCharArray()) passWord.AppendChar(c);
@@ -102,7 +113,7 @@ namespace Common
                     string IssuePriority = (string)item["Priority"];
 
 
-                    strissues = strissues + IssueName +","+ IssueStatus +","+ IssuePriority + "<br>";
+                    strissues = strissues + IssueName + "," + IssueStatus + "," + IssuePriority + "<br>";
 
                 }
 
@@ -158,37 +169,42 @@ namespace Common
 
                 }
 
-              
+
 
             }
             return strissues;
         }
 
 
-        public string GetProjectInfo(string pName, bool optionalDate = false, bool optionalDuration = false , bool optionalCompletion = false)
+        public string GetProjectInfo(string pName, bool optionalDate = false, bool optionalDuration = false, bool optionalCompletion = false)
         {
             string strissues = string.Empty;
-            using (ProjectContext context = new ProjectContext(_siteUri))
+            Token token = new Mongo().Get<Token>("ContextTokens", "UserName", this._userName);
+
+            using (ClientContext contextah = TokenHelper.GetClientContextWithContextToken(_siteUri, token.ContextToken, _siteUri))
             {
-                SecureString passWord = new SecureString();
-                foreach (char c in "Amman@123".ToCharArray()) passWord.AppendChar(c);
-                context.Credentials = new SharePointOnlineCredentials(_userName, passWord);
-                PublishedProject project = GetProjectByName(pName, context);
-
-                if(optionalDate == true)               
-                    strissues = strissues + project.StartDate + "," + project.FinishDate + ",";
-
-                if (optionalDuration == true)
+                using (ProjectContext context = new ProjectContext(_siteUri))
                 {
-                    TimeSpan duration = project.FinishDate - project.StartDate;
-                    strissues = strissues + duration.Days + ",";
+                    //SecureString passWord = new SecureString();
+                    //foreach (char c in "Amman@123".ToCharArray()) passWord.AppendChar(c);
+                    //context.Credentials = new SharePointOnlineCredentials(_userName, passWord);
+                    PublishedProject project = GetProjectByName(pName, context);
+
+                    if (optionalDate == true)
+                        strissues = strissues + project.StartDate + "," + project.FinishDate + ",";
+
+                    if (optionalDuration == true)
+                    {
+                        TimeSpan duration = project.FinishDate - project.StartDate;
+                        strissues = strissues + duration.Days + ",";
+                    }
+
+                    if (optionalCompletion == true)
+                        strissues = strissues + project.PercentComplete + "%" + ",";
+
+
+
                 }
-
-                if (optionalCompletion == true)
-                    strissues = strissues + project.PercentComplete + "%" + ",";
-
-
-
             }
             return strissues;
         }
@@ -265,7 +281,7 @@ namespace Common
             return strissues;
         }
 
-        public string FilterProjectsByDate(string FilterType , string pStartDate , string PEndDate , string ProjectSEdateFlag)
+        public string FilterProjectsByDate(string FilterType, string pStartDate, string PEndDate, string ProjectSEdateFlag)
         {
             string strissues = string.Empty;
             IEnumerable<PublishedProject> retrivedProjects = null; ;
@@ -278,10 +294,10 @@ namespace Common
                 DateTime endate = new DateTime();
 
                 if (!string.IsNullOrEmpty(pStartDate))
-                     startdate = DateTime.Parse(pStartDate);
+                    startdate = DateTime.Parse(pStartDate);
 
                 if (!string.IsNullOrEmpty(PEndDate))
-                     endate = DateTime.Parse(PEndDate);
+                    endate = DateTime.Parse(PEndDate);
 
 
                 if (ProjectSEdateFlag == "START")
@@ -294,7 +310,7 @@ namespace Common
                                   .Select(p => p);
                         retrivedProjects = context.LoadQuery(pubProjects);
 
-                       
+
                     }
                     else if (FilterType.ToUpper() == "AFTER" && pStartDate != "")
                     {
@@ -309,15 +325,15 @@ namespace Common
                     {
                         var pubProjects = context.Projects
                             .Where(p => p.IsEnterpriseProject == true
-                            && p.StartDate >= startdate && p.StartDate<=endate);
+                            && p.StartDate >= startdate && p.StartDate <= endate);
                         retrivedProjects = context.LoadQuery(pubProjects);
 
                     }
                 }
                 else
-                { 
-               
-                 if (FilterType.ToUpper() == "BEFORE" && PEndDate != "")
+                {
+
+                    if (FilterType.ToUpper() == "BEFORE" && PEndDate != "")
                     {
                         var pubProjects = context.Projects
                             .Where(p => p.IsEnterpriseProject == true
@@ -362,5 +378,27 @@ namespace Common
 
             return strissues;
         }
+
+
+
+        //public bool GetUserPermissions()
+        //{
+        //    Token token = new Mongo().Get<Token>("ContextTokens", "UserName", this._userName);
+
+        //    ClientContext context = new ClientContext(_siteUri);
+        //    NetworkCredential nc = new NetworkCredential(token.UserName , token.ContextToken, "basesmc2008");
+        //    context.Credentials = nc;
+        //    BasePermissions bp = new BasePermissions();
+
+        //    bp.Set(PermissionKind.ManageWeb);
+        //    ClientResult<bool> manageWeb = context.Web.DoesUserHavePermissions(bp);
+        //    context.ExecuteQuery();
+
+        //    if (manageWeb.Value == true)
+        //        return true;
+        //    else
+        //        return false;
+
+        //}
     }
 }
