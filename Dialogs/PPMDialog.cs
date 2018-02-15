@@ -38,7 +38,7 @@ namespace Microsoft.Bot.Sample.LuisBot
             domain: ConfigurationManager.AppSettings["LuisAPIHostName"])))
         {
 
-            userName = activity.From.Id;
+            userName = activity.From.Name;
             msgReceivedDate = DateTime.Now;// activity.Timestamp ? ? DateTime.Now;
 
         }
