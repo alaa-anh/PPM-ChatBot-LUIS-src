@@ -13,6 +13,8 @@ using Common.Contracts;
 using Common;
 using Microsoft.Bot.Builder.Dialogs.Internals;
 using Autofac;
+using LuisBot.Forms;
+using Microsoft.Bot.Builder.FormFlow;
 
 namespace Microsoft.Bot.Sample.LuisBot
 {
@@ -28,9 +30,18 @@ namespace Microsoft.Bot.Sample.LuisBot
         [ResponseType(typeof(void))]
         public virtual async Task<HttpResponseMessage> Post([FromBody] Activity activity)
         {
+            
             if (activity.GetActivityType() == ActivityTypes.Message)
             {
-                await Conversation.SendAsync(activity, () => new PPMDialog(activity));
+                if (activity.From.Name.ToLower() != "User".ToLower())
+                {
+                    await Conversation.SendAsync(activity, () => new PPMDialog(activity));
+                }
+                else
+                {
+                    await Conversation.SendAsync(activity, MakeForm);
+                }
+                
             }
             else
             {
@@ -38,44 +49,42 @@ namespace Microsoft.Bot.Sample.LuisBot
             }
 
 
-            //if (activity.GetActivityType() == ActivityTypes.Message)
-            //{
-            //    if (activity.From.Name == "User")
-            //    {
-            //        ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
-            //        Activity replyToConversation = activity.CreateReply();
-            //        replyToConversation.Recipient = activity.From;
-            //        replyToConversation.Type = "message";
-            //        replyToConversation.Attachments = new List<Attachment>();
-            //        List<CardAction> cardButtons = new List<CardAction>();
-            //        CardAction plButton = new CardAction()
-            //        {
-            //            Value = $"{System.Configuration.ConfigurationManager.AppSettings["AuthLogPage"]}?userid={HttpUtility.UrlEncode(activity.From.Id)}",
-            //                Type = "signin",
-            //                Title = "Authentication Required"
-            //        };
-            //        cardButtons.Add(plButton);
-            //        SigninCard plCard = new SigninCard("Please login to Office 365", new List<CardAction>() { plButton });
-            //        Attachment plAttachment = plCard.ToAttachment();
-            //        replyToConversation.Attachments.Add(plAttachment);
-
-            //            var reply = await connector.Conversations.SendToConversationAsync(replyToConversation);
-            //        }
-            //        else
-            //        {
-            //            await Conversation.SendAsync(activity, () => new PPMDialog(activity));
-            //        }
-            //    }
-            //    else
-            //    {
-            //        HandleSystemMessage(activity);
-            //    }
+          
 
             var response = Request.CreateResponse(System.Net.HttpStatusCode.OK);
             return response;
         }
 
-       
+        internal static IDialog<LoginForm> MakeForm()
+        {
+            return Chain.From(() => FormDialog.FromForm(LoginForm.BuildForm))
+                
+                .Do(async (context, order) =>
+                {
+                    try
+                    {
+                        var completed = await order;
+                        if (TokenHelper.checkAuthorizedUser(completed.Name) == true)
+                        {
+                            context.UserData.SetValue("UserName", completed.Name);
+                            new Mongo().Insert("ContextTokens", new Token(completed.Name));
+                            await context.PostAsync("You are registerd. Have a happy time with us.");
+                        }
+                        else
+                        {
+                            string reply = $"Sorry, Your User Name Is wrong or you don't have permission. Please try again.";
+                            await context.PostAsync(reply);
+                        }
+                    }
+                    catch (FormCanceledException<LoginForm> e)
+                    {
+                        string reply = null == e.InnerException ?
+                        $"Hey, you quit the registration. Dont miss out the party!" :
+                        "Sorry, Could not register you. Please try again.";
+                        await context.PostAsync(reply);
+                    }
+                });
+        }
 
         private Activity HandleSystemMessage(Activity message)
         {

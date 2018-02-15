@@ -19,6 +19,10 @@ using System.Text.RegularExpressions;
 using System.Reflection;
 using System.Collections;
 using Microsoft.Bot.Builder.Resource;
+using Microsoft.Bot.Builder.ConnectorEx;
+using System.Net.Http;
+using System.Web.Http.Tracing;
+using System.Threading;
 
 namespace Microsoft.Bot.Sample.LuisBot
 {
@@ -29,6 +33,9 @@ namespace Microsoft.Bot.Sample.LuisBot
         private DateTime msgReceivedDate;
         //private string PPMServerURL;
         protected string prompt { get; }
+        public string Token { get; set; }
+
+
 
         public PPMDialog(Activity activity) : base(new LuisService(new LuisModelAttribute(
 
@@ -60,6 +67,8 @@ namespace Microsoft.Bot.Sample.LuisBot
         [LuisIntent("Greet.Welcome")]
         public async Task GreetWelcome(IDialogContext context, LuisResult luisResult)
         {
+            string id;
+            var userfound = context.UserData.TryGetValue("UserName", out id);
             StringBuilder response = new StringBuilder();
           
             if (this.msgReceivedDate.ToString("tt") == "AM")
@@ -71,8 +80,10 @@ namespace Microsoft.Bot.Sample.LuisBot
                 response.Append($"Hey {userName}.. :)");
             }
 
-            string sharepointLoginUrl = ConfigurationManager.AppSettings["AuthLogPage"];
-            response.Append($"<br>Click <a href='{sharepointLoginUrl}?userName={this.userName}' >here</a> to login");
+             
+
+            //string sharepointLoginUrl = ConfigurationManager.AppSettings["AuthLogPage"];
+            //response.Append($"<br>Click <a href='{sharepointLoginUrl}?userName={this.userName}' >here</a> to login");
 
             await context.PostAsync(response.ToString());
             context.Wait(this.MessageReceived);
@@ -359,9 +370,63 @@ namespace Microsoft.Bot.Sample.LuisBot
         }
 
 
-              
+        //public virtual async Task MessageReceivedAsync(IDialogContext context, IAwaitable<IMessageActivity> argument)
+        //{
+        //    var msg = await argument;
+        //    if (msg.ChannelId == "ppmDL")
+        //    {
+        //        string botChatSecret = ConfigurationManager.AppSettings["BotChatDirectLineSecret"];
+        //        var request = new HttpRequestMessage(HttpMethod.Get, "https://webchat.botframework.com/api/tokens");
+        //        request.Headers.Add("Authorization", "BOTCONNECTOR " + botChatSecret);
+        //        using (HttpResponseMessage response = await new HttpClient().SendAsync(request))
+        //        {
+        //            string token = await response.Content.ReadAsStringAsync();
+        //            Token = token.Replace("\"", "");
+        //        }
 
-        
+        //    }
+        //    else if (msg.ChannelId == "facebook")
+        //    {
+        //        var reply = context.MakeMessage();
+        //        reply.ChannelData = new FacebookMessage
+        //        (
+        //            text: "Please share your location with me.",
+        //            quickReplies: new List<FacebookQuickReply>
+        //            {
+        //                // If content_type is location, title and payload are not used
+        //                // see https://developers.facebook.com/docs/messenger-platform/send-api-reference/quick-replies#fields
+        //                // for more information.
+        //                new FacebookQuickReply(
+        //                    contentType: FacebookQuickReply.ContentTypes.Location,
+        //                    title: default(string),
+        //                    payload: default(string)
+        //                )
+        //            }
+        //        );
+        //        await context.PostAsync(reply);
+        //      //  context.Wait(LocationReceivedAsync);
+        //    }
+        //    else if (msg.ChannelId == "email")
+        //    { }
+        //    else if (msg.ChannelId == "skype")
+        //    { }
+        //    else if (msg.ChannelId == "slack")
+        //    { }
+        //    else
+        //    {
+        //        context.Done(default(Place));
+        //    }
+        //}
+
+        //public virtual async Task LocationReceivedAsync(IDialogContext context, IAwaitable<IMessageActivity> argument)
+        //{
+        //    var msg = await argument;
+        //    var location = msg.Entities?.Where(t => t.Type == "Place").Select(t => t.GetAs<Place>()).FirstOrDefault();
+        //    context.Done(location);
+        //}
+
+      
+
     }
 
 }

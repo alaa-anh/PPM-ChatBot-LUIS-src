@@ -10,11 +10,90 @@ using System.Configuration;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using System.Web.Services.Description;
 
 namespace AuthenticationWebApp.Controllers
 {
+
+    #region public class Chat
+    public class Chat
+    {
+        public string ChatMessage { get; set; }
+        public string ChatResponse { get; set; }
+        public string watermark { get; set; }
+    }
+    #endregion
+
     public class HomeController : Controller
     {
+
+        private static string DiretlineUrl
+          = @"https://directline.botframework.com";
+        private static string directLineSecret =
+            "** INSERT YOUR SECRET CODE HERE **";
+        private static string botId =
+            "** INSERT YOUR BOTID HERE **";
+
+        //public async Task<ActionResult> DirectLineChatBotDirectLine()
+        //{
+        //    // Create an Instance of the Chat object
+        //    Chat objChat = new Chat();
+        //    // Only call Bot if logged in
+        //    if (User.Identity.IsAuthenticated)
+        //    {
+        //        // Pass the message to the Bot 
+        //        // and get the response
+        //        objChat = await TalkToTheBot("Hello");
+        //    }
+        //    else
+        //    {
+        //        objChat.ChatResponse = "Must be logged in";
+        //    }
+        //    // Return response
+        //    return View(objChat);
+        //}
+
+        //private async Task<Chat> TalkToTheBot(string paramMessage)
+        //{
+        //    // Connect to the DirectLine service
+        //    DirectLineClient client = new DirectLineClient(directLineSecret);
+        //    // Try to get the existing Conversation
+        //    Conversation conversation =
+        //        System.Web.HttpContext.Current.Session["conversation"] as Conversation;
+        //    // Try to get an existing watermark 
+        //    // the watermark marks the last message we received
+        //    string watermark =
+        //        System.Web.HttpContext.Current.Session["watermark"] as string;
+        //    if (conversation == null)
+        //    {
+        //        // There is no existing conversation
+        //        // start a new one
+        //        conversation = client.Conversations.NewConversation();
+        //    }
+        //    // Use the text passed to the method (by the user)
+        //    // to create a new message
+        //    Message message = new Message
+        //    {
+        //        FromProperty = User.Identity.Name,
+        //        Text = paramMessage
+        //    };
+        //    // Post the message to the Bot
+        //    await client.Conversations.PostMessageAsync(conversation.ConversationId, message);
+        //    // Get the response as a Chat object
+        //    Chat objChat =
+        //        await ReadBotMessagesAsync(client, conversation.ConversationId, watermark);
+        //    // Save values
+        //    System.Web.HttpContext.Current.Session["conversation"] = conversation;
+        //    System.Web.HttpContext.Current.Session["watermark"] = objChat.watermark;
+        //    // Return the response as a Chat object
+        //    return objChat;
+        //}
+
+        //private Task<Chat> ReadBotMessagesAsync(DirectLineClient client, object conversationId, string watermark)
+        //{
+        //    throw new NotImplementedException();
+        //}
+
         public ActionResult Index()
         {
             return View();

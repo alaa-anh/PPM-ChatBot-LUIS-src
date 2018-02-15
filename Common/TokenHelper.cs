@@ -6,12 +6,14 @@ using Microsoft.SharePoint.Client.EventReceivers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Configuration;
 using System.Globalization;
 using System.IdentityModel.Selectors;
 using System.IdentityModel.Tokens;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Security;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Principal;
 using System.ServiceModel;
@@ -76,6 +78,40 @@ namespace Common
                 }
             }
             return null;
+        }
+
+        public static bool checkAuthorizedUser(string name)
+        {
+            bool Authorized = false;
+            try
+            {
+                using (ClientContext ctx = new ClientContext(ConfigurationManager.AppSettings["PPMServerURL"]))
+                {
+
+                    SecureString passWord = new SecureString();
+                    foreach (char c in ConfigurationManager.AppSettings["PPMAdminPassword"].ToCharArray()) passWord.AppendChar(c);
+                    ctx.Credentials = new SharePointOnlineCredentials(ConfigurationManager.AppSettings["PPMAdminUser"], passWord);
+
+                 
+                    var user = ctx.Web.EnsureUser(name);
+                    ctx.Load(user);
+                    ctx.ExecuteQuery();
+
+                    if (null != user)
+                    {
+                        //Console.WriteLine("User: {0} Login name: {1} Email: {2}",
+                        //        user.Title, user.LoginName, user.Email);
+                        Authorized = true;
+                    }
+                    else
+                        Authorized = false;
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+            return Authorized;
         }
 
         /// <summary>
@@ -1219,5 +1255,8 @@ namespace Common
         private List<SecurityKey> securityKeys;
 
         #endregion
+
+
+      
     }
 }

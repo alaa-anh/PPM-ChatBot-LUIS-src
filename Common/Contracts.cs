@@ -1,23 +1,30 @@
-﻿
-using System;
+﻿using MongoDB.Bson;
+
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Common.Contracts
 {
     public class Token
     {
-        public Object _id;
+        public ObjectId _id;
         public string UserName;
         public string ContextToken;
 
-        //public const string PersistedCookieKey = "persistedCookie";
-        //public const string AuthResultKey = "authResult";
-        //public const string MagicNumberKey = "authMagicNumber";
-        //public const string MagicNumberValidated = "authMagicNumberValidated";
+      
 
         public Token(string userName, string contextToken)
         {
             UserName = userName;
             ContextToken = contextToken;
+        }
+
+        public Token(string userName)
+        {
+            UserName = userName;
+
         }
     }
 }
