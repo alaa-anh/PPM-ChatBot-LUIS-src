@@ -72,7 +72,7 @@ namespace LuisBot.Forms
             //})
             .OnCompletion(async (context, state) =>
                          {
-                             await context.PostAsync("You are currently Logged In. Please Enjoy Using our App.");
+                             //await context.PostAsync("You are currently Logged In. Please Enjoy Using our App.");
                              context.UserData.SetValue("UserName", state.Name);
                              context.UserData.SetValue("Password", state.Password);
 

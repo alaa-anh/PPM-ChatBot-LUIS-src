@@ -5,6 +5,8 @@ using System.Web;
 
 namespace LuisBot.Model
 {
+
+    [Serializable]
     public class ProjectInfo
     {
         public string ProjectName { get; set; }

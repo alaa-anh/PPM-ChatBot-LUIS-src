@@ -35,12 +35,6 @@ namespace Microsoft.Bot.Sample.LuisBot
         private string password;
 
         private DateTime msgReceivedDate;
-        //private string PPMServerURL;
-        //protected string prompt { get; }
-        //public string Token { get; set; }
-
-
-
         public PPMDialog(Activity activity) : base(new LuisService(new LuisModelAttribute(
 
 
@@ -48,26 +42,9 @@ namespace Microsoft.Bot.Sample.LuisBot
             ConfigurationManager.AppSettings["LuisAPIKey"],
             domain: ConfigurationManager.AppSettings["LuisAPIHostName"])))
         {
-
-
-            //Chain.From(() => FormDialog.FromForm(LoginForm.BuildForm));
-
             userName = activity.From.Name;
             msgReceivedDate = DateTime.Now;// activity.Timestamp ? ? DateTime.Now;
-
         }
-
-        //public override async Task StartAsync(IDialogContext context)
-        //{
-        //    await context.PostAsync(FormDialog.FromForm(LoginForm.BuildForm));
-
-
-
-        //    context.Wait(MessageReceivedAsync);
-
-        //}
-
-
         [LuisIntent("")]
         [LuisIntent("none")]
         [LuisIntent("None")]
@@ -82,52 +59,32 @@ namespace Microsoft.Bot.Sample.LuisBot
         [LuisIntent("Greet.Welcome")]
         public async Task GreetWelcome(IDialogContext context, LuisResult luisResult)
         {
-            string id;
-            var userfound = context.UserData.TryGetValue("UserName", out id);
-            StringBuilder response = new StringBuilder();
-          
-            if (this.msgReceivedDate.ToString("tt") == "AM")
+            if (context.UserData.TryGetValue<string>("UserName", out userName) && (context.UserData.TryGetValue<string>("Password", out password)))
             {
-                response.Append($"Good morning, {userName}.. :)");
+                string id;
+                var userfound = context.UserData.TryGetValue("UserName", out id);
+                StringBuilder response = new StringBuilder();
+
+                if (this.msgReceivedDate.ToString("tt") == "AM")
+                {
+                    response.Append($"Good morning, {userName}.. :)");
+                }
+                else
+                {
+                    response.Append($"Hey {userName}.. :)");
+                }
+
+                await context.PostAsync(response.ToString());
+                context.Wait(this.MessageReceived);
             }
             else
             {
-                response.Append($"Hey {userName}.. :)");
+                var form = new FormDialog<LoginForm>(new LoginForm(), LoginForm.BuildForm);
+                context.Call(form, SignUpComplete);
             }
-
-            var form = new FormDialog<LoginForm>(new LoginForm(), LoginForm.BuildForm);
-          //   context.Call<LoginForm>(form, SignUpComplete);
-            context.Call(form , SignUpComplete);
-
-            //await context.PostAsync(response.ToString());
-            //context.Wait(this.MessageReceived);
         }
 
-        private async Task SignUpComplete(IDialogContext context, IAwaitable<LoginForm> result)
-        {
-            LoginForm form = null;
-            try
-            {
-                form = await result;
-            }
-            catch (OperationCanceledException)
-            {
-            }
-
-            if (form == null)
-            {
-                await context.PostAsync("You canceled the form.");
-            }
-            else
-            {
-                // Here is where we could call our signup service here to complete the sign-up
-
-                var message = $"Thanks! We signed up **{form.Name}**.";
-                await context.PostAsync(message);
-            }
-
-            context.Wait(MessageReceived);
-        }
+       
 
         [LuisIntent("Greet.Farewell")]
         public async Task GreetFarewell(IDialogContext context, LuisResult luisResult)
@@ -413,7 +370,31 @@ namespace Microsoft.Bot.Sample.LuisBot
             context.Wait(this.MessageReceived);
         }
 
+        private async Task SignUpComplete(IDialogContext context, IAwaitable<LoginForm> result)
+        {
+            LoginForm form = null;
+            try
+            {
+                form = await result;
+            }
+            catch (OperationCanceledException)
+            {
+            }
 
+            if (form == null)
+            {
+                await context.PostAsync("You canceled the form.");
+            }
+            else
+            {
+                // Here is where we could call our signup service here to complete the sign-up
+
+                var message = $"You are currently Logged In. Please Enjoy Using our App. **{form.Name}**.";
+                await context.PostAsync(message);
+            }
+
+            context.Wait(MessageReceived);
+        }
         //public virtual async Task MessageReceivedAsync(IDialogContext context, IAwaitable<IMessageActivity> argument)
         //{
         //    var msg = await argument;
@@ -469,7 +450,7 @@ namespace Microsoft.Bot.Sample.LuisBot
         //    context.Done(location);
         //}
 
-      
+
 
     }
 

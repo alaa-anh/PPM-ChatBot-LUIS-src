@@ -37,6 +37,62 @@ namespace Common
             _siteUri = ConfigurationManager.AppSettings["PPMServerURL"];
         }
 
+
+        public string GetAllProjects(bool showCompletion)
+        {
+            var markdownContent = "";
+            using (ProjectContext context = new ProjectContext(_siteUri))
+            {
+                SecureString passWord = new SecureString();
+                foreach (char c in _userPassword.ToCharArray()) passWord.AppendChar(c);
+                context.Credentials = new SharePointOnlineCredentials(_userName, passWord);
+                context.Load(context.Projects);
+                context.ExecuteQuery();
+
+                ProjectCollection projectDetails = context.Projects;
+                if (context.Projects.Count > 0)
+                {
+                    if (showCompletion == true)
+                    {
+                        foreach (PublishedProject pro in projectDetails)
+                        {
+                            markdownContent += "**Project Name**\n" + pro.Name + "<br>";
+                            markdownContent += "**Completed Percentage**\n" + pro.PercentComplete + "%<br>";
+                            markdownContent += "\n\n";
+
+                        }
+                    }
+                    else
+                    {
+                        markdownContent += "**Project Name**\n\n" + "<br>";
+                        foreach (PublishedProject pro in projectDetails)
+                        {
+                            markdownContent += pro.Name + "<br>";
+                        }
+                    }
+
+                    markdownContent += "**Total Projects :**\n" + projectDetails.Count + "<br>";
+                }
+                else
+                    markdownContent += "**No Availabel Projects**\n\n";
+
+
+            }
+            //markdownContent += "##A subheading\n";
+            //markdownContent += "**something bold**\n\n";
+            //markdownContent += "*something italic*\n\n";
+            //markdownContent += "[a link!](http://robinosborne.co.uk/?s=bot)\n\n";
+            //markdownContent += "![AN IMAGE!](http://robinosborne.co.uk/wp-content/uploads/2016/07/robinosborne.jpg)\n";
+            //markdownContent += "> A quote of something interesting\n\n";
+            //markdownContent += "```\nvar this = \"code\";\n```\n";
+
+            markdownContent += $"<ul><li>Bird </li><li> McHale </li><li> Parish </li></ul> ";
+
+            return markdownContent;
+        }
+
+
+
         public string FindProjectByName(string searchTermName)
         {
             string projects = string.Empty;
@@ -57,56 +113,7 @@ namespace Common
             return projects;
         }
 
-        public string GetAllProjects(bool showCompletion)
-        {
-            string projects = string.Empty;
-            using (ProjectContext context = new ProjectContext(_siteUri))
-            {
-                SecureString passWord = new SecureString();
-                foreach (char c in _userPassword.ToCharArray()) passWord.AppendChar(c);
-                context.Credentials = new SharePointOnlineCredentials(_userName, passWord);
-
-
-                context.Load(context.Projects);
-                //context.ExecuteQuery();
-
-                ProjectCollection projectDetails = context.Projects;
-                StringBuilder htmlTable = new StringBuilder();
-                htmlTable.AppendLine("<table>");
-
-                htmlTable.AppendLine("<tr>");
-                htmlTable.AppendLine("<th>colum 1</th>");
-                htmlTable.AppendLine("<th>colum 2</th>");
-                htmlTable.AppendLine("<th>colum 3</th>");
-                htmlTable.AppendLine("</tr>");
-
-
-                htmlTable.AppendLine("<tr>");
-                htmlTable.AppendLine("<td>colum 1 data</td>");
-                htmlTable.AppendLine("<td>colum 2 data</td>");
-                htmlTable.AppendLine("<td>colum 3 data</td>");
-                htmlTable.AppendLine("</tr>");
-
-
-                htmlTable.AppendLine("</table>");
-
-                if (showCompletion == true)
-                {
-                    foreach (PublishedProject pro in projectDetails)
-                    {
-                        projects = projects + pro.Name + "," + pro.PercentComplete + "%" + "<br>";
-
-
-
-                    }
-                }
-
-                else
-                    projects = string.Join("<br>", projectDetails.Select(x => x.Name));
-            }
-            return projects;
-        }
-
+      
 
         public string GetProjectIssues(string pName)
         {
