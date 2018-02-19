@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Security;
+using System.Text;
 using Common.Contracts;
 using Microsoft.ProjectServer.Client;
 using Microsoft.SharePoint.Client;
@@ -15,7 +16,7 @@ namespace Common
     public class ProjectServer
     {
         private string _userName;
-        private string _userPassword = "Amman@123";
+        private string _userPassword;
 
         private string _siteUri;
 
@@ -24,6 +25,15 @@ namespace Common
         public ProjectServer(string userName)
         {
             _userName = userName;
+
+            _siteUri = ConfigurationManager.AppSettings["PPMServerURL"];
+        }
+
+        public ProjectServer(string userName , string password)
+        {
+            _userName = userName;
+            _userPassword = password;
+
             _siteUri = ConfigurationManager.AppSettings["PPMServerURL"];
         }
 
@@ -33,7 +43,7 @@ namespace Common
             using (ProjectContext context = new ProjectContext(_siteUri))
             {
                 SecureString passWord = new SecureString();
-                foreach (char c in "Amman@123".ToCharArray()) passWord.AppendChar(c);
+                foreach (char c in _userPassword.ToCharArray()) passWord.AppendChar(c);
                 context.Credentials = new SharePointOnlineCredentials(_userName, passWord);
                 CamlQuery query = new CamlQuery();
 
@@ -50,35 +60,49 @@ namespace Common
         public string GetAllProjects(bool showCompletion)
         {
             string projects = string.Empty;
-            Token token = new Mongo().Get<Token>("ContextTokens", "UserName", this._userName);
-
-            using (ClientContext contextah = TokenHelper.GetClientContextWithContextToken(_siteUri, token.ContextToken, _siteUri))
+            using (ProjectContext context = new ProjectContext(_siteUri))
             {
+                SecureString passWord = new SecureString();
+                foreach (char c in _userPassword.ToCharArray()) passWord.AppendChar(c);
+                context.Credentials = new SharePointOnlineCredentials(_userName, passWord);
 
-                using (ProjectContext context = new ProjectContext(_siteUri))
+
+                context.Load(context.Projects);
+                //context.ExecuteQuery();
+
+                ProjectCollection projectDetails = context.Projects;
+                StringBuilder htmlTable = new StringBuilder();
+                htmlTable.AppendLine("<table>");
+
+                htmlTable.AppendLine("<tr>");
+                htmlTable.AppendLine("<th>colum 1</th>");
+                htmlTable.AppendLine("<th>colum 2</th>");
+                htmlTable.AppendLine("<th>colum 3</th>");
+                htmlTable.AppendLine("</tr>");
+
+
+                htmlTable.AppendLine("<tr>");
+                htmlTable.AppendLine("<td>colum 1 data</td>");
+                htmlTable.AppendLine("<td>colum 2 data</td>");
+                htmlTable.AppendLine("<td>colum 3 data</td>");
+                htmlTable.AppendLine("</tr>");
+
+
+                htmlTable.AppendLine("</table>");
+
+                if (showCompletion == true)
                 {
-                    //SecureString passWord = new SecureString();
-                    //foreach (char c in "Amman@123".ToCharArray()) passWord.AppendChar(c);
-                    //context.Credentials = new SharePointOnlineCredentials(_userName, passWord);
-                    CamlQuery query = new CamlQuery();
-
-
-                    context.Load(context.Projects);
-                    context.ExecuteQuery();
-
-                    ProjectCollection projectDetails = context.Projects;
-                    if (showCompletion == true)
+                    foreach (PublishedProject pro in projectDetails)
                     {
-                        foreach (PublishedProject pro in projectDetails)
-                        {
-                            projects = projects + pro.Name + "," + pro.PercentComplete + "%" + "<br>";
+                        projects = projects + pro.Name + "," + pro.PercentComplete + "%" + "<br>";
 
-                        }
+
+
                     }
-
-                    else
-                        projects = string.Join("<br>", projectDetails.Select(x => x.Name));
                 }
+
+                else
+                    projects = string.Join("<br>", projectDetails.Select(x => x.Name));
             }
             return projects;
         }

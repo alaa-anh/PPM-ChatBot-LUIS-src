@@ -23,6 +23,8 @@ using Microsoft.Bot.Builder.ConnectorEx;
 using System.Net.Http;
 using System.Web.Http.Tracing;
 using System.Threading;
+using Microsoft.Bot.Builder.FormFlow;
+using LuisBot.Forms;
 
 namespace Microsoft.Bot.Sample.LuisBot
 {
@@ -30,10 +32,12 @@ namespace Microsoft.Bot.Sample.LuisBot
     public class PPMDialog : LuisDialog<object>
     {
         private string userName;
+        private string password;
+
         private DateTime msgReceivedDate;
         //private string PPMServerURL;
-        protected string prompt { get; }
-        public string Token { get; set; }
+        //protected string prompt { get; }
+        //public string Token { get; set; }
 
 
 
@@ -45,12 +49,23 @@ namespace Microsoft.Bot.Sample.LuisBot
             domain: ConfigurationManager.AppSettings["LuisAPIHostName"])))
         {
 
+
+            //Chain.From(() => FormDialog.FromForm(LoginForm.BuildForm));
+
             userName = activity.From.Name;
             msgReceivedDate = DateTime.Now;// activity.Timestamp ? ? DateTime.Now;
 
         }
 
+        //public override async Task StartAsync(IDialogContext context)
+        //{
+        //    await context.PostAsync(FormDialog.FromForm(LoginForm.BuildForm));
 
+
+
+        //    context.Wait(MessageReceivedAsync);
+
+        //}
 
 
         [LuisIntent("")]
@@ -80,15 +95,39 @@ namespace Microsoft.Bot.Sample.LuisBot
                 response.Append($"Hey {userName}.. :)");
             }
 
-             
+            var form = new FormDialog<LoginForm>(new LoginForm(), LoginForm.BuildForm);
+          //   context.Call<LoginForm>(form, SignUpComplete);
+            context.Call(form , SignUpComplete);
 
-            //string sharepointLoginUrl = ConfigurationManager.AppSettings["AuthLogPage"];
-            //response.Append($"<br>Click <a href='{sharepointLoginUrl}?userName={this.userName}' >here</a> to login");
-
-            await context.PostAsync(response.ToString());
-            context.Wait(this.MessageReceived);
+            //await context.PostAsync(response.ToString());
+            //context.Wait(this.MessageReceived);
         }
 
+        private async Task SignUpComplete(IDialogContext context, IAwaitable<LoginForm> result)
+        {
+            LoginForm form = null;
+            try
+            {
+                form = await result;
+            }
+            catch (OperationCanceledException)
+            {
+            }
+
+            if (form == null)
+            {
+                await context.PostAsync("You canceled the form.");
+            }
+            else
+            {
+                // Here is where we could call our signup service here to complete the sign-up
+
+                var message = $"Thanks! We signed up **{form.Name}**.";
+                await context.PostAsync(message);
+            }
+
+            context.Wait(MessageReceived);
+        }
 
         [LuisIntent("Greet.Farewell")]
         public async Task GreetFarewell(IDialogContext context, LuisResult luisResult)
@@ -117,7 +156,12 @@ namespace Microsoft.Bot.Sample.LuisBot
             if (luisResult.TryFindEntity("Project.Completion", out completion))
                 showCompletion = true;
 
-            await context.PostAsync(new Common.ProjectServer(this.userName).GetAllProjects(showCompletion));
+
+            if (context.UserData.TryGetValue<string>("UserName", out userName) && (context.UserData.TryGetValue<string>("Password", out password)))
+            {
+
+                await context.PostAsync(new Common.ProjectServer(userName , password).GetAllProjects(showCompletion));
+            }
 
 
             context.Wait(this.MessageReceived);

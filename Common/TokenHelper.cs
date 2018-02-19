@@ -80,7 +80,7 @@ namespace Common
             return null;
         }
 
-        public static bool checkAuthorizedUser(string name)
+        public static bool checkAuthorizedUser(string name , string upassword)
         {
             bool Authorized = false;
             try
@@ -89,8 +89,8 @@ namespace Common
                 {
 
                     SecureString passWord = new SecureString();
-                    foreach (char c in ConfigurationManager.AppSettings["PPMAdminPassword"].ToCharArray()) passWord.AppendChar(c);
-                    ctx.Credentials = new SharePointOnlineCredentials(ConfigurationManager.AppSettings["PPMAdminUser"], passWord);
+                    foreach (char c in upassword) passWord.AppendChar(c);
+                    ctx.Credentials = new SharePointOnlineCredentials(name, passWord);
 
                  
                     var user = ctx.Web.EnsureUser(name);
@@ -99,17 +99,16 @@ namespace Common
 
                     if (null != user)
                     {
-                        //Console.WriteLine("User: {0} Login name: {1} Email: {2}",
-                        //        user.Title, user.LoginName, user.Email);
+                       
                         Authorized = true;
                     }
                     else
                         Authorized = false;
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-
+                Authorized = false;
             }
             return Authorized;
         }

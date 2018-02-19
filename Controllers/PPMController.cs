@@ -29,19 +29,30 @@ namespace Microsoft.Bot.Sample.LuisBot
         /// </summary>
         [ResponseType(typeof(void))]
         public virtual async Task<HttpResponseMessage> Post([FromBody] Activity activity)
+
         {
-            
+
+
             if (activity.GetActivityType() == ActivityTypes.Message)
             {
-                if (activity.From.Name.ToLower() != "User".ToLower())
-                {
-                    await Conversation.SendAsync(activity, () => new PPMDialog(activity));
-                }
-                else
-                {
-                    await Conversation.SendAsync(activity, MakeForm);
-                }
-                
+                //if (activity.From.Name.ToLower() != "User".ToLower())
+                //{
+                 await Conversation.SendAsync(activity, () => new PPMDialog(activity));
+                //}
+                //else
+                //{
+                //    await Conversation.SendAsync(activity, MakeForm);
+                //}
+               // var form = new FormDialog<LoginForm>(
+               //new SignupForm(),
+               //SignupForm.BuildForm,
+               //FormOptions.PromptInStart,
+               //PreprocessEntities(result.Entities));
+
+               // context.Call<LoginForm>(form, SignUpComplete);
+
+                // await Conversation.SendAsync(activity, FormDialog.FromForm(LoginForm.BuildForm));
+              //  await Conversation.SendAsync(activity, MakeForm);
             }
             else
             {
@@ -55,36 +66,58 @@ namespace Microsoft.Bot.Sample.LuisBot
             return response;
         }
 
+        //private async Task SignUpComplete(IDialogContext context, IAwaitable<LoginForm> result)
+        //{
+        //    LoginForm form = null;
+        //    try
+        //    {
+        //        form = await result;
+        //    }
+        //    catch (OperationCanceledException)
+        //    {
+        //    }
+
+        //    if (form == null)
+        //    {
+        //        await context.PostAsync("You canceled the form.");
+        //    }
+        //    else
+        //    {
+        //        // Here is where we could call our signup service here to complete the sign-up
+
+        //        var message = $"Thanks! We signed up **{form.Name}**.";
+        //        await context.PostAsync(message);
+        //    }
+
+        //    context.Wait(MessageReceived);
+        //}
+
+
         internal static IDialog<LoginForm> MakeForm()
         {
-            return Chain.From(() => FormDialog.FromForm(LoginForm.BuildForm))
-                
-                .Do(async (context, order) =>
-                {
-                    try
-                    {
-                        var completed = await order;
-                        if (TokenHelper.checkAuthorizedUser(completed.Name) == true)
-                        {
-                            context.UserData.SetValue("UserName", completed.Name);
-                            new Mongo().Insert("ContextTokens", new Token(completed.Name));
-                            await context.PostAsync("You are registerd. Have a happy time with us.");
-                        }
-                        else
-                        {
-                            string reply = $"Sorry, Your User Name Is wrong or you don't have permission. Please try again.";
-                            await context.PostAsync(reply);
-                        }
-                    }
-                    catch (FormCanceledException<LoginForm> e)
-                    {
-                        string reply = null == e.InnerException ?
-                        $"Hey, you quit the registration. Dont miss out the party!" :
-                        "Sorry, Could not register you. Please try again.";
-                        await context.PostAsync(reply);
-                    }
-                });
+            return Chain.From(() => FormDialog.FromForm(LoginForm.BuildForm));
         }
+
+        //internal static IDialog<LoginForm> MakeForm()
+        //{
+        //    return Chain.From(() => FormDialog.FromForm(LoginForm.BuildForm))
+
+        //        .Do(async (context, order) =>
+        //        {
+        //            try
+        //            {
+        //                var completed = await order;
+
+        //            }
+        //            catch (FormCanceledException<LoginForm> e)
+        //            {
+        //                string reply = null == e.InnerException ?
+        //                $"Hey, you quit the registration. Dont miss out the party!" :
+        //                "Sorry, Could not register you. Please try again.";
+        //                await context.PostAsync(reply);
+        //            }
+        //        });
+        //}
 
         private Activity HandleSystemMessage(Activity message)
         {
