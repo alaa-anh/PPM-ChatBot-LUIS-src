@@ -148,6 +148,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Contracts.cs" />
+    <Compile Include="Enums.cs" />
     <Compile Include="Helper.cs" />
     <Compile Include="Mongo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
