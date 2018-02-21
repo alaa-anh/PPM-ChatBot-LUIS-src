@@ -148,8 +148,8 @@ namespace Common
             projectweb.Context.Load(issues);
             projectweb.Context.Load(itemsIssue);
             projectweb.Context.ExecuteQuery();
-       //     markdownContent += "|Title|Status|Priority|";
-          //  markdownContent += "|---|---|---:|";
+            markdownContent += "|Title|Status|Priority|\n\n";
+            markdownContent += "|---|---|---:|\n\n";
             if (itemsIssue.Count > 0)
             {
                 foreach (ListItem item in itemsIssue)
@@ -161,7 +161,7 @@ namespace Common
                     if (item["Priority"] != null)
                         IssuePriority = (string)item["Priority"];
 
-              //      markdownContent += "|"+ IssueName + "|"+ IssueStatus + "|"+ IssuePriority + "|";
+                    markdownContent += "|"+ IssueName + "|"+ IssueStatus + "|"+ IssuePriority + "|\n\n";
 
 
                    // markdownContent += "**Title**\n" + IssueName + "<br>";
@@ -174,12 +174,12 @@ namespace Common
             else
                 markdownContent = "No Issies for this Project";
 
-            markdownContent += "|Name|Value|";
-            markdownContent += "| ---| ---:|";
-            markdownContent += "| Status | Active |";
-            markdownContent += "| Balance |£0.00 |";
-            markdownContent += "| Credit Limit |£0.00 |";
-            markdownContent += "| Available Credit |£0.00 |";
+            //markdownContent += "|Name|Value|\n\n";
+            //markdownContent += "| ---| ---:|";
+            //markdownContent += "| Status | Active |";
+            //markdownContent += "| Balance |£0.00 |";
+            //markdownContent += "| Credit Limit |£0.00 |";
+            //markdownContent += "| Available Credit |£0.00 |";
             return markdownContent;
         }
 
