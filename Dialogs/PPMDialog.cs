@@ -59,33 +59,22 @@ namespace Microsoft.Bot.Sample.LuisBot
         [LuisIntent("Greet.Welcome")]
         public async Task GreetWelcome(IDialogContext context, LuisResult luisResult)
         {
-          
+            StringBuilder response = new StringBuilder();
 
             if (context.UserData.TryGetValue<string>("UserName", out userName) && (context.UserData.TryGetValue<string>("Password", out password)))
             {
-                if (userName!="" && password !="")
+
+                if (this.msgReceivedDate.ToString("tt") == "AM")
                 {
-                    string id;
-                    var userfound = context.UserData.TryGetValue("UserName", out id);
-                    StringBuilder response = new StringBuilder();
-
-                    if (this.msgReceivedDate.ToString("tt") == "AM")
-                    {
-                        response.Append($"Good morning, {userName}.. :)");
-                    }
-                    else
-                    {
-                        response.Append($"Hey {userName}.. :)");
-                    }
-
-                    await context.PostAsync(response.ToString());
-                    context.Wait(this.MessageReceived);
+                    response.Append($"Good morning, {userName}.. :)");
                 }
                 else
                 {
-                    var form = new FormDialog<LoginForm>(new LoginForm(), LoginForm.BuildForm);
-                    context.Call(form, SignUpComplete);
+                    response.Append($"Hey {userName}.. :)");
                 }
+
+                await context.PostAsync(response.ToString());
+                context.Wait(this.MessageReceived);
             }
             else
             {
@@ -99,8 +88,9 @@ namespace Microsoft.Bot.Sample.LuisBot
         [LuisIntent("Greet.Farewell")]
         public async Task GreetFarewell(IDialogContext context, LuisResult luisResult)
         {
-            context.UserData.SetValue("UserName", string.Empty);
-            context.UserData.SetValue("Password", string.Empty);
+            context.UserData.Clear();
+            //.SetValue("UserName", string.Empty);
+            //context.UserData.SetValue("Password", string.Empty);
 
             string response = string.Empty;
             if (this.msgReceivedDate.ToString("tt") == "AM")
