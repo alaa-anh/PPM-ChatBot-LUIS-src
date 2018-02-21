@@ -57,8 +57,7 @@ namespace Common
                         foreach (PublishedProject pro in projectDetails)
                         {
                             markdownContent += "**Project Name**\n" + pro.Name + "<br>";
-                            markdownContent += "**Completed Percentage**\n" + pro.PercentComplete + "%<br>";
-                            markdownContent += "\n\n";
+                            markdownContent += "**Completed Percentage**\n" + pro.PercentComplete + "%<br/>";
 
                         }
                     }
@@ -86,12 +85,165 @@ namespace Common
             //markdownContent += "> A quote of something interesting\n\n";
             //markdownContent += "```\nvar this = \"code\";\n```\n";
 
-            markdownContent += $"<ul><li>Bird </li><li> McHale </li><li> Parish </li></ul> ";
-
             return markdownContent;
         }
 
+        public string GetProjectSubItems(string pName , string ListName)
+        {
+            var markdownContent = "";
 
+            using (ProjectContext context = new ProjectContext(_siteUri))
+            {
+               
+
+                SecureString passWord = new SecureString();
+                foreach (char c in _userPassword.ToCharArray()) passWord.AppendChar(c);
+                context.Credentials = new SharePointOnlineCredentials(_userName, passWord);
+
+                context.Load(context.Projects);
+                context.Load(context.Web);
+                context.ExecuteQuery();
+
+                PublishedProject project = GetProjectByName(pName, context);
+                if(project !=null)
+                {
+                    Web projectweb = SubSiteExists(_siteUri, pName, context);
+                    if (projectweb !=null)
+                    {
+                        if (UserHavePermissionOnaProjects(_siteUri, pName, context))
+                        {
+                            markdownContent = GetProjectIssues(projectweb);
+                           
+                           
+                        }
+                        else
+                        {
+                            markdownContent = "Sorry , You don't have access to this project";
+                        }
+                    }
+                    else
+                    {
+                        markdownContent = "No Issies for this Project";
+                    }
+                }
+                else
+                {
+                    markdownContent = "Project Name Not Exist";
+                }
+               
+            }
+            return markdownContent;
+        }
+
+        public string GetProjectIssues(Web projectweb)
+        {
+            var markdownContent = "";
+            string IssueName = string.Empty;
+            string IssueStatus = string.Empty;
+            string IssuePriority = string.Empty;
+            var issues = projectweb.Lists.GetByTitle("Issues");
+            CamlQuery query = CamlQuery.CreateAllItemsQuery();
+            ListItemCollection itemsIssue = issues.GetItems(query);
+
+            projectweb.Context.Load(issues);
+            projectweb.Context.Load(itemsIssue);
+            projectweb.Context.ExecuteQuery();
+       //     markdownContent += "|Title|Status|Priority|";
+          //  markdownContent += "|---|---|---:|";
+            if (itemsIssue.Count > 0)
+            {
+                foreach (ListItem item in itemsIssue)
+                {
+                    if (item["Title"] !=null)
+                        IssueName = (string)item["Title"];
+                    if (item["Status"] != null)
+                        IssueStatus = (string)item["Status"];
+                    if (item["Priority"] != null)
+                        IssuePriority = (string)item["Priority"];
+
+              //      markdownContent += "|"+ IssueName + "|"+ IssueStatus + "|"+ IssuePriority + "|";
+
+
+                   // markdownContent += "**Title**\n" + IssueName + "<br>";
+                   // markdownContent += "**Status**\n" + IssueStatus + "<br/>";
+                   // markdownContent += "**Priority**\n" + IssuePriority + "<br/>";
+                }
+
+                markdownContent += "**Total Issues :**\n" + itemsIssue.Count + "<br>";
+            }
+            else
+                markdownContent = "No Issies for this Project";
+
+            markdownContent += "|Name|Value|";
+            markdownContent += "| ---| ---:|";
+            markdownContent += "| Status | Active |";
+            markdownContent += "| Balance |£0.00 |";
+            markdownContent += "| Credit Limit |£0.00 |";
+            markdownContent += "| Available Credit |£0.00 |";
+            return markdownContent;
+        }
+
+        public Web SubSiteExists(string siteUrl, string subSiteTitle, ClientContext context)
+        {
+            var web = context.Web;
+            Web projectweb = null;
+          //  bool exist = false;
+            context.Load(web, w => w.Webs);
+            context.ExecuteQuery();
+            foreach(Web ww in web.Webs)
+            {
+                
+                if (ww.Title.ToLower() == subSiteTitle.ToLower())
+                {
+                  //  exist = true;
+                    projectweb = ww;
+                    break;
+                }
+            }
+           
+            return projectweb;
+        }
+
+        public bool UserHavePermissionOnaProjects(string siteUrl, string subSiteTitle, ProjectContext context)
+        {
+
+            var web = context.Web;
+            bool exist = false;
+            context.Load(web, w => w.Webs);
+            context.ExecuteQuery();
+            foreach (Web subWeb in web.Webs)
+            {
+                if (subWeb.Title.ToLower() == subSiteTitle.ToLower())
+                {
+                    var user = subWeb.EnsureUser(_userName);
+                    context.Load(user);
+                    context.ExecuteQuery();
+
+                    if (null != user)
+                    {
+                        ClientResult<BasePermissions> permissions = subWeb.GetUserEffectivePermissions(user.LoginName);
+                        context.ExecuteQuery();
+                        if (permissions.Value.Has(PermissionKind.ViewListItems))
+                        {
+                            exist = true;
+                            break;
+                        }
+                        else
+                            exist = false;
+
+
+                    }
+                    else
+                        exist = false;
+                           
+                   
+                  
+
+                }
+            }
+
+            return exist;
+        }
 
         public string FindProjectByName(string searchTermName)
         {
@@ -115,55 +267,22 @@ namespace Common
 
       
 
-        public string GetProjectIssues(string pName)
-        {
-            string strissues = string.Empty;
-            using (ProjectContext context = new ProjectContext(_siteUri + "/Demo"))
-            {
-                SecureString passWord = new SecureString();
-                foreach (char c in "Amman@123".ToCharArray()) passWord.AppendChar(c);
-                context.Credentials = new SharePointOnlineCredentials(_userName, passWord);
-                PublishedProject project = GetProjectByName("Demo", context);
-
-                context.Load(context.Web);
-                context.ExecuteQuery();
-
-                var issues = context.Web.Lists.GetByTitle("Issues");
-                CamlQuery query = CamlQuery.CreateAllItemsQuery();
-                ListItemCollection itemsIssue = issues.GetItems(query);
-
-                context.Load(issues);
-                context.Load(itemsIssue);
-                context.ExecuteQuery();
-
-
-                foreach (ListItem item in itemsIssue)
-                {
-                    string IssueName = (string)item["Title"];
-                    string IssueStatus = (string)item["Status"];
-                    string IssuePriority = (string)item["Priority"];
-
-
-                    strissues = strissues + IssueName + "," + IssueStatus + "," + IssuePriority + "<br>";
-
-                }
-
-            }
-            return strissues;
-        }
+       
 
 
         private static PublishedProject GetProjectByName(string name, ProjectContext context)
         {
             IEnumerable<PublishedProject> projs = context.LoadQuery(context.Projects.Where(p => p.Name == name));
             context.ExecuteQuery();
-
+            
             if (!projs.Any())       // no project found
             {
                 return null;
             }
             return projs.FirstOrDefault();
         }
+
+       
 
         public string GetProjectTasks(string pName)
         {
@@ -409,29 +528,5 @@ namespace Common
 
             return strissues;
         }
-
-
-
-        //public bool GetUserPermissions()
-        //{
-        //    Token token = new Mongo().Get<Token>("ContextTokens", "UserName", this._userName);
-
-        //    ClientContext context = new ClientContext(_siteUri);
-        //    NetworkCredential nc = new NetworkCredential(token.UserName , token.ContextToken, "basesmc2008");
-        //    context.Credentials = nc;
-        //    BasePermissions bp = new BasePermissions();
-
-        //    bp.Set(PermissionKind.ManageWeb);
-        //    ClientResult<bool> manageWeb = context.Web.DoesUserHavePermissions(bp);
-        //    context.ExecuteQuery();
-
-        //    if (manageWeb.Value == true)
-        //        return true;
-        //    else
-        //        return false;
-
-        //}
-
-
     }
 }

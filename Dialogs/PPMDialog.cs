@@ -124,19 +124,25 @@ namespace Microsoft.Bot.Sample.LuisBot
             context.Wait(this.MessageReceived);
         }
 
-        [LuisIntent("GetProjectIssues")]
-        public async Task GetProjectIssues(IDialogContext context, LuisResult luisResult)
+        [LuisIntent("GetProjectInfo")]
+        public async Task GetProjectInfo(IDialogContext context, LuisResult luisResult)
         {
             EntityRecommendation projectname;
             EntityRecommendation projectIssues;
 
 
             string searchTerm_ProjectName = string.Empty;
+            string ListName = string.Empty;
 
 
-            if (luisResult.TryFindEntity("Project.name", out projectname) && luisResult.TryFindEntity("Project.Issues", out projectIssues))
+            if (luisResult.TryFindEntity("Project.name", out projectname))
             {
                 searchTerm_ProjectName = projectname.Entity;
+            }
+
+            if (luisResult.TryFindEntity("Project.Issues", out projectIssues))
+            {
+                ListName = "Issues";
             }
 
             if (string.IsNullOrWhiteSpace(searchTerm_ProjectName))
@@ -145,9 +151,11 @@ namespace Microsoft.Bot.Sample.LuisBot
             }
             else
             {
-                await context.PostAsync(new Common.ProjectServer(this.userName).GetProjectIssues(searchTerm_ProjectName));
+                if (context.UserData.TryGetValue<string>("UserName", out userName) && (context.UserData.TryGetValue<string>("Password", out password)))
+                {
+                    await context.PostAsync(new Common.ProjectServer(userName, password).GetProjectSubItems(searchTerm_ProjectName , ListName));
+                }
             }
-
             context.Wait(this.MessageReceived);
         }
 
@@ -179,41 +187,41 @@ namespace Microsoft.Bot.Sample.LuisBot
         }
 
 
-        [LuisIntent("GetProjectInfo")]
-        public async Task GetProjectInfo(IDialogContext context, LuisResult luisResult)
-        {
-            EntityRecommendation projectname, projectSDate, projectEDate, projectDuration, projectCompletion;
+        //[LuisIntent("GetProjectInfo")]
+        //public async Task GetProjectInfo(IDialogContext context, LuisResult luisResult)
+        //{
+        //    EntityRecommendation projectname, projectSDate, projectEDate, projectDuration, projectCompletion;
 
 
 
-            string searchTerm_ProjectName = string.Empty;
-            bool Pdate = false;
-            bool pDuration = false;
-            bool PCompletion = false;
+        //    string searchTerm_ProjectName = string.Empty;
+        //    bool Pdate = false;
+        //    bool pDuration = false;
+        //    bool PCompletion = false;
 
-            if (luisResult.TryFindEntity("Project.name", out projectname))
-                searchTerm_ProjectName = projectname.Entity;
-            if (luisResult.TryFindEntity("Project.SDate", out projectSDate) || luisResult.TryFindEntity("Project.EDate", out projectEDate))
-                Pdate = true;
-            if (luisResult.TryFindEntity("Project.Duration", out projectDuration))
-                pDuration = true;
-            if (luisResult.TryFindEntity("Project.Completion", out projectCompletion))
-                PCompletion = true;
-
-
+        //    if (luisResult.TryFindEntity("Project.name", out projectname))
+        //        searchTerm_ProjectName = projectname.Entity;
+        //    if (luisResult.TryFindEntity("Project.SDate", out projectSDate) || luisResult.TryFindEntity("Project.EDate", out projectEDate))
+        //        Pdate = true;
+        //    if (luisResult.TryFindEntity("Project.Duration", out projectDuration))
+        //        pDuration = true;
+        //    if (luisResult.TryFindEntity("Project.Completion", out projectCompletion))
+        //        PCompletion = true;
 
 
-            if (string.IsNullOrWhiteSpace(searchTerm_ProjectName))
-            {
-                await context.PostAsync($"Unable to get search term.");
-            }
-            else
-            {
-                await context.PostAsync(new Common.ProjectServer(this.userName).GetProjectInfo(searchTerm_ProjectName, Pdate, pDuration, PCompletion));
-            }
 
-            context.Wait(this.MessageReceived);
-        }
+
+        //    if (string.IsNullOrWhiteSpace(searchTerm_ProjectName))
+        //    {
+        //        await context.PostAsync($"Unable to get search term.");
+        //    }
+        //    else
+        //    {
+        //        await context.PostAsync(new Common.ProjectServer(this.userName).GetProjectInfo(searchTerm_ProjectName, Pdate, pDuration, PCompletion));
+        //    }
+
+        //    context.Wait(this.MessageReceived);
+        //}
 
         [LuisIntent("GetProjectRiskResources")]
         public async Task GetProjectRiskResources(IDialogContext context, LuisResult luisResult)
