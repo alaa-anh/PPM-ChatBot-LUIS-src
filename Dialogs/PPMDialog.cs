@@ -59,23 +59,33 @@ namespace Microsoft.Bot.Sample.LuisBot
         [LuisIntent("Greet.Welcome")]
         public async Task GreetWelcome(IDialogContext context, LuisResult luisResult)
         {
+          
+
             if (context.UserData.TryGetValue<string>("UserName", out userName) && (context.UserData.TryGetValue<string>("Password", out password)))
             {
-                string id;
-                var userfound = context.UserData.TryGetValue("UserName", out id);
-                StringBuilder response = new StringBuilder();
-
-                if (this.msgReceivedDate.ToString("tt") == "AM")
+                if (userName!="" && password !="")
                 {
-                    response.Append($"Good morning, {userName}.. :)");
+                    string id;
+                    var userfound = context.UserData.TryGetValue("UserName", out id);
+                    StringBuilder response = new StringBuilder();
+
+                    if (this.msgReceivedDate.ToString("tt") == "AM")
+                    {
+                        response.Append($"Good morning, {userName}.. :)");
+                    }
+                    else
+                    {
+                        response.Append($"Hey {userName}.. :)");
+                    }
+
+                    await context.PostAsync(response.ToString());
+                    context.Wait(this.MessageReceived);
                 }
                 else
                 {
-                    response.Append($"Hey {userName}.. :)");
+                    var form = new FormDialog<LoginForm>(new LoginForm(), LoginForm.BuildForm);
+                    context.Call(form, SignUpComplete);
                 }
-
-                await context.PostAsync(response.ToString());
-                context.Wait(this.MessageReceived);
             }
             else
             {
@@ -89,6 +99,9 @@ namespace Microsoft.Bot.Sample.LuisBot
         [LuisIntent("Greet.Farewell")]
         public async Task GreetFarewell(IDialogContext context, LuisResult luisResult)
         {
+            context.UserData.SetValue("UserName", string.Empty);
+            context.UserData.SetValue("Password", string.Empty);
+
             string response = string.Empty;
             if (this.msgReceivedDate.ToString("tt") == "AM")
             {
@@ -98,6 +111,9 @@ namespace Microsoft.Bot.Sample.LuisBot
             {
                 response = $"b'bye {userName}, Take care.";
             }
+
+            
+
             await context.PostAsync(response);
             context.Wait(this.MessageReceived);
         }
@@ -107,21 +123,36 @@ namespace Microsoft.Bot.Sample.LuisBot
         [LuisIntent("GetAllProjectsData")]
         public async Task GetAllProjectsData(IDialogContext context, LuisResult luisResult)
         {
-
-            EntityRecommendation projects, completion;
-            bool showCompletion = false;
-            if (luisResult.TryFindEntity("Project.Completion", out completion))
-                showCompletion = true;
-
-
             if (context.UserData.TryGetValue<string>("UserName", out userName) && (context.UserData.TryGetValue<string>("Password", out password)))
             {
+                if (userName != "" && password != "")
+                {
+                    EntityRecommendation projects, completion;
+                    bool showCompletion = false;
+                    if (luisResult.TryFindEntity("Project.Completion", out completion))
+                        showCompletion = true;
 
-                await context.PostAsync(new Common.ProjectServer(userName , password).GetAllProjects(showCompletion));
+
+
+
+                    await context.PostAsync(new Common.ProjectServer(userName, password).GetAllProjects(showCompletion));
+
+
+
+                    context.Wait(this.MessageReceived);
+                }
+                else
+                {
+                    var form = new FormDialog<LoginForm>(new LoginForm(), LoginForm.BuildForm);
+                    context.Call(form, SignUpComplete);
+                }
+
             }
-
-
-            context.Wait(this.MessageReceived);
+            else
+            {
+                var form = new FormDialog<LoginForm>(new LoginForm(), LoginForm.BuildForm);
+                context.Call(form, SignUpComplete);
+            }
         }
 
         [LuisIntent("GetProjectInfo")]
