@@ -4,6 +4,7 @@ using Microsoft.IdentityModel.S2S.Tokens;
 using Microsoft.SharePoint.Client;
 using Microsoft.SharePoint.Client.EventReceivers;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Configuration;
@@ -113,6 +114,28 @@ namespace Common
             return Authorized;
         }
 
+
+        public static string Datevalues(object obj, string keyNeed)
+        {
+            string keyval = string.Empty;
+            if (typeof(IDictionary).IsAssignableFrom(obj.GetType()))
+            {
+                IDictionary idict = (IDictionary)obj;
+
+                Dictionary<string, string> newDict = new Dictionary<string, string>();
+                foreach (object key in idict.Keys)
+                {
+                    if (keyNeed == key.ToString())
+                    {
+                        keyval = idict[key].ToString();
+                        //newDict.Add(key.ToString(), idict[key].ToString());
+                        break;
+                    }
+                }
+            }
+            return keyval;
+
+        }
         /// <summary>
         /// Validate that a specified context token string is intended for this application based on the parameters 
         /// specified in web.config. Parameters used from web.config used for validation include ClientId, 

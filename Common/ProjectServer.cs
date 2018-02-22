@@ -100,8 +100,6 @@ namespace Common
 
             using (ProjectContext context = new ProjectContext(_siteUri))
             {
-               
-
                 SecureString passWord = new SecureString();
                 foreach (char c in _userPassword.ToCharArray()) passWord.AppendChar(c);
                 context.Credentials = new SharePointOnlineCredentials(_userName, passWord);
@@ -331,25 +329,7 @@ namespace Common
             return exist;
         }
 
-        public string FindProjectByName(string searchTermName)
-        {
-            string projects = string.Empty;
-            using (ProjectContext context = new ProjectContext(_siteUri))
-            {
-                SecureString passWord = new SecureString();
-                foreach (char c in _userPassword.ToCharArray()) passWord.AppendChar(c);
-                context.Credentials = new SharePointOnlineCredentials(_userName, passWord);
-                CamlQuery query = new CamlQuery();
-
-
-                context.Load(context.Projects);
-                context.ExecuteQuery();
-
-                ProjectCollection projectDetails = context.Projects;
-                projects = string.Join("<br>", projectDetails.Select(x => x.Name));
-            }
-            return projects;
-        }
+    
 
         private static PublishedProject GetProjectByName(string name, ProjectContext context)
         {
@@ -405,8 +385,7 @@ namespace Common
             }
             return markdownContent;
         }
-
-      
+              
         public string GetProjectRiskStatus(string pName)
         {
             string strissues = string.Empty;
@@ -442,12 +421,12 @@ namespace Common
 
         public string FilterProjectsByDate(string FilterType, string pStartDate, string PEndDate, string ProjectSEdateFlag)
         {
-            string strissues = string.Empty;
+            string markdownContent = string.Empty;
             IEnumerable<PublishedProject> retrivedProjects = null; ;
             using (ProjectContext context = new ProjectContext(_siteUri))
             {
                 SecureString passWord = new SecureString();
-                foreach (char c in "Amman@123".ToCharArray()) passWord.AppendChar(c);
+                foreach (char c in _userPassword.ToCharArray()) passWord.AppendChar(c);
                 context.Credentials = new SharePointOnlineCredentials(_userName, passWord);
                 DateTime startdate = new DateTime();
                 DateTime endate = new DateTime();
@@ -524,18 +503,27 @@ namespace Common
             }
             if (!retrivedProjects.Any())       // no project found
             {
-                return null;
+                markdownContent += "**No Availabel Projects**\n\n";
+
+               // return null;
             }
             else
             {
                 foreach (var item in retrivedProjects)
                 {
-                    strissues = strissues + item.Name + "," + item.StartDate + "," + item.FinishDate + "," + item.DefaultFixedCostAccrual.ToString() + "<br>";
+                    markdownContent += "**Project Name**\n" + item.Name + "<br>";
+                    markdownContent += "**Start Date**\n" + item.StartDate + "<br>";
+                    markdownContent += "**Finish Date**\n" + item.FinishDate + "<br>";
+                    markdownContent += "**Actual Cost**\n" + item.DefaultFixedCostAccrual.ToString() + "<br>";
+                    markdownContent += "----\n\n";
+
 
                 }
+                markdownContent +="**Total Projects :**\n" + retrivedProjects.Count() + "<br>";
+
             }
 
-            return strissues;
+            return markdownContent;
         }
     }
 }

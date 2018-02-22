@@ -199,137 +199,73 @@ namespace Microsoft.Bot.Sample.LuisBot
                 context.Call(form, SignUpComplete);
             }
         }
-        
-
-      
-
-        [LuisIntent("GetProjectRiskStatus")]
-        public async Task GetProjectRiskStatus(IDialogContext context, LuisResult luisResult)
-        {
-            EntityRecommendation projectname;
-
-
-            string searchTerm_ProjectName = string.Empty;
-
-
-            if (luisResult.TryFindEntity("Project.name", out projectname))
-            {
-                searchTerm_ProjectName = projectname.Entity;
-            }
-
-            if (string.IsNullOrWhiteSpace(searchTerm_ProjectName))
-            {
-                await context.PostAsync($"Unable to get search term.");
-            }
-            else
-            {
-                await context.PostAsync(new Common.ProjectServer(this.userName , password).GetProjectRiskStatus(searchTerm_ProjectName));
-            }
-
-            context.Wait(this.MessageReceived);
-        }
-
 
         [LuisIntent("FilterProjectsByDate")]
         public async Task FilterProjectsByDate(IDialogContext context, LuisResult luisResult)
         {
-            string FilterType = string.Empty;
-            string ProjectSEdateFlag = "START";
-            string ProjectED = string.Empty;
-
-
-            string ProjectSDate = string.Empty;
-            string ProjectEDate = string.Empty;
-
-            var filterDate = (object)null;
-
-            EntityRecommendation dateTimeEntity, dateRangeEntity, ProjectS, ProjectE;
-
-
-            if (luisResult.TryFindEntity("builtin.datetimeV2.daterange", out dateRangeEntity))
+            if (context.UserData.TryGetValue<string>("UserName", out userName) && (context.UserData.TryGetValue<string>("Password", out password)))
             {
-                filterDate = dateRangeEntity.Resolution.Values.Select(x => x).OfType<List<object>>().SelectMany(i => i).FirstOrDefault();
-                if (Datevalues(filterDate, "Mod") != "")
+                string FilterType = string.Empty;
+                string ProjectSEdateFlag = "START";
+                string ProjectED = string.Empty;
+
+
+                string ProjectSDate = string.Empty;
+                string ProjectEDate = string.Empty;
+
+                var filterDate = (object)null;
+
+                EntityRecommendation dateTimeEntity, dateRangeEntity, ProjectS, ProjectE;
+
+
+                if (luisResult.TryFindEntity("builtin.datetimeV2.daterange", out dateRangeEntity))
                 {
-                    FilterType = Datevalues(filterDate, "Mod");
-                    ProjectSDate = Datevalues(filterDate, "timex");
-
-                }
-                else
-                {
-                    FilterType = "Between";
-
-                    ProjectSDate = Datevalues(filterDate, "start");
-                }
-                ProjectEDate = Datevalues(filterDate, "end");
-
-            }
-            else if (luisResult.TryFindEntity("Project.Start", out ProjectS))
-            {
-                ProjectSEdateFlag = "START";
-            }
-            else if (luisResult.TryFindEntity("Project.Finish", out ProjectE))
-            {
-                ProjectSEdateFlag = "Finish";
-            }
-
-
-            if (filterDate != null)
-                await context.PostAsync(new Common.ProjectServer(this.userName, password).FilterProjectsByDate(FilterType, ProjectSDate, ProjectEDate, ProjectSEdateFlag));
-
-
-
-
-            context.Wait(this.MessageReceived);
-        }
-
-
-
-        public string Datevalues(object obj, string keyNeed)
-        {
-            string keyval = string.Empty;
-            if (typeof(IDictionary).IsAssignableFrom(obj.GetType()))
-            {
-                IDictionary idict = (IDictionary)obj;
-
-                Dictionary<string, string> newDict = new Dictionary<string, string>();
-                foreach (object key in idict.Keys)
-                {
-                    if (keyNeed == key.ToString())
+                    filterDate = dateRangeEntity.Resolution.Values.Select(x => x).OfType<List<object>>().SelectMany(i => i).FirstOrDefault();
+                    if (Common.TokenHelper.Datevalues(filterDate, "Mod") != "")
                     {
-                        keyval = idict[key].ToString();
-                        //newDict.Add(key.ToString(), idict[key].ToString());
-                        break;
+                        FilterType = Common.TokenHelper.Datevalues(filterDate, "Mod");
+                        ProjectSDate = Common.TokenHelper.Datevalues(filterDate, "timex");
+
                     }
+                    else
+                    {
+                        FilterType = "Between";
+
+                        ProjectSDate =Common.TokenHelper.Datevalues(filterDate, "start");
+                    }
+                    ProjectEDate = Common.TokenHelper.Datevalues(filterDate, "end");
+
                 }
-            }
-            return keyval;
+                else if (luisResult.TryFindEntity("Project.Start", out ProjectS))
+                {
+                    ProjectSEdateFlag = "START";
+                }
+                else if (luisResult.TryFindEntity("Project.Finish", out ProjectE))
+                {
+                    ProjectSEdateFlag = "Finish";
+                }
 
-        }
 
-        [LuisIntent("Search.Projects")]
-        public async Task SearchProjects(IDialogContext context, LuisResult luisResult)
-        {
-            EntityRecommendation projectname;
+                if (filterDate != null)
+                    await context.PostAsync(new Common.ProjectServer(this.userName, password).FilterProjectsByDate(FilterType, ProjectSDate, ProjectEDate, ProjectSEdateFlag));
 
-            string searchTerm_ProjectName = string.Empty;
 
-            if (luisResult.TryFindEntity("Project.name", out projectname))
-            {
-                searchTerm_ProjectName = projectname.Entity;
-            }
 
-            if (string.IsNullOrWhiteSpace(searchTerm_ProjectName))
-            {
-                await context.PostAsync($"Unable to get search term.");
+
+                context.Wait(this.MessageReceived);
             }
             else
             {
-                await context.PostAsync(new Common.ProjectServer(this.userName,password).FindProjectByName(searchTerm_ProjectName));
+                var form = new FormDialog<LoginForm>(new LoginForm(), LoginForm.BuildForm);
+                context.Call(form, SignUpComplete);
             }
-
-            context.Wait(this.MessageReceived);
         }
+
+
+
+       
+
+    
 
         private async Task SignUpComplete(IDialogContext context, IAwaitable<LoginForm> result)
         {
