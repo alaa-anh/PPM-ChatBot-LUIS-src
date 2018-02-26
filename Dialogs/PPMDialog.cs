@@ -136,6 +136,9 @@ namespace Microsoft.Bot.Sample.LuisBot
                 EntityRecommendation projectIssues;
                 EntityRecommendation projectTasks;
                 EntityRecommendation projectRisks;
+                EntityRecommendation projectDeliverables;
+                EntityRecommendation projectAssignments;
+
 
 
                 string searchTerm_ProjectName = string.Empty;
@@ -160,6 +163,14 @@ namespace Microsoft.Bot.Sample.LuisBot
                 {
                     ListName = Common.Enums.ListName.Risks.ToString();
                 }
+                if (luisResult.TryFindEntity("Project.Deliverables", out projectDeliverables))
+                {
+                    ListName = Common.Enums.ListName.Deliverables.ToString();
+                }
+                if (luisResult.TryFindEntity("Project.Assignments", out projectAssignments))
+                {
+                    ListName = Common.Enums.ListName.Assignments.ToString();
+                }
 
                 if (string.IsNullOrWhiteSpace(searchTerm_ProjectName))
                 {
@@ -174,12 +185,14 @@ namespace Microsoft.Bot.Sample.LuisBot
                     }
                     else
                     {
-                        EntityRecommendation  projectSDate, projectEDate, projectDuration, projectCompletion , projectDate;
+                        EntityRecommendation  projectSDate, projectEDate, projectDuration, projectCompletion , projectDate , projectManager;
 
 
                         bool Pdate = false;
                         bool pDuration = false;
                         bool PCompletion = false;
+                        bool PMshow = false;
+
 
                         if (luisResult.TryFindEntity("Project.SDate", out projectSDate) || luisResult.TryFindEntity("Project.EDate", out projectEDate) || luisResult.TryFindEntity("Project.Date", out projectDate))
                             Pdate = true;
@@ -188,7 +201,12 @@ namespace Microsoft.Bot.Sample.LuisBot
                         if (luisResult.TryFindEntity("Project.Completion", out projectCompletion))
                             PCompletion = true;
 
-                        await context.PostAsync(new Common.ProjectServer(userName , password).GetProjectInfo(searchTerm_ProjectName, Pdate, pDuration, PCompletion));
+                        if (luisResult.TryFindEntity("Project.PM", out projectManager))
+                            PMshow = true;
+
+                            PMshow = true;
+                            PMshow = true;
+                        await context.PostAsync(new Common.ProjectServer(userName , password).GetProjectInfo(searchTerm_ProjectName, Pdate, pDuration, PCompletion , PMshow));
                         context.Wait(this.MessageReceived);
                     }
                 }
@@ -261,11 +279,47 @@ namespace Microsoft.Bot.Sample.LuisBot
             }
         }
 
+        [LuisIntent("GetResourceAssignments")]
+        public async Task GetResourceAssignments(IDialogContext context, LuisResult luisResult)
+        {
+            if (context.UserData.TryGetValue<string>("UserName", out userName) && (context.UserData.TryGetValue<string>("Password", out password)))
+            {
+               
+
+                EntityRecommendation resoursename, resourceassignment;
 
 
-       
+                string searchTerm_ResourceName = string.Empty;
+                string ListName = string.Empty;
 
-    
+
+                if (luisResult.TryFindEntity("user.name", out resoursename))
+                {
+                    searchTerm_ResourceName = resoursename.Entity;
+                }
+
+                //if (luisResult.TryFindEntity("user.assignment", out resourceassignment))
+                //{
+                //    ListName = Common.Enums.ListName.Issues.ToString();
+                //}
+
+
+                if (string.IsNullOrWhiteSpace(searchTerm_ResourceName) )
+                {
+                    await context.PostAsync($"Unable to get search term.");
+                }
+                else
+                {
+                    await context.PostAsync(new Common.ProjectServer(this.userName, password).GetResourceAssignments(searchTerm_ResourceName));
+                    context.Wait(this.MessageReceived);
+                }
+            }
+            else
+            {
+                var form = new FormDialog<LoginForm>(new LoginForm(), LoginForm.BuildForm);
+                context.Call(form, SignUpComplete);
+            }
+        }
 
         private async Task SignUpComplete(IDialogContext context, IAwaitable<LoginForm> result)
         {

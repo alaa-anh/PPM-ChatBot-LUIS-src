@@ -12,7 +12,9 @@ namespace Common
         {
             Issues = 1,
             Tasks = 2,
-            Risks = 3
+            Risks = 3,
+            Deliverables = 4,
+            Assignments = 5
         }
     }
 }
