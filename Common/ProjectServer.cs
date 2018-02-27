@@ -332,7 +332,7 @@ namespace Common
                     markdownContent += "**Task Start Date**\n" + TaskStartDate + "<br>";
                     markdownContent += "**Task Finish Date**\n" + TaskFinishDate + "<br>";
                     markdownContent += "----\n\n";
-                }
+                }  
                 markdownContent += "**Total Tasks :**\n" + tskcoll.Count + "<br>";
             }
             else
