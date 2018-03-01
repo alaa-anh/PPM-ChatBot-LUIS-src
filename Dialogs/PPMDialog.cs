@@ -12,6 +12,7 @@ using System.Collections;
 using System.Net.Http;
 using Microsoft.Bot.Builder.FormFlow;
 using LuisBot.Forms;
+using Common;
 
 namespace Microsoft.Bot.Sample.LuisBot
 {
@@ -32,6 +33,9 @@ namespace Microsoft.Bot.Sample.LuisBot
             userName = activity.From.Name;
             msgReceivedDate = DateTime.Now;// activity.Timestamp ? ? DateTime.Now;
         }
+
+       
+
         [LuisIntent("")]
         [LuisIntent("none")]
         [LuisIntent("None")]
@@ -48,9 +52,9 @@ namespace Microsoft.Bot.Sample.LuisBot
         {
             StringBuilder response = new StringBuilder();
 
+
             if (context.UserData.TryGetValue<string>("UserName", out userName) && (context.UserData.TryGetValue<string>("Password", out password)))
             {
-
                 if (this.msgReceivedDate.ToString("tt") == "AM")
                 {
                     response.Append($"Good morning, {userName}.. :)");
@@ -59,38 +63,74 @@ namespace Microsoft.Bot.Sample.LuisBot
                 {
                     response.Append($"Hey {userName}.. :)");
                 }
-
                 await context.PostAsync(response.ToString());
                 context.Wait(this.MessageReceived);
+
             }
             else
             {
-                var form = new FormDialog<LoginForm>(new LoginForm(), LoginForm.BuildForm);
-                context.Call(form, SignUpComplete);
-            }
-        }
+                PromptDialog.Text(
+                    context: context,
+                    resume: ResumeGetPassword,
+                   //pattern : @"^([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$",
+                    prompt: "Dear , May I know your user name?",
+                    retry: "Sorry, I didn't understand that. Please try again."
+                );
 
-       
+                //  var form = new FormDialog<LoginForm>(new LoginForm(), LoginForm.BuildForm);
+                //  context.Call(form, SignUpComplete);
+                // PromptDialog.Confirm(context, ResumeAfterConfirmation, "The User Don't have permission , do you want to try another cridentials?");
+
+            }
+
+
+
+        }
+                
+        public virtual async Task ResumeGetPassword(IDialogContext context, IAwaitable<string> UserEmail)
+        {
+            string response = await UserEmail;
+            userName = response; ;
+
+            PromptDialog.Text(
+                context: context,
+                resume: SignUpComplete,
+                prompt: "Please share your password",
+                retry: "Sorry, I didn't understand that. Please try again."
+            );
+        }
+        private async Task UseAnotherCridentials(IDialogContext context, IAwaitable<bool> result)
+        {
+            var confirmation = await result;
+            await context.PostAsync(confirmation ? "You do want to order." : "You don't want to order.");
+        }
 
         [LuisIntent("Greet.Farewell")]
         public async Task GreetFarewell(IDialogContext context, LuisResult luisResult)
         {
-            context.UserData.Clear();
-            //.SetValue("UserName", string.Empty);
-            //context.UserData.SetValue("Password", string.Empty);
-
             string response = string.Empty;
-            if (this.msgReceivedDate.ToString("tt") == "AM")
+
+
+            try
             {
-                response = $"Good bye, {userName}.. Have a nice day. :)";
+
+                if (this.msgReceivedDate.ToString("tt") == "AM")
+                {
+                    response = $"Good bye, {userName}.. Have a nice day. :)";
+                }
+                else
+                {
+                    response = $"b'bye {userName}, Take care.";
+                }
+
+
             }
-            else
+            catch(Exception ex)
             {
-                response = $"b'bye {userName}, Take care.";
+                response = ex.Message;
             }
 
-            
-
+            context.UserData.Clear();
             await context.PostAsync(response);
             context.Wait(this.MessageReceived);
         }
@@ -321,31 +361,84 @@ namespace Microsoft.Bot.Sample.LuisBot
             }
         }
 
-        private async Task SignUpComplete(IDialogContext context, IAwaitable<LoginForm> result)
-        {
-            LoginForm form = null;
-            try
-            {
-                form = await result;
-            }
-            catch (OperationCanceledException)
-            {
-            }
 
-            if (form == null)
+        private async Task SignUpComplete(IDialogContext context, IAwaitable<LoginForm> result)
+        { }
+
+       public virtual async Task SignUpComplete(IDialogContext context, IAwaitable<string> pass)
+        {
+            string response = await pass;
+            password = response;
+
+            //LoginForm form = null;
+            //try
+            //{
+            //    form = await result;
+            //}
+            //catch (OperationCanceledException)
+            //{
+            //}
+
+            //if (form == null)
+            //{
+            //    await context.PostAsync("You canceled the form.");
+            //}
+            //else
+            //{
+            // Here is where we could call our signup service here to complete the sign-up
+            if (TokenHelper.checkUserPermission(userName, password) == true)
+                {
+                    context.UserData.SetValue("UserName", userName);
+                    context.UserData.SetValue("Password", password);
+
+                    var message = $"You are currently Logged In. Please Enjoy Using our App. **{userName}**.";
+                    await context.PostAsync(message);
+                    context.Wait(MessageReceived);
+                }
+                else
+                {
+                    PromptDialog.Confirm(context, ResumeAfterConfirmation, "The User Don't have permission , do you want to try another cridentials?");
+
+                  
+                }
+           // }
+
+           // context.Wait(MessageReceived);
+        }
+
+        private async Task ResumeAfterConfirmation(IDialogContext context, IAwaitable<bool> result)
+        {
+            var confirmation = await result;
+            if(confirmation == true)
             {
-                await context.PostAsync("You canceled the form.");
+                PromptDialog.Text(
+                    context: context,
+                    resume: ResumeGetPassword,
+                    //pattern : @"^([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$",
+                    prompt: "Dear , May I know your user name?",
+                    retry: "Sorry, I didn't understand that. Please try again."
+                );
             }
             else
             {
-                // Here is where we could call our signup service here to complete the sign-up
+                string response = string.Empty;
 
-                var message = $"You are currently Logged In. Please Enjoy Using our App. **{form.Name}**.";
-                await context.PostAsync(message);
+                if (this.msgReceivedDate.ToString("tt") == "AM")
+                {
+                    response = $"Good bye, {userName}.. Have a nice day. :)";
+                }
+                else
+                {
+                    response = $"b'bye {userName}, Take care.";
+                }             
+
+                context.UserData.Clear();
+                await context.PostAsync(response);
+                context.Wait(this.MessageReceived);
             }
-
-            context.Wait(MessageReceived);
+          //  await context.PostAsync(confirmation ? "You do want to order." : "You don't want to order.");
         }
+
         //public virtual async Task MessageReceivedAsync(IDialogContext context, IAwaitable<IMessageActivity> argument)
         //{
         //    var msg = await argument;

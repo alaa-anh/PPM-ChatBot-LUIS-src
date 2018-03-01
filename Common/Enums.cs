@@ -17,5 +17,19 @@ namespace Common
             Deliverables = 4,
             Assignments = 5
         }
+
+
+        enum PPMGroups
+        {
+
+            //Administrators = "a",
+            //PortfolioManagers = "a",
+            //PortfolioViewers = "a",
+            //ProjectManagers = "a",
+            //ResourceManagers = "a",
+            //TeamLeads = "a",
+            //TeamMembers = "Team Members"
+
+        }
     }
 }

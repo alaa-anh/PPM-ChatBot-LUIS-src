@@ -44,7 +44,6 @@ C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\Ada
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\Common.dll.config
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\Common.dll
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\Common.pdb
-C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\AdaptiveCards.dll
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\Microsoft.IdentityModel.dll
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\Microsoft.IdentityModel.Extensions.dll
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\Microsoft.IdentityModel.Protocols.dll

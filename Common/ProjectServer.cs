@@ -39,8 +39,12 @@ namespace Common
                 SecureString passWord = new SecureString();
                 foreach (char c in _userPassword.ToCharArray()) passWord.AppendChar(c);
                 context.Credentials = new SharePointOnlineCredentials(_userName, passWord);
-                context.Load(context.Projects);
-                context.ExecuteQuery();
+
+                    context.Load(context.Projects);
+                    context.ExecuteQuery();
+             
+
+               
 
                 ProjectCollection projectDetails = context.Projects;
                 if (context.Projects.Count > 0)
@@ -408,6 +412,8 @@ namespace Common
                     {
                         ClientResult<BasePermissions> permissions = subWeb.GetUserEffectivePermissions(user.LoginName);
                         context.ExecuteQuery();
+
+                        
                         if (permissions.Value.Has(PermissionKind.ViewListItems))
                         {
                             exist = true;
@@ -430,7 +436,55 @@ namespace Common
             return exist;
         }
 
-    
+        public bool GetUserGroup(ProjectContext context , string groupName)
+        {
+            bool exist = false;
+
+            Web web = context.Web;
+            //Parameters to receive response from the server    
+            //RoleAssignments property should be passed in Load method to get the collection of Groups assigned to the web    
+            context.Load(web, w => w.Title);
+            context.Load(web.RoleAssignments);
+            context.ExecuteQuery();
+
+            RoleAssignmentCollection roleAssignments = web.RoleAssignments;
+            //RoleAssignment.Member property returns the group associated to the web  
+            //RoleAssignement.RoleDefinitionBindings property returns the permissions associated to the group for the web  
+            context.Load(roleAssignments, roleAssignement => roleAssignement.Include(r => r.Member, r => r.RoleDefinitionBindings));
+            context.ExecuteQuery();
+
+            //Console.WriteLine("Groups has permission to the Web: " + web.Title);
+            //Console.WriteLine("Groups Count: " + roleAssignments.Count.ToString());
+            //Console.WriteLine("Group with Permissions as follows:");
+            foreach (RoleAssignment grp in roleAssignments)
+            {
+                string strGroup = "";
+                strGroup += grp.Member.Title + " : ";
+
+                foreach (RoleDefinition rd in grp.RoleDefinitionBindings)
+                {
+                    strGroup += rd.Name + " ";
+                }
+                //  Console.WriteLine(strGroup);
+            }
+
+            //var web = context.Web;
+            //context.Load(web.SiteGroups);
+            //context.Load(web.SiteUsers);
+
+            //context.ExecuteQuery();
+
+            //Group group = web.SiteGroups.GetByName(groupName);
+            //context.Load(group.Users);
+            //context.ExecuteQuery();
+
+            //foreach (User usr in group.Users)
+            //{
+            //    if (usr.Email.ToLower() == _userName.ToLower())
+            //        exist = true;
+            //}
+            return exist;
+        }
 
         private static PublishedProject GetProjectByName(string name, ProjectContext context)
         {
@@ -494,38 +548,38 @@ namespace Common
             return markdownContent;
         }
               
-        public string GetProjectRiskStatus(string pName)
-        {
-            string strissues = string.Empty;
-            using (ProjectContext context = new ProjectContext(_siteUri + "/Demo"))
-            {
-                SecureString passWord = new SecureString();
-                foreach (char c in "Amman@123".ToCharArray()) passWord.AppendChar(c);
-                context.Credentials = new SharePointOnlineCredentials(_userName, passWord);
-                PublishedProject project = GetProjectByName("Demo", context);
+        //public string GetProjectRiskStatus(string pName)
+        //{
+        //    string strissues = string.Empty;
+        //    using (ProjectContext context = new ProjectContext(_siteUri + "/Demo"))
+        //    {
+        //        SecureString passWord = new SecureString();
+        //        foreach (char c in "Amman@123".ToCharArray()) passWord.AppendChar(c);
+        //        context.Credentials = new SharePointOnlineCredentials(_userName, passWord);
+        //        PublishedProject project = GetProjectByName("Demo", context);
 
-                context.Load(context.Web);
-                context.ExecuteQuery();
+        //        context.Load(context.Web);
+        //        context.ExecuteQuery();
 
-                var issues = context.Web.Lists.GetByTitle("Risks");
-                CamlQuery query = CamlQuery.CreateAllItemsQuery();
-                ListItemCollection itemsIssue = issues.GetItems(query);
+        //        var issues = context.Web.Lists.GetByTitle("Risks");
+        //        CamlQuery query = CamlQuery.CreateAllItemsQuery();
+        //        ListItemCollection itemsIssue = issues.GetItems(query);
 
-                context.Load(issues);
-                context.Load(itemsIssue);
-                context.ExecuteQuery();
+        //        context.Load(issues);
+        //        context.Load(itemsIssue);
+        //        context.ExecuteQuery();
 
 
-                foreach (ListItem item in itemsIssue)
-                {
-                    string IssueName = (string)item["Title"];
-                    string riskStatus = (string)item["Status"];
-                    strissues = strissues + IssueName + "," + "," + riskStatus + "<br>";
-                }
+        //        foreach (ListItem item in itemsIssue)
+        //        {
+        //            string IssueName = (string)item["Title"];
+        //            string riskStatus = (string)item["Status"];
+        //            strissues = strissues + IssueName + "," + "," + riskStatus + "<br>";
+        //        }
 
-            }
-            return strissues;
-        }
+        //    }
+        //    return strissues;
+        //}
 
         public string FilterProjectsByDate(string FilterType, string pStartDate, string PEndDate, string ProjectSEdateFlag)
         {

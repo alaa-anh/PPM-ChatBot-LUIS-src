@@ -48,17 +48,10 @@ namespace LuisBot.Forms
 
 
             return new FormBuilder<LoginForm>()
-                        .Message("Hey, Welcome to the Chat Pot!")
+                       // .Message("Hey, Welcome to the Chat Pot!")
 
-                      //  .Field(nameof(Name))
                         .Field(nameof(Name))
-                        //  .Field(nameof(Gender))
-                        //  .Field(nameof(ArrivalTime))
-                        //   .Field(nameof(TotalAttendees))
-                             .Field(nameof(Password), validate: ValidateUserPermissionOnPPMSite)
-                        //  .Field(new FieldReflector<LoginForm>(nameof(ComplementoryDrink))
-                        //.SetType(null)
-                        //.SetActive(state => state.TotalAttendees > 3)
+                             .Field(nameof(Password))
 
 
             //.Confirm(async (state) =>
@@ -69,39 +62,48 @@ namespace LuisBot.Forms
 
 
             //})
-            .OnCompletion(async (context, state) =>
-                         {
-                             //await context.PostAsync("You are currently Logged In. Please Enjoy Using our App.");
-                             context.UserData.SetValue("UserName", state.Name);
-                             context.UserData.SetValue("Password", state.Password);
+            //.OnCompletion(async (context, state) =>
+            //             {
+            //                 //await context.PostAsync("You are currently Logged In. Please Enjoy Using our App.");
+            //                 //context.UserData.SetValue("UserName", state.Name);
+            //                 //context.UserData.SetValue("Password", state.Password);
 
-                             //new Mongo().Insert("ContextTokens", new Token((string)response));
-                         })
+            //                 //new Mongo().Insert("ContextTokens", new Token((string)response));
+            //             })
                         .Build();
             }
 
 
 
-        private static ValidateAsyncDelegate<LoginForm> ValidateUserPermissionOnPPMSite = async (state, response) =>
-        {
-            var result = new ValidateResult { IsValid = true, Value = response };
-          //  var zip = (response as string).Trim();
-            if (TokenHelper.checkAuthorizedUser(state.Name, (string)response) == true)
-            {
-                result.IsValid = true;
-                //context.UserData.SetValue("UserName", (string)response);
-                //new Mongo().Insert("ContextTokens", new Token((string)response));
-                //  await context.PostAsync("You are registerd. Have a happy time with us.");
-                // result.Feedback = "You did not enter valid email address.";
-            }
-            else
-            {
-                result.IsValid = false;
-                result.Feedback = $"Sorry, Your User Name / Password Is wrong or you don't have permission. Please try again.";
-            }
+        //private static ValidateAsyncDelegate<LoginForm> ValidateUserPermissionOnPPMSite = async (state, response) =>
+        //{
+        //    var result = new ValidateResult { IsValid = true, Value = response };
+        //  //  var zip = (response as string).Trim();
+        //    if (TokenHelper.checkUserPermission(state.Name, (string)response) == true)
+        //    {
+        //        result.IsValid = true;
+        //        //context.UserData.SetValue("UserName", (string)response);
+        //        //new Mongo().Insert("ContextTokens", new Token((string)response));
+        //        //  await context.PostAsync("You are registerd. Have a happy time with us.");
+        //        // result.Feedback = "You did not enter valid email address.";
+        //    }
+        //    else
+        //    {
+        //        result.IsValid = false;
+        //           result.Feedback = $"Sorry, Your User Name / Password Is wrong or you don't have permission. Please try again.";
 
-            return await Task.FromResult(result);
-        };
+        //        //    response.Append($"Hey {userName}.. you Don't have permission anymore to the current site:)");
+        //        //    var form = new FormDialog<LoginForm>(new LoginForm(), LoginForm.BuildForm);
+        //        //    context.Call(form, SignUpComplete);
+
+                
+        //        //PromptDialog.Confirm(context, UseAnotherCridentials,
+        //        //$"You Don't Have permission to the Site , do you want to use another cridentials ?");
+
+        //    }
+
+        //    return await Task.FromResult(result);
+        //};
 
         //private static Task<ValidateResult> ValidateUserPermissionOnPPMSite(LoginForm state, object response)
         //{

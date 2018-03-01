@@ -114,7 +114,85 @@ namespace Common
             return Authorized;
         }
 
+        public static bool checkUserPermission(string name, string upassword)
+        {
+            bool Authorized = false;
 
+            try
+            {
+                ClientContext ctx = new ClientContext(ConfigurationManager.AppSettings["PPMServerURL"]);
+                SecureString passWord = new SecureString();
+                foreach (char c in upassword) passWord.AppendChar(c);
+                ctx.Credentials = new SharePointOnlineCredentials(name, passWord);
+
+                Web web = ctx.Web;
+                //Parameters to receive response from the server    
+                //RoleAssignments property should be passed in Load method to get the collection of Groups assigned to the web    
+                ctx.Load(web, w => w.Title);
+                ctx.Load(web.RoleAssignments);
+                ctx.ExecuteQuery();
+
+                RoleAssignmentCollection roleAssignments = web.RoleAssignments;
+                //RoleAssignment.Member property returns the group associated to the web  
+                //RoleAssignement.RoleDefinitionBindings property returns the permissions associated to the group for the web  
+                ctx.Load(roleAssignments, roleAssignement => roleAssignement.Include(r => r.Member, r => r.RoleDefinitionBindings));
+                ctx.ExecuteQuery();
+
+                if(roleAssignments !=null)
+                {
+                    Authorized = true;
+                }
+                //Console.WriteLine("Groups has permission to the Web: " + web.Title);
+                //Console.WriteLine("Groups Count: " + roleAssignments.Count.ToString());
+                //Console.WriteLine("Group with Permissions as follows:");
+                //foreach (RoleAssignment grp in roleAssignments)
+                //{
+                //    string strGroup = "";
+                //    strGroup += grp.Member.Title + " : ";
+
+                //    foreach (RoleDefinition rd in grp.RoleDefinitionBindings)
+                //    {
+                //        strGroup += rd.Name + " ";
+                //    }
+                //    //  Console.WriteLine(strGroup);
+                //}
+            }
+            catch(Exception)
+            {
+               Authorized = false;
+            }
+           
+          //  Console.Read();
+            return Authorized;
+        }
+
+        private static string getPassword()
+        {
+            ConsoleKeyInfo key;
+            string pass = "";
+            do
+            {
+                key = Console.ReadKey(true);
+                // Backspace Should Not Work    
+                if (key.Key != ConsoleKey.Backspace && key.Key != ConsoleKey.Enter)
+                {
+                    pass += key.KeyChar;
+                    Console.Write("*");
+                }
+                else
+                {
+                    if (key.Key == ConsoleKey.Backspace && pass.Length > 0)
+                    {
+                        pass = pass.Substring(0, (pass.Length - 1));
+                        Console.Write("\b \b");
+                    }
+                }
+            }
+            // Stops Receving Keys Once Enter is Pressed    
+            while (key.Key != ConsoleKey.Enter);
+            return pass;
+         
+        }
         public static string Datevalues(object obj, string keyNeed)
         {
             string keyval = string.Empty;
