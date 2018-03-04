@@ -142,11 +142,12 @@ namespace Microsoft.Bot.Sample.LuisBot
         {
             if (context.UserData.TryGetValue<string>("UserName", out userName) && (context.UserData.TryGetValue<string>("Password", out password)))
             {
-                EntityRecommendation projectSDate, projectEDate, projectDuration, projectCompletion, projectDate;
+                EntityRecommendation projectSDate, projectEDate, projectDuration, projectCompletion, projectDate , projectPM;
 
                 bool showCompletion = false;
                 bool Pdate = false;
                 bool pDuration = false;
+                bool pPM = false;
 
                 if (luisResult.TryFindEntity("Project.Completion", out projectCompletion))
                     showCompletion = true;
@@ -157,13 +158,19 @@ namespace Microsoft.Bot.Sample.LuisBot
                 if (luisResult.TryFindEntity("Project.Duration", out projectDuration))
                     pDuration = true;
 
-                await context.PostAsync(new Common.ProjectServer(userName, password).GetAllProjects(showCompletion , Pdate , pDuration));
+                if (luisResult.TryFindEntity("Project.PM", out projectPM))
+                    pPM = true;
+
+                await context.PostAsync(new Common.ProjectServer(userName, password).GetAllProjects(showCompletion , Pdate , pDuration , pPM));
                 context.Wait(this.MessageReceived);
             }
             else
             {
-                var form = new FormDialog<LoginForm>(new LoginForm(), LoginForm.BuildForm);
-                context.Call(form, SignUpComplete);
+                PromptDialog.Confirm(context, ResumeAfterConfirmation, "You are note allwed to access the data , do you want to login?");
+
+
+                //var form = new FormDialog<LoginForm>(new LoginForm(), LoginForm.BuildForm);
+                //context.Call(form, SignUpComplete);
             }
         }
 
@@ -199,15 +206,15 @@ namespace Microsoft.Bot.Sample.LuisBot
                 {
                     ListName = Common.Enums.ListName.Tasks.ToString();
                 }
-                if (luisResult.TryFindEntity("Project.Risks", out projectRisks))
+                else if (luisResult.TryFindEntity("Project.Risks", out projectRisks))
                 {
                     ListName = Common.Enums.ListName.Risks.ToString();
                 }
-                if (luisResult.TryFindEntity("Project.Deliverables", out projectDeliverables))
+                else if (luisResult.TryFindEntity("Project.Deliverables", out projectDeliverables))
                 {
                     ListName = Common.Enums.ListName.Deliverables.ToString();
                 }
-                if (luisResult.TryFindEntity("Project.Assignments", out projectAssignments))
+                else if (luisResult.TryFindEntity("Project.Assignments", out projectAssignments))
                 {
                     ListName = Common.Enums.ListName.Assignments.ToString();
                 }
@@ -240,12 +247,10 @@ namespace Microsoft.Bot.Sample.LuisBot
                             pDuration = true;
                         if (luisResult.TryFindEntity("Project.Completion", out projectCompletion))
                             PCompletion = true;
-
                         if (luisResult.TryFindEntity("Project.PM", out projectManager))
                             PMshow = true;
 
-                            PMshow = true;
-                            PMshow = true;
+                         
                         await context.PostAsync(new Common.ProjectServer(userName , password).GetProjectInfo(searchTerm_ProjectName, Pdate, pDuration, PCompletion , PMshow));
                         context.Wait(this.MessageReceived);
                     }
@@ -386,14 +391,14 @@ namespace Microsoft.Bot.Sample.LuisBot
             //else
             //{
             // Here is where we could call our signup service here to complete the sign-up
-            if (TokenHelper.checkUserPermission(userName, password) == true)
+            if (TokenHelper.checkAuthorizedUser(userName, password) == true)
                 {
                     context.UserData.SetValue("UserName", userName);
                     context.UserData.SetValue("Password", password);
 
                     var message = $"You are currently Logged In. Please Enjoy Using our App. **{userName}**.";
                     await context.PostAsync(message);
-                    context.Wait(MessageReceived);
+                   // context.Wait(MessageReceived);
                 }
                 else
                 {

@@ -1,6 +1,7 @@
 ﻿using Microsoft.IdentityModel;
 using Microsoft.IdentityModel.S2S.Protocols.OAuth2;
 using Microsoft.IdentityModel.S2S.Tokens;
+using Microsoft.ProjectServer.Client;
 using Microsoft.SharePoint.Client;
 using Microsoft.SharePoint.Client.EventReceivers;
 using System;
@@ -120,23 +121,35 @@ namespace Common
 
             try
             {
-                ClientContext ctx = new ClientContext(ConfigurationManager.AppSettings["PPMServerURL"]);
+                ProjectContext context = new ProjectContext(ConfigurationManager.AppSettings["PPMServerURL"]);
                 SecureString passWord = new SecureString();
                 foreach (char c in upassword) passWord.AppendChar(c);
-                ctx.Credentials = new SharePointOnlineCredentials(name, passWord);
+                context.Credentials = new SharePointOnlineCredentials(name, passWord);
 
-                Web web = ctx.Web;
+                //context.Load(context.EnterpriseResources);
+                //context.ExecuteQuery();
+
+                //var user = context.Web.EnsureUser(name);
+                //context.Load(user);
+                //context.ExecuteQuery();
+
+
+               // EnterpriseResourceCollection resources = context.EnterpriseResources.Where(r => r.Email = name);
+
+                
+
+                Web web = context.Web;
                 //Parameters to receive response from the server    
                 //RoleAssignments property should be passed in Load method to get the collection of Groups assigned to the web    
-                ctx.Load(web, w => w.Title);
-                ctx.Load(web.RoleAssignments);
-                ctx.ExecuteQuery();
+                context.Load(web, w => w.Title);
+                context.Load(web.RoleAssignments);
+                context.ExecuteQuery();
 
                 RoleAssignmentCollection roleAssignments = web.RoleAssignments;
                 //RoleAssignment.Member property returns the group associated to the web  
                 //RoleAssignement.RoleDefinitionBindings property returns the permissions associated to the group for the web  
-                ctx.Load(roleAssignments, roleAssignement => roleAssignement.Include(r => r.Member, r => r.RoleDefinitionBindings));
-                ctx.ExecuteQuery();
+                context.Load(roleAssignments, roleAssignement => roleAssignement.Include(r => r.Member, r => r.RoleDefinitionBindings));
+                context.ExecuteQuery();
 
                 if(roleAssignments !=null)
                 {
@@ -157,7 +170,7 @@ namespace Common
                 //    //  Console.WriteLine(strGroup);
                 //}
             }
-            catch(Exception)
+            catch(Exception ex)
             {
                Authorized = false;
             }
