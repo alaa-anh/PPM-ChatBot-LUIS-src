@@ -53,7 +53,7 @@ namespace Common
 
                      //   markdownContent = string.Join("**Project Name**\n", projectDetails.Select(x => x.Name + "<br>" + "**Completed Percentage**\n" + x.PercentComplete + "%<br/>" + "**Start Date**\n" + x.StartDate + "<br>" + "**Finish Date**\n" + x.FinishDate + "<br>" + "**Project Manager**\n" + x.Owner.Title + "<br>"));
 
-                        markdownContent = string.Join("**Project Name**\n", projectDetails.Select(x => x.Name + "<br>" + "**Completed Percentage**\n" + x.PercentComplete + "%<br/>" + "**Start Date**\n" + x.StartDate + "<br>" + "**Finish Date**\n" + x.FinishDate + "<br>" + "----\n\n"));
+                        markdownContent = string.Join("**Project Name :**", projectDetails.Select(x => x.Name + "<br>" + "**Completed Percentage :**" + x.PercentComplete + "%<br/>" + "**Start Date :**" + x.StartDate + "<br>" + "**Finish Date :**" + x.FinishDate + "<br>" + "----\n\n"));
 
 
                         //   markdownContent += "**Project Name**\n\n" + "<br>";
@@ -71,7 +71,7 @@ namespace Common
 
                         //    markdownContent += "----\n\n";
                         //}
-                        markdownContent += "**Total Projects :**\n" + projectDetails.Count + "<br>";
+                        markdownContent += "**Total Projects :**" + projectDetails.Count + "<br>";
                     }
                     else
                     {
