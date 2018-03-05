@@ -48,9 +48,6 @@ namespace Common
                 {
                     if (showCompletion == false && ProjectDates== false && ProjectDuration == false && projectManager == false)
                     {
-                   //     context.Load(projectDetails.Owner);
-                   //     context.ExecuteQuery();
-
                      //   markdownContent = string.Join("**Project Name**\n", projectDetails.Select(x => x.Name + "<br>" + "**Completed Percentage**\n" + x.PercentComplete + "%<br/>" + "**Start Date**\n" + x.StartDate + "<br>" + "**Finish Date**\n" + x.FinishDate + "<br>" + "**Project Manager**\n" + x.Owner.Title + "<br>"));
 
                         markdownContent = string.Join("**Project Name :**", projectDetails.Select(x => x.Name + "<br>" + "**Completed Percentage :**" + x.PercentComplete + "%<br/>" + "**Start Date :**" + x.StartDate + "<br>" + "**Finish Date :**" + x.FinishDate + "<br>" + "----\n\n"));
