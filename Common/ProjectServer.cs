@@ -51,7 +51,16 @@ namespace Common
                         markdownContent += "**Project Name**\n\n" + "<br>";
                         foreach (PublishedProject pro in projectDetails)
                         {
-                            markdownContent += pro.Name + "<br>";
+                            markdownContent += "**Project Name**\n" + pro.Name + "<br>";
+                            markdownContent += "**Completed Percentage**\n" + pro.PercentComplete + "%<br/>";
+                            markdownContent += "**Start Date**\n" + pro.StartDate + "<br>";
+                            markdownContent += "**Finish Date**\n" + pro.FinishDate + "<br>";
+                            TimeSpan duration = pro.FinishDate - pro.StartDate;
+                            markdownContent += "**Project Duration**\n" + duration.Days + "<br>";
+                            context.Load(pro.Owner);
+                            context.ExecuteQuery();
+                            markdownContent += "**Project Manager**\n" + pro.Owner.Title + "<br>";
+                            markdownContent += "----\n\n";
                         }
                         markdownContent += "**Total Projects :**\n" + projectDetails.Count + "<br>";
                     }

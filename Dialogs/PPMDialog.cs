@@ -167,10 +167,6 @@ namespace Microsoft.Bot.Sample.LuisBot
             else
             {
                 PromptDialog.Confirm(context, ResumeAfterConfirmation, "You are note allwed to access the data , do you want to login?");
-
-
-                //var form = new FormDialog<LoginForm>(new LoginForm(), LoginForm.BuildForm);
-                //context.Call(form, SignUpComplete);
             }
         }
 
