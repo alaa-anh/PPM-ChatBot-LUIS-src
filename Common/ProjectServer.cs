@@ -637,7 +637,7 @@ namespace Common
                 exist = false;
             }
             else
-                exist = true;
+                exist = true; 
             return exist;
         }
 
