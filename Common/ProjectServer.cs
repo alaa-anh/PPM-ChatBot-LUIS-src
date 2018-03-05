@@ -48,6 +48,7 @@ namespace Common
                 {
                     if (showCompletion == false && ProjectDates== false && ProjectDuration == false && projectManager == false)
                     {
+                     //   markdownContent += "**Project Name**\n\n" + "<br>";
                         foreach (PublishedProject pro in projectDetails)
                         {
                             markdownContent += "**Project Name**\n" + pro.Name + "<br>";
@@ -58,7 +59,8 @@ namespace Common
                             markdownContent += "**Project Duration**\n" + duration.Days + "<br>";
                             context.Load(pro.Owner);
                             context.ExecuteQuery();
-                            markdownContent += "**Project Manager**\n" + pro.Owner.Title + "<br>";
+                               markdownContent += "**Project Manager**\n" + pro.Owner.Title + "<br>";
+
                             markdownContent += "----\n\n";
                         }
                         markdownContent += "**Total Projects :**\n" + projectDetails.Count + "<br>";
