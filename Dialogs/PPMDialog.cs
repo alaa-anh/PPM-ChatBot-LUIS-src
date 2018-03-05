@@ -55,7 +55,7 @@ namespace Microsoft.Bot.Sample.LuisBot
             {
                 if (this.msgReceivedDate.ToString("tt") == "AM")
                 {
-                    response.Append($"Good morning, {userName}.. :)");
+                    response.Append($"Good morning, {userName}.. :)"); 
                 }
                 else
                 {
