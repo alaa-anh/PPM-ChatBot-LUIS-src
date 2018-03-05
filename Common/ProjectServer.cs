@@ -48,21 +48,29 @@ namespace Common
                 {
                     if (showCompletion == false && ProjectDates== false && ProjectDuration == false && projectManager == false)
                     {
-                     //   markdownContent += "**Project Name**\n\n" + "<br>";
-                        foreach (PublishedProject pro in projectDetails)
-                        {
-                            markdownContent += "**Project Name**\n" + pro.Name + "<br>";
-                            markdownContent += "**Completed Percentage**\n" + pro.PercentComplete + "%<br/>";
-                            markdownContent += "**Start Date**\n" + pro.StartDate + "<br>";
-                            markdownContent += "**Finish Date**\n" + pro.FinishDate + "<br>";
-                            TimeSpan duration = pro.FinishDate - pro.StartDate;
-                            markdownContent += "**Project Duration**\n" + duration.Days + "<br>";
-                            context.Load(pro.Owner);
-                            context.ExecuteQuery();
-                               markdownContent += "**Project Manager**\n" + pro.Owner.Title + "<br>";
+                   //     context.Load(projectDetails.Owner);
+                   //     context.ExecuteQuery();
 
-                            markdownContent += "----\n\n";
-                        }
+                     //   markdownContent = string.Join("**Project Name**\n", projectDetails.Select(x => x.Name + "<br>" + "**Completed Percentage**\n" + x.PercentComplete + "%<br/>" + "**Start Date**\n" + x.StartDate + "<br>" + "**Finish Date**\n" + x.FinishDate + "<br>" + "**Project Manager**\n" + x.Owner.Title + "<br>"));
+
+                        markdownContent = string.Join("**Project Name**\n", projectDetails.Select(x => x.Name + "<br>" + "**Completed Percentage**\n" + x.PercentComplete + "%<br/>" + "**Start Date**\n" + x.StartDate + "<br>" + "**Finish Date**\n" + x.FinishDate + "<br>" + "----\n\n"));
+
+
+                        //   markdownContent += "**Project Name**\n\n" + "<br>";
+                        //foreach (PublishedProject pro in projectDetails)
+                        //{
+                        //    markdownContent += "**Project Name**\n" + pro.Name + "<br>";
+                        //    markdownContent += "**Completed Percentage**\n" + pro.PercentComplete + "%<br/>";
+                        //    markdownContent += "**Start Date**\n" + pro.StartDate + "<br>";
+                        //    markdownContent += "**Finish Date**\n" + pro.FinishDate + "<br>";
+                        //    TimeSpan duration = pro.FinishDate - pro.StartDate;
+                        //    markdownContent += "**Project Duration**\n" + duration.Days + "<br>";
+                        //    context.Load(pro.Owner);
+                        //    context.ExecuteQuery();
+                        //       markdownContent += "**Project Manager**\n" + pro.Owner.Title + "<br>";
+
+                        //    markdownContent += "----\n\n";
+                        //}
                         markdownContent += "**Total Projects :**\n" + projectDetails.Count + "<br>";
                     }
                     else
@@ -188,14 +196,27 @@ namespace Common
             projectweb.Context.Load(itemsIssue);
             projectweb.Context.ExecuteQuery();
 
-            if (GetUserGroup(context, "Project Managers (Project Web App Synchronized)") || GetUserGroup(context, "Portfolio Managers for Project Web App") || GetUserGroup(context, "Portfolio Managers for Project Web App") || GetUserGroup(context, "Web Administrators (Project Web App Synchronized)"))
-            {
-                markdownContent = GetAllProjectIssues(itemsIssue);
-            }
-            else if (GetUserGroup(context, "Team Members (Project Web App Synchronized)"))
+            if (GetUserGroup(context, "Team Members (Project Web App Synchronized)"))
             {
                 markdownContent = getresourceassignedrisksIssues(itemsIssue);
             }
+            else if (GetUserGroup(context, "Project Managers (Project Web App Synchronized)"))
+            {
+                markdownContent = GetAllProjectIssues(itemsIssue);
+            }
+            else
+            {
+                markdownContent = GetAllProjectIssues(itemsIssue);
+            }
+
+            //if (GetUserGroup(context, "Project Managers (Project Web App Synchronized)") || GetUserGroup(context, "Portfolio Managers for Project Web App") || GetUserGroup(context, "Portfolio Managers for Project Web App") || GetUserGroup(context, "Web Administrators (Project Web App Synchronized)"))
+            //{
+            //    markdownContent = GetAllProjectIssues(itemsIssue);
+            //}
+            //else if (GetUserGroup(context, "Team Members (Project Web App Synchronized)"))
+            //{
+            //    markdownContent = getresourceassignedrisksIssues(itemsIssue);
+            //}
 
             return markdownContent;
         }
@@ -288,17 +309,31 @@ namespace Common
             projectweb.Context.Load(risks);
             projectweb.Context.Load(itemsRisk);
             projectweb.Context.ExecuteQuery();
-            if (GetUserGroup(context, "Project Managers (Project Web App Synchronized)") || GetUserGroup(context, "Portfolio Managers for Project Web App") || GetUserGroup(context, "Portfolio Managers for Project Web App") || GetUserGroup(context, "Web Administrators (Project Web App Synchronized)"))
-            {
-                markdownContent = getallrisks(itemsRisk);
-            }
-            else if (GetUserGroup(context, "Team Members (Project Web App Synchronized)"))
+
+            if (GetUserGroup(context, "Team Members (Project Web App Synchronized)"))
             {
                 markdownContent = getresourceassignedrisks(itemsRisk);
             }
-            
+            else if (GetUserGroup(context, "Project Managers (Project Web App Synchronized)"))
+            {
+                markdownContent = getallrisks(itemsRisk);
+            }
+            else
+            {
+                markdownContent = getallrisks(itemsRisk);
+            }
 
-        
+            //if (GetUserGroup(context, "Project Managers (Project Web App Synchronized)") || GetUserGroup(context, "Portfolio Managers for Project Web App") || GetUserGroup(context, "Portfolio Managers for Project Web App") || GetUserGroup(context, "Web Administrators (Project Web App Synchronized)"))
+            //{
+            //    markdownContent = getallrisks(itemsRisk);
+            //}
+            //else if (GetUserGroup(context, "Team Members (Project Web App Synchronized)"))
+            //{
+            //    markdownContent = getresourceassignedrisks(itemsRisk);
+            //}
+
+
+
 
             return markdownContent;
         }
@@ -619,30 +654,46 @@ namespace Common
         {
             bool exist = false;
 
+             context.Load(context.Web);
+
+            //  context.Load(web.SiteUsers);
+            context.ExecuteQuery();
+
             Web web = context.Web;
+
             IEnumerable<User> user = context.LoadQuery(web.SiteUsers.Where(p => p.Email == _userName));
             context.ExecuteQuery();
 
-            User userLogged = user.FirstOrDefault();
-
-            context.Load(userLogged.Groups);
-            context.ExecuteQuery();
-
-            GroupCollection group = userLogged.Groups;
-
-            IEnumerable<Group> usergroup  = context.LoadQuery(userLogged.Groups.Where(p => p.Title == groupName));
-            context.ExecuteQuery();
-            if (!usergroup.Any())       
+            if (user.Any())
             {
-                exist = false;
+                User userLogged = user.FirstOrDefault();
+
+                context.Load(userLogged.Groups);
+                context.ExecuteQuery();
+
+                GroupCollection group = userLogged.Groups;
+
+                IEnumerable<Group> usergroup = context.LoadQuery(userLogged.Groups.Where(p => p.Title == groupName));
+                context.ExecuteQuery();
+                if (!usergroup.Any())
+                {
+                    exist = false;
+                }
+                else
+                    exist = true;
             }
-            else
-                exist = true; 
+            
             return exist;
         }
 
         private static PublishedProject GetProjectByName(string name, ProjectContext context)
         {
+            if (name.Contains(" - "))
+                name = name.Replace(" - " , "-");
+
+       //     context.Load(context.Projects);
+        //    context.ExecuteQuery();
+
             IEnumerable<PublishedProject> projs = context.LoadQuery(context.Projects.Where(p => p.Name == name));
             context.ExecuteQuery();
             if (!projs.Any())       // no project found
@@ -661,6 +712,10 @@ namespace Common
                 SecureString passWord = new SecureString();
                 foreach (char c in _userPassword.ToCharArray()) passWord.AppendChar(c);
                 context.Credentials = new SharePointOnlineCredentials(_userName, passWord);
+
+                //char[] specialArray = { '!', '@', '#', '$', '%', '&', '/', '{', '(', ')', '}', '=', '?', '+' , '-' , '_' };
+                //if (pName.Contains(" - "))
+                //    pName = pName.Replace(" - " , "-");
 
                 PublishedProject project = GetProjectByName(pName, context);
 
