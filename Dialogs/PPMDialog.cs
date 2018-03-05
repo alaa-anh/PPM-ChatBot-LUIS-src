@@ -51,8 +51,6 @@ namespace Microsoft.Bot.Sample.LuisBot
         public async Task GreetWelcome(IDialogContext context, LuisResult luisResult)
         {
             StringBuilder response = new StringBuilder();
-
-
             if (context.UserData.TryGetValue<string>("UserName", out userName) && (context.UserData.TryGetValue<string>("Password", out password)))
             {
                 if (this.msgReceivedDate.ToString("tt") == "AM")
@@ -72,19 +70,10 @@ namespace Microsoft.Bot.Sample.LuisBot
                 PromptDialog.Text(
                     context: context,
                     resume: ResumeGetPassword,
-                   //pattern : @"^([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$",
                     prompt: "Dear , May I know your user name?",
                     retry: "Sorry, I didn't understand that. Please try again."
                 );
-
-                //  var form = new FormDialog<LoginForm>(new LoginForm(), LoginForm.BuildForm);
-                //  context.Call(form, SignUpComplete);
-                // PromptDialog.Confirm(context, ResumeAfterConfirmation, "The User Don't have permission , do you want to try another cridentials?");
-
             }
-
-
-
         }
                 
         public virtual async Task ResumeGetPassword(IDialogContext context, IAwaitable<string> UserEmail)
