@@ -48,7 +48,6 @@ namespace Common
                 {
                     if (showCompletion == false && ProjectDates== false && ProjectDuration == false && projectManager == false)
                     {
-                        markdownContent += "**Project Name**\n\n" + "<br>";
                         foreach (PublishedProject pro in projectDetails)
                         {
                             markdownContent += "**Project Name**\n" + pro.Name + "<br>";
