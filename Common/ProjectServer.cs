@@ -157,6 +157,10 @@ namespace Common
                     string ProjectStartDate = (string)item["ProjectStartDate"];
                     string ProjectDuration = (string)item["ProjectDuration"];
                     string ProjectOwnerName = (string)item["ProjectOwnerName"];
+                    List<JToken> jArraysTasks = ((Newtonsoft.Json.Linq.JContainer)((Newtonsoft.Json.Linq.JContainer)item["Tasks"]).First).First.ToList();
+
+                    string Tasks = (string)jArraysTasks[0];
+
 
                     string SubtitleVal = "";
 
@@ -181,25 +185,25 @@ namespace Common
                     }
 
                   
-                    var actionsButton = new List<CardAction>();
-                    CardAction buttonTasks = new CardAction()
-                    {
-                        Value = "Tasks",
-                        Type = ActionTypes.PostBack,
-                      //  Image = strlike,
-                        Title = "Tasks"
-                    };
-                    actionsButton.Add(buttonTasks);
-                    GetProjectIssues(ProjectName);
+                    //var actionsButton = new List<CardAction>();
+                    //CardAction buttonTasks = new CardAction()
+                    //{
+                    //    Value = "Tasks",
+                    //    Type = ActionTypes.PostBack,
+                    //  //  Image = strlike,
+                    //    Title = "Tasks"
+                    //};
+                    //actionsButton.Add(buttonTasks);
+                    //GetProjectTasks(Tasks);
 
-                    CardAction buttonIssues = new CardAction()
-                    {
-                        Value = "Issues",
-                        Type = ActionTypes.PostBack,
-                      //  Image = strlike,
-                        Title = "Issues"
-                    };
-                    actionsButton.Add(buttonIssues);
+                    //CardAction buttonIssues = new CardAction()
+                    //{
+                    //    Value = "Issues",
+                    //    Type = ActionTypes.PostBack,
+                    //  //  Image = strlike,
+                    //    Title = "Issues"
+                    //};
+                    //actionsButton.Add(buttonIssues);
 
                     HeroCard plCard = new HeroCard()
                     {
@@ -210,7 +214,7 @@ namespace Common
                         //Title = ProjectName + $"I'm \r\r a hero \n\r card",
                         //Subtitle = $" Wikipedia \r\r Page \n\r test",
                         //Text = "line 1 \r\r line 2 \n\r line 3 \r line 4"
-                        Buttons = actionsButton
+                       // Buttons = actionsButton
 
                     };
 
@@ -681,40 +685,7 @@ namespace Common
             }
 
 
-            //if (GetUserGroup(context, "Project Managers (Project Web App Synchronized)") || GetUserGroup(context, "Portfolio Managers for Project Web App") || GetUserGroup(context, "Portfolio Managers for Project Web App") || GetUserGroup(context, "Web Administrators (Project Web App Synchronized)"))
-            //{
-            //    context.Load(project.Tasks);
-            //    context.ExecuteQuery();
-            //    PublishedTaskCollection tskcoll = project.Tasks;
-            //    if (tskcoll.Count > 0)
-            //    {
-            //        foreach (PublishedTask tsk in tskcoll)
-            //        {
-            //            string TaskName = tsk.Name;
-            //            string TaskDuration = tsk.Duration;
-            //            string TaskPercentCompleted = tsk.PercentComplete.ToString();
-            //            string TaskStartDate = tsk.Start.ToString();
-            //            string TaskFinishDate = tsk.Finish.ToString();
-
-
-            //            markdownContent += "**Task Name**\n" + TaskName + "<br>";
-            //            markdownContent += "**Task Duration**\n" + TaskDuration + "<br/>";
-            //            markdownContent += "**Task Percent Completed**\n" + TaskPercentCompleted + "<br>";
-            //            markdownContent += "**Task Start Date**\n" + TaskStartDate + "<br>";
-            //            markdownContent += "**Task Finish Date**\n" + TaskFinishDate + "<br>";
-            //            markdownContent += "----\n\n";
-            //        }
-            //        markdownContent += "**Total Tasks :**\n" + tskcoll.Count + "<br>";
-            //    }
-            //    else
-            //        markdownContent = "No Tasks for this Project";
-            //}
-
-            //else
-            //{
-            //    if (GetUserGroup(context, "Team Members (Project Web App Synchronized)"))
-                   
-            //}
+         
             return markdownContent;
         }
         public string GetProjectTAssignments(ProjectContext context, PublishedProject project)
@@ -893,10 +864,6 @@ namespace Common
                 SecureString passWord = new SecureString();
                 foreach (char c in _userPassword.ToCharArray()) passWord.AppendChar(c);
                 context.Credentials = new SharePointOnlineCredentials(_userName, passWord);
-
-                //char[] specialArray = { '!', '@', '#', '$', '%', '&', '/', '{', '(', ')', '}', '=', '?', '+' , '-' , '_' };
-                //if (pName.Contains(" - "))
-                //    pName = pName.Replace(" - " , "-");
 
                 PublishedProject project = GetProjectByName(pName, context);
 
@@ -1175,6 +1142,50 @@ namespace Common
             return markdownContent;
             
 
+        }
+
+
+        public string GetProjectTasks(string EndnodeTasks)
+        {
+
+            var markdownContent = "";
+
+
+            SecureString passWord = new SecureString();
+            foreach (char c in _userPassword.ToCharArray()) passWord.AppendChar(c);
+            SharePointOnlineCredentials credentials = new SharePointOnlineCredentials(_userName, passWord);
+            var webUri = new Uri(_siteUri);
+            using (var client = new WebClient())
+            {
+                client.Headers.Add("X-FORMS_BASED_AUTH_ACCEPTED", "f");
+                client.Credentials = credentials;
+                client.Headers.Add(HttpRequestHeader.ContentType, "application/json;odata=verbose");
+                client.Headers.Add(HttpRequestHeader.Accept, "application/json;odata=verbose");
+                var endpointUri = new Uri(EndnodeTasks);
+                var responce = client.DownloadString(endpointUri);
+                var t = JToken.Parse(responce);
+                JObject results = JObject.Parse(t["d"].ToString());
+                List<JToken> jArrays = ((Newtonsoft.Json.Linq.JContainer)((Newtonsoft.Json.Linq.JContainer)t["d"]).First).First.ToList();
+                foreach (var item in jArrays)
+                {
+                    string TaskName = (string)item["TaskName"];
+                    string TaskDuration = (string)item["TaskDuration"];
+                    string TaskPercentCompleted = (string)item["PercentCompleted"];
+                    string TaskStartDate = (string)item["TaskStartDate"];
+                    string TaskFinishDate = (string)item["TaskFinishDate"];
+
+
+                    markdownContent += "**Task Name**\n" + TaskName + "<br>";
+                    markdownContent += "**Task Duration**\n" + TaskDuration + "<br/>";
+                    markdownContent += "**Task Percent Completed**\n" + TaskPercentCompleted + "<br>";
+                    markdownContent += "**Task Start Date**\n" + TaskStartDate + "<br>";
+                    markdownContent += "**Task Finish Date**\n" + TaskFinishDate + "<br>";
+                    markdownContent += "----\n\n";
+                }
+
+
+                return markdownContent;
+            }
         }
     }
 }
