@@ -170,7 +170,7 @@ namespace Common
                 //    //  Console.WriteLine(strGroup);
                 //}
             }
-            catch(Exception ex)
+            catch(Exception)
             {
                Authorized = false;
             }

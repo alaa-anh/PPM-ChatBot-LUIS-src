@@ -23,9 +23,9 @@ namespace Common
 
             MongoIdentity identity = new MongoInternalIdentity("MongoDBChatBot", "mongodb-chatbot");
             MongoIdentityEvidence evidence = new PasswordEvidence("giXFEwkRQ1DWyNCFim7VnOGNb6KOkjYbdXDYIvbmtKwJrt0uEm573wzaccGFbw5WkVE9hqTEo7x2MTHNGPAkWA==");
-            settings.Credentials = new List<MongoCredential>(){
-                new MongoCredential("SCRAM-SHA-1", identity, evidence)
-            };
+            //settings.Credentials = new List<MongoCredential>(){
+            //    new MongoCredential("SCRAM-SHA-1", identity, evidence)
+            //};
 
 
 
