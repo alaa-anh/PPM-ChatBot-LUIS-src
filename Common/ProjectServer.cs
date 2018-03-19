@@ -144,27 +144,10 @@ namespace Common
                 client.Headers.Add(HttpRequestHeader.ContentType, "application/json;odata=verbose");
                 client.Headers.Add(HttpRequestHeader.Accept, "application/json;odata=verbose");
                 var endpointUri = new Uri(webUri+"/_api/ProjectData/Projects");
-
                 var responce = client.DownloadString(endpointUri);
-
-              
-
-               
                 var t = JToken.Parse(responce);
                 JObject results = JObject.Parse(t["d"].ToString());
-
-
-
-                //   return t["d"];
-
-
-
-              
-
                 List<JToken> jArrays = ((Newtonsoft.Json.Linq.JContainer)((Newtonsoft.Json.Linq.JContainer)t["d"]).First).First.ToList();
-
-
-
                 foreach (var item in jArrays)
                 {
                     string ProjectName = (string)item["ProjectName"];
@@ -197,16 +180,38 @@ namespace Common
                         SubtitleVal += "**Project Manager :**\n" + ProjectOwnerName + "\n\r";
                     }
 
+                  
+                    var actionsButton = new List<CardAction>();
+                    CardAction buttonTasks = new CardAction()
+                    {
+                        Value = "Tasks",
+                        Type = ActionTypes.PostBack,
+                      //  Image = strlike,
+                        Title = "Tasks"
+                    };
+                    actionsButton.Add(buttonTasks);
+                    GetProjectIssues(ProjectName);
+
+                    CardAction buttonIssues = new CardAction()
+                    {
+                        Value = "Issues",
+                        Type = ActionTypes.PostBack,
+                      //  Image = strlike,
+                        Title = "Issues"
+                    };
+                    actionsButton.Add(buttonIssues);
 
                     HeroCard plCard = new HeroCard()
                     {
                         Title = ProjectName,
                         Subtitle = SubtitleVal,// $" Wikipedia \r\r Page \n\r test",
-                      //  Text = "line 1 \r\r line 2 \n\r line 3 \r line 4"
+                                               //  Text = "line 1 \r\r line 2 \n\r line 3 \r line 4"
 
                         //Title = ProjectName + $"I'm \r\r a hero \n\r card",
                         //Subtitle = $" Wikipedia \r\r Page \n\r test",
                         //Text = "line 1 \r\r line 2 \n\r line 3 \r line 4"
+                        Buttons = actionsButton
+
                     };
 
                     Microsoft.Bot.Connector.Attachment attachment = new Microsoft.Bot.Connector.Attachment()
@@ -347,6 +352,7 @@ namespace Common
             return markdownContent;
         }
 
+      
 
         public string GetAllProjectIssues(ListItemCollection itemsIssue)
         {
