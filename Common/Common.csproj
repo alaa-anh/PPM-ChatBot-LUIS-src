@@ -64,17 +64,17 @@
       <HintPath>..\packages\Microsoft.Identity.Model.Extensions.2.0.1459.0\lib\Microsoft.IdentityModel.Extensions.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.IdentityModel.Logging, Version=1.1.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.IdentityModel.Logging.1.1.4\lib\net451\Microsoft.IdentityModel.Logging.dll</HintPath>
+    <Reference Include="Microsoft.IdentityModel.Logging, Version=5.2.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Logging.5.2.1\lib\net451\Microsoft.IdentityModel.Logging.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.IdentityModel.Protocols, Version=2.1.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.IdentityModel.Protocols.2.1.4\lib\net451\Microsoft.IdentityModel.Protocols.dll</HintPath>
+    <Reference Include="Microsoft.IdentityModel.Protocols, Version=5.2.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Protocols.5.2.1\lib\net451\Microsoft.IdentityModel.Protocols.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect, Version=2.1.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.IdentityModel.Protocols.OpenIdConnect.2.1.4\lib\net451\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll</HintPath>
+    <Reference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect, Version=5.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Protocols.OpenIdConnect.5.2.0\lib\net451\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.IdentityModel.Tokens, Version=5.1.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.IdentityModel.Tokens.5.1.4\lib\net451\Microsoft.IdentityModel.Tokens.dll</HintPath>
+    <Reference Include="Microsoft.IdentityModel.Tokens, Version=5.2.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Tokens.5.2.1\lib\net451\Microsoft.IdentityModel.Tokens.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Office.Client.Policy, Version=16.1.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.SharePointOnline.CSOM.16.1.7414.1200\lib\net45\Microsoft.Office.Client.Policy.dll</HintPath>
@@ -140,8 +140,8 @@
       <HintPath>..\packages\Newtonsoft.Json.11.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Buffers, Version=4.0.1.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Buffers.4.3.0\lib\netstandard1.1\System.Buffers.dll</HintPath>
+    <Reference Include="System.Buffers, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Buffers.4.4.0\lib\netstandard1.1\System.Buffers.dll</HintPath>
     </Reference>
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
@@ -149,8 +149,8 @@
     <Reference Include="System.IdentityModel" />
     <Reference Include="System.IdentityModel.Selectors" />
     <Reference Include="System.IdentityModel.Services" />
-    <Reference Include="System.IdentityModel.Tokens.Jwt, Version=5.1.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.IdentityModel.Tokens.Jwt.5.1.4\lib\net451\System.IdentityModel.Tokens.Jwt.dll</HintPath>
+    <Reference Include="System.IdentityModel.Tokens.Jwt, Version=5.2.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IdentityModel.Tokens.Jwt.5.2.1\lib\net451\System.IdentityModel.Tokens.Jwt.dll</HintPath>
     </Reference>
     <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Net" />
