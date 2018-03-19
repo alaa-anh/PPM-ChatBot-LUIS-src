@@ -8,11 +8,13 @@ using Microsoft.Bot.Builder.Luis.Models;
 using Microsoft.Bot.Connector;
 using System.Collections.Generic;
 using System.Linq;
-using System.Collections;
 using System.Net.Http;
 using Microsoft.Bot.Builder.FormFlow;
 using LuisBot.Forms;
 using Common;
+using Newtonsoft.Json.Linq;
+using global::AdaptiveCards;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Sample.LuisBot
 {
@@ -88,11 +90,7 @@ namespace Microsoft.Bot.Sample.LuisBot
                 retry: "Sorry, I didn't understand that. Please try again."
             );
         }
-        private async Task UseAnotherCridentials(IDialogContext context, IAwaitable<bool> result)
-        {
-            var confirmation = await result;
-            await context.PostAsync(confirmation ? "You do want to order." : "You don't want to order.");
-        }
+      
 
         [LuisIntent("Greet.Farewell")]
         public async Task GreetFarewell(IDialogContext context, LuisResult luisResult)
@@ -129,6 +127,8 @@ namespace Microsoft.Bot.Sample.LuisBot
         [LuisIntent("GetAllProjectsData")]
         public async Task GetAllProjectsData(IDialogContext context, LuisResult luisResult)
         {
+            IMessageActivity reply = null;
+            reply = context.MakeMessage();
             if (context.UserData.TryGetValue<string>("UserName", out userName) && (context.UserData.TryGetValue<string>("Password", out password)))
             {
                 EntityRecommendation projectSDate, projectEDate, projectDuration, projectCompletion, projectDate , projectPM;
@@ -150,14 +150,20 @@ namespace Microsoft.Bot.Sample.LuisBot
                 if (luisResult.TryFindEntity("Project.PM", out projectPM))
                     pPM = true;
 
-                await context.PostAsync(new Common.ProjectServer(userName, password).GetAllProjects(showCompletion , Pdate , pDuration , pPM));
-                context.Wait(this.MessageReceived);
+                
+
+                await context.PostAsync(new Common.ProjectServer(userName, password).GetAllProjects(context , showCompletion, Pdate, pDuration, pPM));
+
+               
             }
             else
             {
                 PromptDialog.Confirm(context, ResumeAfterConfirmation, "You are note allwed to access the data , do you want to login?");
             }
         }
+
+
+        
 
         [LuisIntent("GetProjectInfo")]
         public async Task GetProjectInfo(IDialogContext context, LuisResult luisResult)
@@ -483,9 +489,43 @@ namespace Microsoft.Bot.Sample.LuisBot
         //    var location = msg.Entities?.Where(t => t.Type == "Place").Select(t => t.GetAs<Place>()).FirstOrDefault();
         //    context.Done(location);
         //}
+        public static IEnumerable<IEnumerable<T>> Split<T>(IEnumerable<T> list, int parts)
+        {
+            return list.Select((item, ix) => new { ix, item })
+                       .GroupBy(x => x.ix % parts)
+                       .Select(x => x.Select(y => y.item));
+        }
 
+        private Column AsProjectItem(ProjectsModule project)
+        {
+            var submitActionData = JObject.Parse("{ \"Type\": \"HotelSelection\" }");
+            submitActionData.Merge(JObject.FromObject(project));
 
-
+            return new Column()
+            {
+                Size = "20",
+                Items = new List<CardElement>()
+                {
+                    new TextBlock()
+                    {
+                        Text = project.ProjectName,
+                    //    Speak = $"<s>{hotel.Name}</s>",
+                        HorizontalAlignment = HorizontalAlignment.Center,
+                        Wrap = false,
+                        Weight = TextWeight.Bolder
+                    },
+                    new Image()
+                    {
+                        Size = ImageSize.Auto,
+                     //   Url = hotel.Image
+                    }
+                },
+                SelectAction = new SubmitAction()
+                {
+                    DataJson = submitActionData.ToString()
+                }
+            };
+        }
     }
 
 }
