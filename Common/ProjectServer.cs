@@ -7,7 +7,7 @@ using System.Net.Http;
 using System.Security;
 using System.Text;
 using System.Web.Script.Serialization;
-using Common.Contracts;
+//using Common.Contracts;
 using Microsoft.ProjectServer.Client;
 using Microsoft.SharePoint.Client;
 using Newtonsoft.Json;
