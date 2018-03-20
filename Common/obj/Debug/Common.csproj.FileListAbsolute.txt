@@ -69,7 +69,6 @@ C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\MongoDB.Driver.GridFS.
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\Newtonsoft.Json.dll
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\System.Buffers.dll
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\System.IdentityModel.Tokens.Jwt.dll
-C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\System.Net.Http.Formatting.dll
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\System.Runtime.InteropServices.RuntimeInformation.dll
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\Microsoft.IdentityModel.Protocols.xml
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\MongoDB.Bson.xml
@@ -84,3 +83,8 @@ C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\obj\Debug\Common.csproj.CoreComp
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\obj\Debug\Common.dll
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\obj\Debug\Common.pdb
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\Microsoft.SharePoint.Client.Runtime.dll
+C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\Autofac.dll
+C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\Autofac.xml
+C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\Microsoft.IdentityModel.Logging.dll
+C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\Microsoft.IdentityModel.Logging.xml
+C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\System.Buffers.xml

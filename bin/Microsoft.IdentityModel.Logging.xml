@@ -14,6 +14,16 @@
             Static logger that is exposed externally. An external application or framework can hook up a listener to this event source to log data in a custom way.
             </summary>
         </member>
+        <member name="P:Microsoft.IdentityModel.Logging.IdentityModelEventSource.ShowPII">
+            <summary>
+            Flag which indicates whether or not PII is shown in logs. False by default.
+            </summary>
+        </member>
+        <member name="P:Microsoft.IdentityModel.Logging.IdentityModelEventSource.HiddenPIIString">
+            <summary>
+            String that is used in place of any arguments to log messages if the 'ShowPII' flag is set to false.
+            </summary>
+        </member>
         <member name="M:Microsoft.IdentityModel.Logging.IdentityModelEventSource.WriteAlways(System.String)">
             <summary>
             Writes an event log by using the provided string argument and current UTC time.
