@@ -6,10 +6,15 @@ using System.Net;
 using System.Net.Http;
 using System.Security;
 using System.Text;
-using Common.Contracts;
+using System.Web.Script.Serialization;
+//using Common.Contracts;
 using Microsoft.ProjectServer.Client;
 using Microsoft.SharePoint.Client;
-
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System.Threading.Tasks;
+//using Microsoft.Bot.Connector;
+//using Microsoft.Bot.Builder.Dialogs;
 
 namespace Common
 {
@@ -19,10 +24,7 @@ namespace Common
         private string _userPassword;
 
         private string _siteUri;
-     //   private  ProjectServer projSvr;
-    //    private ClientRuntimeContext context;
-
-        public ProjectServer(string userName , string password)
+        public ProjectServer(string userName, string password)
         {
             _userName = userName;
             _userPassword = password;
@@ -31,135 +33,291 @@ namespace Common
         }
 
 
-        public string GetAllProjects(bool showCompletion , bool ProjectDates , bool ProjectDuration)
+        public string GetAllProjects(bool showCompletion, bool ProjectDates, bool ProjectDuration, bool projectManager)
         {
             var markdownContent = "";
             using (ProjectContext context = new ProjectContext(_siteUri))
             {
                 SecureString passWord = new SecureString();
                 foreach (char c in _userPassword.ToCharArray()) passWord.AppendChar(c);
-                context.Credentials = new SharePointOnlineCredentials(_userName, passWord);
-                context.Load(context.Projects);
-                context.ExecuteQuery();
+                SharePointOnlineCredentials credentials = new SharePointOnlineCredentials(_userName, passWord);
+                //   context.Credentials = new SharePointOnlineCredentials(_userName, passWord);
 
-                ProjectCollection projectDetails = context.Projects;
-                if (context.Projects.Count > 0)
-                {
-                    if (showCompletion == false && ProjectDates== false && ProjectDuration == false)
-                    {
-                        markdownContent += "**Project Name**\n\n" + "<br>";
-                        foreach (PublishedProject pro in projectDetails)
-                        {
-                            markdownContent += pro.Name + "<br>";
-                        }
-                        markdownContent += "**Total Projects :**\n" + projectDetails.Count + "<br>";
-                    }
-                    else
-                    {
-                        foreach (PublishedProject pro in projectDetails)
-                        {
-                            markdownContent += "**Project Name**\n" + pro.Name + "<br>";
+                //    context.Load(context.Projects);
+                //    context.ExecuteQuery();
 
-                            if (showCompletion==true)
-                                markdownContent += "**Completed Percentage**\n" + pro.PercentComplete + "%<br/>";
-
-                            if (ProjectDates == true)
-                            {
-                                markdownContent += "**Start Date**\n" + pro.StartDate + "<br>";
-                                markdownContent += "**Finish Date**\n" + pro.FinishDate + "<br>";
-                            }
-
-                            if (ProjectDuration == true)
-                            {
-                                TimeSpan duration = pro.FinishDate - pro.StartDate;
-                                markdownContent += "**Project Duration**\n" + duration.Days + "<br>";
-                            }
-
-                            markdownContent += "----\n\n";
+                //   ICredentials credentials = context.Credentials;
+                var webUri = new Uri("https://m365x892385.sharepoint.com/sites/pwa/");
+                ///   GetList(webUri, credentials, "");
 
 
+                //ProjectCollection projectDetails = context.Projects;
+                //if (context.Projects.Count > 0)
+                //{
+                //    if (showCompletion == false && ProjectDates== false && ProjectDuration == false && projectManager == false)
+                //    {
+                //        //   markdownContent = string.Join("**Project Name**\n", projectDetails.Select(x => x.Name + "<br>" + "**Completed Percentage**\n" + x.PercentComplete + "%<br/>" + "**Start Date**\n" + x.StartDate + "<br>" + "**Finish Date**\n" + x.FinishDate + "<br>" + "**Project Manager**\n" + x.Owner.Title + "<br>"));
 
-                        }
-                        markdownContent += "**Total Projects :**\n" + projectDetails.Count + "<br>";
-
-
-                    }
-
-                   
-                }
-                else
-                    markdownContent += "**No Availabel Projects**\n\n";
+                //        // markdownContent = string.Join("**Project Name :**\n", projectDetails.Select(""+ x => x.Name + "<br>" + "**Completed Percentage :**\n" + x.PercentComplete + "%<br/>" + "**Start Date :**\n" + x.StartDate + "<br>" + "**Finish Date :**\n" + x.FinishDate + "<br>" + "----\n\n"));
 
 
-            }         
+                //        //   markdownContent += "**Project Name**\n\n" + "<br>";
+                //        foreach (PublishedProject pro in projectDetails)
+                //        {
+                //            markdownContent += "**Project Name**\n" + pro.Name + "<br>";
+                //            markdownContent += "**Completed Percentage**\n" + pro.PercentComplete + "%<br/>";
+                //            markdownContent += "**Start Date**\n" + pro.StartDate + "<br>";
+                //            markdownContent += "**Finish Date**\n" + pro.FinishDate + "<br>";
+                //            TimeSpan duration = pro.FinishDate - pro.StartDate;
+                //            markdownContent += "**Project Duration**\n" + duration.Days + "<br>";
+                //            context.Load(pro.Owner);
+                //            context.ExecuteQuery();
+                //            markdownContent += "**Project Manager**\n" + pro.Owner.Title + "<br>";
+
+                //            markdownContent += "----\n\n";
+                //        }
+                //        markdownContent += "**Total Projects :**\n" + projectDetails.Count + "<br>";
+                //    }
+                //    else
+                //    {
+                //        foreach (PublishedProject pro in projectDetails)
+                //        {
+                //            markdownContent += "**Project Name**\n" + pro.Name + "<br>";
+
+                //            if (showCompletion==true)
+                //                markdownContent += "**Completed Percentage**\n" + pro.PercentComplete + "%<br/>";
+
+                //            if (ProjectDates == true)
+                //            {
+                //                markdownContent += "**Start Date**\n" + pro.StartDate + "<br>";
+                //                markdownContent += "**Finish Date**\n" + pro.FinishDate + "<br>";
+                //            }
+
+                //            if (ProjectDuration == true)
+                //            {
+                //                TimeSpan duration = pro.FinishDate - pro.StartDate;
+                //                markdownContent += "**Project Duration**\n" + duration.Days + "<br>";
+                //            }
+
+
+                //            if (projectManager == true)
+                //            {
+                //                context.Load(pro.Owner);
+                //                context.ExecuteQuery();
+                //                markdownContent += "**Project Manager**\n" + pro.Owner.Title + "<br>";
+                //            }
+
+                //            markdownContent += "----\n\n";
+
+
+
+                //        }
+                //        markdownContent += "**Total Projects :**\n" + projectDetails.Count + "<br>";
+
+
+                //    }
+
+
+                //}
+                //else
+                //    markdownContent += "**No Availabel Projects**\n\n";
+
+
+            }
 
             return markdownContent;
         }
 
-        public string GetProjectSubItems(string pName , string ListName)
+
+        //public IMessageActivity GetAllProjects(IDialogContext context, bool showCompletion, bool ProjectDates, bool PDuration, bool projectManager)
+        //{
+        //    IMessageActivity reply = null;
+        //    reply = context.MakeMessage();
+        //    SecureString passWord = new SecureString();
+        //    foreach (char c in _userPassword.ToCharArray()) passWord.AppendChar(c);
+        //    SharePointOnlineCredentials credentials = new SharePointOnlineCredentials(_userName, passWord);
+        //    var webUri = new Uri(_siteUri);
+        //    using (var client = new WebClient())
+        //    {
+        //        client.Headers.Add("X-FORMS_BASED_AUTH_ACCEPTED", "f");
+        //        client.Credentials = credentials;
+        //        client.Headers.Add(HttpRequestHeader.ContentType, "application/json;odata=verbose");
+        //        client.Headers.Add(HttpRequestHeader.Accept, "application/json;odata=verbose");
+        //        var endpointUri = new Uri(webUri + "/_api/ProjectData/Projects");
+        //        var responce = client.DownloadString(endpointUri);
+        //        var t = JToken.Parse(responce);
+        //        JObject results = JObject.Parse(t["d"].ToString());
+        //        List<JToken> jArrays = ((Newtonsoft.Json.Linq.JContainer)((Newtonsoft.Json.Linq.JContainer)t["d"]).First).First.ToList();
+        //        foreach (var item in jArrays)
+        //        {
+        //            string ProjectName = (string)item["ProjectName"];
+        //            string ProjectWorkspaceInternalUrl = (string)item["ProjectWorkspaceInternalUrl"];
+        //            string ProjectPercentCompleted = (string)item["ProjectPercentCompleted"];
+        //            string ProjectFinishDate = (string)item["ProjectFinishDate"];
+        //            string ProjectStartDate = (string)item["ProjectStartDate"];
+        //            string ProjectDuration = (string)item["ProjectDuration"];
+        //            string ProjectOwnerName = (string)item["ProjectOwnerName"];
+        //            List<JToken> jArraysTasks = ((Newtonsoft.Json.Linq.JContainer)((Newtonsoft.Json.Linq.JContainer)item["Tasks"]).First).First.ToList();
+
+        //            string Tasks = (string)jArraysTasks[0];
+
+
+        //            string SubtitleVal = "";
+
+        //            if (showCompletion == true)
+        //                SubtitleVal += "**Completed Percentage :**\n" + ProjectPercentCompleted + "%\n\r";
+
+        //            if (ProjectDates == true)
+        //            {
+        //                SubtitleVal += "**Start Date :**\n" + ProjectStartDate + "\n\r";
+        //                SubtitleVal += "**Finish Date :**\n" + ProjectFinishDate + "\n\r";
+        //            }
+
+        //            if (PDuration == true)
+        //            {
+        //                SubtitleVal += "**Project Duration :**\n" + ProjectDuration + "\n\r";
+        //            }
+
+
+        //            if (projectManager == true)
+        //            {
+        //                SubtitleVal += "**Project Manager :**\n" + ProjectOwnerName + "\n\r";
+        //            }
+
+
+        //            //var actionsButton = new List<CardAction>();
+        //            //CardAction buttonTasks = new CardAction()
+        //            //{
+        //            //    Value = "Tasks",
+        //            //    Type = ActionTypes.PostBack,
+        //            //  //  Image = strlike,
+        //            //    Title = "Tasks"
+        //            //};
+        //            //actionsButton.Add(buttonTasks);
+        //            //GetProjectTasks(Tasks);
+
+        //            //CardAction buttonIssues = new CardAction()
+        //            //{
+        //            //    Value = "Issues",
+        //            //    Type = ActionTypes.PostBack,
+        //            //  //  Image = strlike,
+        //            //    Title = "Issues"
+        //            //};
+        //            //actionsButton.Add(buttonIssues);
+
+        //            HeroCard plCard = new HeroCard()
+        //            {
+        //                Title = ProjectName,
+        //                Subtitle = SubtitleVal,// $" Wikipedia \r\r Page \n\r test",
+        //                                       //  Text = "line 1 \r\r line 2 \n\r line 3 \r line 4"
+
+        //                //Title = ProjectName + $"I'm \r\r a hero \n\r card",
+        //                //Subtitle = $" Wikipedia \r\r Page \n\r test",
+        //                //Text = "line 1 \r\r line 2 \n\r line 3 \r line 4"
+        //                // Buttons = actionsButton
+
+        //            };
+
+        //            Microsoft.Bot.Connector.Attachment attachment = new Microsoft.Bot.Connector.Attachment()
+        //            {
+        //                ContentType = HeroCard.ContentType,
+        //                Content = plCard
+        //            };
+
+
+        //            reply.Attachments.Add(attachment);
+        //        }
+
+        //        HeroCard plCard2 = new HeroCard()
+        //        {
+        //            Title = "Total Projects :" + jArrays.Count(),
+        //            //  Text = "line 1 \r\r line 2 \n\r line 3 \r line 4"
+
+        //            //Title = ProjectName + $"I'm \r\r a hero \n\r card",
+        //            //Subtitle = $" Wikipedia \r\r Page \n\r test",
+        //            //Text = "line 1 \r\r line 2 \n\r line 3 \r line 4"
+        //        };
+
+        //        reply.Attachments.Add(plCard2.ToAttachment());
+        //        return reply;
+        //    }
+        //}
+
+
+
+
+        public string GetProjectSubItems(string pName, string ListName)
         {
             var markdownContent = "";
-
+            string projectsite = string.Empty;
+            Web projectweb;
             using (ProjectContext context = new ProjectContext(_siteUri))
             {
                 SecureString passWord = new SecureString();
                 foreach (char c in _userPassword.ToCharArray()) passWord.AppendChar(c);
                 context.Credentials = new SharePointOnlineCredentials(_userName, passWord);
 
-                context.Load(context.Projects);
-                context.Load(context.Web);
+                PublishedProject project = GetProjectByName(pName, context);
+
+                context.Load(project, p => p.ProjectSiteUrl);
                 context.ExecuteQuery();
 
-                PublishedProject project = GetProjectByName(pName, context);
-                
-                if(project !=null)
+
+                projectsite = project.ProjectSiteUrl;
+                projectweb = GetProjectWEB(projectsite, context);
+
+                if (project != null)
                 {
                     if (ListName == Enums.ListName.Tasks.ToString())
                     {
                         markdownContent = GetProjectTasks(context, project);
                     }
-                    if (ListName == Enums.ListName.Assignments.ToString())
+                    else if (ListName == Enums.ListName.Assignments.ToString())
                     {
                         markdownContent = GetProjectTAssignments(context, project);
                     }
                     else
                     {
-                        Web projectweb = SubSiteExists(_siteUri, pName, context);
-                        if (projectweb != null)
+                        if (projectsite != string.Empty)
                         {
-                            if (UserHavePermissionOnaProjects(_siteUri, pName, context))
+                            //   Web projectweb = SubSiteExists(projectsite);
+                            if (projectweb != null)
                             {
-                               if(ListName== Common.Enums.ListName.Issues.ToString())
-                                    markdownContent = GetProjectIssues(projectweb);
+                                // if (UserHavePermissionOnaProjects(_siteUri, pName, context))
+                                //  {
+                                if (ListName == Common.Enums.ListName.Issues.ToString())
+                                    markdownContent = GetProjectIssues(projectweb, context);
 
                                 if (ListName == Common.Enums.ListName.Risks.ToString())
-                                    markdownContent = GetProjectRisks(projectweb);
+                                    markdownContent = GetProjectRisks(projectweb, context);
 
                                 if (ListName == Common.Enums.ListName.Deliverables.ToString())
-                                    markdownContent = GetProjectDeliverables(projectweb);
-                            }
-                            else
-                            {
-                                markdownContent = "Sorry , You don't have access to this project";
+                                    markdownContent = GetProjectDeliverables(projectweb, context);
+                                //}
+                                //else
+                                //{
+                                //    markdownContent = "Sorry , You don't have access to this project";
+                                //}
                             }
                         }
+
                         else
                         {
                             markdownContent = "Site Project Not Created";
                         }
                     }
-                    
+
                 }
                 else
                 {
-                    markdownContent = "Project Name Not Exist";
+                    markdownContent = "Project Name Not Exist or you don't have permission to this project";
                 }
-               
+
             }
             return markdownContent;
         }
 
-        public string GetProjectIssues(Web projectweb)
+        public string GetProjectIssues(Web projectweb, ProjectContext context)
         {
             var markdownContent = "";
             string IssueName = string.Empty;
@@ -172,12 +330,47 @@ namespace Common
             projectweb.Context.Load(issues);
             projectweb.Context.Load(itemsIssue);
             projectweb.Context.ExecuteQuery();
-       
+
+            if (GetUserGroup(context, "Team Members (Project Web App Synchronized)"))
+            {
+                markdownContent = getresourceassignedrisksIssues(itemsIssue);
+            }
+            else if (GetUserGroup(context, "Project Managers (Project Web App Synchronized)"))
+            {
+                markdownContent = GetAllProjectIssues(itemsIssue);
+            }
+            else
+            {
+                markdownContent = GetAllProjectIssues(itemsIssue);
+            }
+
+            //if (GetUserGroup(context, "Project Managers (Project Web App Synchronized)") || GetUserGroup(context, "Portfolio Managers for Project Web App") || GetUserGroup(context, "Portfolio Managers for Project Web App") || GetUserGroup(context, "Web Administrators (Project Web App Synchronized)"))
+            //{
+            //    markdownContent = GetAllProjectIssues(itemsIssue);
+            //}
+            //else if (GetUserGroup(context, "Team Members (Project Web App Synchronized)"))
+            //{
+            //    markdownContent = getresourceassignedrisksIssues(itemsIssue);
+            //}
+
+            return markdownContent;
+        }
+
+
+
+        public string GetAllProjectIssues(ListItemCollection itemsIssue)
+        {
+            var markdownContent = "";
+            string IssueName = string.Empty;
+            string IssueStatus = string.Empty;
+            string IssuePriority = string.Empty;
+
+
             if (itemsIssue.Count > 0)
             {
                 foreach (ListItem item in itemsIssue)
                 {
-                    if (item["Title"] !=null)
+                    if (item["Title"] != null)
                         IssueName = (string)item["Title"];
                     if (item["Status"] != null)
                         IssueStatus = (string)item["Status"];
@@ -197,15 +390,53 @@ namespace Common
             return markdownContent;
         }
 
-        public string GetProjectRisks(Web projectweb)
+        public string getresourceassignedrisksIssues(ListItemCollection itemsIssue)
         {
             var markdownContent = "";
-            string RiskName = string.Empty;
-            string ResourceName = string.Empty;
-            string riskStatus = string.Empty;
-            string riskImpact = string.Empty;
-            string riskProbability = string.Empty;
-            string riskCostExposure = string.Empty;
+            string IssueName = string.Empty;
+            string IssueStatus = string.Empty;
+            string IssuePriority = string.Empty;
+
+
+            if (itemsIssue.Count > 0)
+            {
+                int count = 0;
+                foreach (ListItem item in itemsIssue)
+                {
+                    if (item["AssignedTo"] != null)
+                    {
+                        count++;
+                        FieldUserValue fuv = (FieldUserValue)item["AssignedTo"];
+                        if (fuv.Email == _userName)
+                        {
+                            if (item["Title"] != null)
+                                IssueName = (string)item["Title"];
+                            if (item["Status"] != null)
+                                IssueStatus = (string)item["Status"];
+                            if (item["Priority"] != null)
+                                IssuePriority = (string)item["Priority"];
+                            markdownContent += "**Title**\n" + IssueName + "<br>";
+                            markdownContent += "**Status**\n" + IssueStatus + "<br/>";
+                            markdownContent += "**Priority**\n" + IssuePriority + "<br>";
+                            markdownContent += "----\n\n";
+                        }
+                    }
+                }
+
+                markdownContent += "**Total Issues :**\n" + count + "<br>";
+            }
+            else
+                markdownContent = "No Issues assigned to you on this project";
+
+            return markdownContent;
+        }
+
+        public string GetProjectRisks(Web projectweb, ProjectContext context)
+        {
+            var markdownContent = "";
+
+
+
 
             var risks = projectweb.Lists.GetByTitle(Enums.ListName.Risks.ToString());
             CamlQuery query = CamlQuery.CreateAllItemsQuery();
@@ -214,6 +445,44 @@ namespace Common
             projectweb.Context.Load(risks);
             projectweb.Context.Load(itemsRisk);
             projectweb.Context.ExecuteQuery();
+
+            if (GetUserGroup(context, "Team Members (Project Web App Synchronized)"))
+            {
+                markdownContent = getresourceassignedrisks(itemsRisk);
+            }
+            else if (GetUserGroup(context, "Project Managers (Project Web App Synchronized)"))
+            {
+                markdownContent = getallrisks(itemsRisk);
+            }
+            else
+            {
+                markdownContent = getallrisks(itemsRisk);
+            }
+
+            //if (GetUserGroup(context, "Project Managers (Project Web App Synchronized)") || GetUserGroup(context, "Portfolio Managers for Project Web App") || GetUserGroup(context, "Portfolio Managers for Project Web App") || GetUserGroup(context, "Web Administrators (Project Web App Synchronized)"))
+            //{
+            //    markdownContent = getallrisks(itemsRisk);
+            //}
+            //else if (GetUserGroup(context, "Team Members (Project Web App Synchronized)"))
+            //{
+            //    markdownContent = getresourceassignedrisks(itemsRisk);
+            //}
+
+
+
+
+            return markdownContent;
+        }
+
+        public string getallrisks(ListItemCollection itemsRisk)
+        {
+            var markdownContent = "";
+            string RiskName = string.Empty;
+            string ResourceName = string.Empty;
+            string riskStatus = string.Empty;
+            string riskImpact = string.Empty;
+            string riskProbability = string.Empty;
+            string riskCostExposure = string.Empty;
 
             if (itemsRisk.Count > 0)
             {
@@ -229,14 +498,16 @@ namespace Common
                         markdownContent += "**Assigned To Resource**\n" + fuv.LookupValue + "<br/>";
 
                     }
+                    else
+                        markdownContent += "**Assigned To Resource :**\n" + "Not assigned" + "<br/>";
 
                     if (item["Status"] != null)
                         riskStatus = (string)item["Status"];
                     markdownContent += "**Risk Status**\n" + riskStatus + "<br>";
 
-                     if (item["Impact"] != null)
+                    if (item["Impact"] != null)
                         riskImpact = item["Impact"].ToString();
-                    markdownContent += "**Risk Impact**\n" +  riskImpact + "<br>";
+                    markdownContent += "**Risk Impact**\n" + riskImpact + "<br>";
 
                     if (item["Probability"] != null)
                         riskProbability = item["Probability"].ToString();
@@ -246,7 +517,7 @@ namespace Common
                         riskCostExposure = item["Exposure"].ToString();
                     markdownContent += "**Risk CostExposure**\n" + riskCostExposure + "<br>";
 
-                    
+
                     markdownContent += "----\n\n";
                 }
 
@@ -258,52 +529,118 @@ namespace Common
             return markdownContent;
         }
 
-        public string GetProjectDeliverables(Web projectweb)
+        public string getresourceassignedrisks(ListItemCollection itemsRisk)
+        {
+            var markdownContent = "";
+            string RiskName = string.Empty;
+            string ResourceName = string.Empty;
+            string riskStatus = string.Empty;
+            string riskImpact = string.Empty;
+            string riskProbability = string.Empty;
+            string riskCostExposure = string.Empty;
+            if (itemsRisk.Count > 0)
+            {
+                int count = 0;
+                foreach (ListItem item in itemsRisk)
+                {
+
+
+                    if (item["AssignedTo"] != null)
+                    {
+                        count++;
+                        FieldUserValue fuv = (FieldUserValue)item["AssignedTo"];
+                        if (fuv.Email == _userName)
+                        {
+                            if (item["Title"] != null)
+                                RiskName = (string)item["Title"];
+                            markdownContent += "**Risk Title**\n" + RiskName + "<br>";
+
+                            markdownContent += "**Assigned To Resource**\n" + fuv.LookupValue + "<br/>";
+                            if (item["Status"] != null)
+                                riskStatus = (string)item["Status"];
+                            markdownContent += "**Risk Status**\n" + riskStatus + "<br>";
+
+                            if (item["Impact"] != null)
+                                riskImpact = item["Impact"].ToString();
+                            markdownContent += "**Risk Impact**\n" + riskImpact + "<br>";
+
+                            if (item["Probability"] != null)
+                                riskProbability = item["Probability"].ToString();
+                            markdownContent += "**Risk Probability**\n" + riskProbability + "<br>";
+
+                            if (item["Exposure"] != null)
+                                riskCostExposure = item["Exposure"].ToString();
+                            markdownContent += "**Risk CostExposure**\n" + riskCostExposure + "<br>";
+
+
+                            markdownContent += "----\n\n";
+                        }
+
+                    }
+
+
+                }
+
+                markdownContent += "**Total Risks :**\n" + count + "<br>";
+            }
+            else
+                markdownContent = "No Risks assigned for you on this project";
+
+            return markdownContent;
+        }
+        public string GetProjectDeliverables(Web projectweb, ProjectContext context)
         {
             var markdownContent = "";
             string DeliverableName = string.Empty;
             string DeliverableStart = string.Empty;
             string DeliverableFinish = string.Empty;
 
-
-            var delive = projectweb.Lists.GetByTitle(Enums.ListName.Deliverables.ToString());
-            CamlQuery query = CamlQuery.CreateAllItemsQuery();
-            ListItemCollection itemsdelive = delive.GetItems(query);
-
-            projectweb.Context.Load(delive);
-            projectweb.Context.Load(itemsdelive);
-            projectweb.Context.ExecuteQuery();
-
-            if (itemsdelive.Count > 0)
+            if (GetUserGroup(context, "Team Members (Project Web App Synchronized)"))
             {
-                foreach (ListItem item in itemsdelive)
-                {
-                    if (item["Title"] != null)
-                        DeliverableName = (string)item["Title"];
-                    markdownContent += "**Deliverable Name**\n" + DeliverableName + "<br>";
+                markdownContent = "You Don't have permission to view the deliverables of this project";
 
-                    if (item["Author"] != null)
-                    {
-                        FieldUserValue fuv = (FieldUserValue)item["Author"];
-                        markdownContent += "**Create By Resource :**\n" + fuv.LookupValue + "<br/>";
-
-                    }
-
-                    if (item["CommitmentStart"] != null)
-                        DeliverableStart =item["CommitmentStart"].ToString();
-                    markdownContent += "**Start Date :**\n" + DeliverableStart+ "<br>";
-
-                    if (item["CommitmentFinish"] != null)
-                        DeliverableFinish =item["CommitmentFinish"].ToString();
-                    markdownContent += "**Finish Date :**\n" + DeliverableFinish+ "<br>";
-
-                    markdownContent += "----\n\n";
-                }
-
-                markdownContent += "**Total Deliverabels :**\n" + itemsdelive.Count + "<br>";
             }
             else
-                markdownContent = "No Deliverabels for this Project";
+            {
+                var delive = projectweb.Lists.GetByTitle(Enums.ListName.Deliverables.ToString());
+                CamlQuery query = CamlQuery.CreateAllItemsQuery();
+                ListItemCollection itemsdelive = delive.GetItems(query);
+
+                projectweb.Context.Load(delive);
+                projectweb.Context.Load(itemsdelive);
+                projectweb.Context.ExecuteQuery();
+
+                if (itemsdelive.Count > 0)
+                {
+                    foreach (ListItem item in itemsdelive)
+                    {
+                        if (item["Title"] != null)
+                            DeliverableName = (string)item["Title"];
+                        markdownContent += "**Deliverable Name**\n" + DeliverableName + "<br>";
+
+                        if (item["Author"] != null)
+                        {
+                            FieldUserValue fuv = (FieldUserValue)item["Author"];
+                            markdownContent += "**Create By Resource :**\n" + fuv.LookupValue + "<br/>";
+
+                        }
+
+                        if (item["CommitmentStart"] != null)
+                            DeliverableStart = item["CommitmentStart"].ToString();
+                        markdownContent += "**Start Date :**\n" + DeliverableStart + "<br>";
+
+                        if (item["CommitmentFinish"] != null)
+                            DeliverableFinish = item["CommitmentFinish"].ToString();
+                        markdownContent += "**Finish Date :**\n" + DeliverableFinish + "<br>";
+
+                        markdownContent += "----\n\n";
+                    }
+
+                    markdownContent += "**Total Deliverabels :**\n" + itemsdelive.Count + "<br>";
+                }
+                else
+                    markdownContent = "No Deliverabels for this Project";
+            }
 
             return markdownContent;
         }
@@ -312,31 +649,42 @@ namespace Common
         {
             var markdownContent = "";
 
-            context.Load(project.Tasks);
-            context.ExecuteQuery();
-            PublishedTaskCollection tskcoll = project.Tasks;
-            if (tskcoll.Count > 0)
+            if (GetUserGroup(context, "Team Members (Project Web App Synchronized)"))
             {
-                foreach (PublishedTask tsk in tskcoll)
-                {
-                    string TaskName = tsk.Name;
-                    string TaskDuration = tsk.Duration;
-                    string TaskPercentCompleted = tsk.PercentComplete.ToString();
-                    string TaskStartDate = tsk.Start.ToString();
-                    string TaskFinishDate = tsk.Finish.ToString();
-
-
-                    markdownContent += "**Task Name**\n" + TaskName + "<br>";
-                    markdownContent += "**Task Duration**\n" + TaskDuration + "<br/>";
-                    markdownContent += "**Task Percent Completed**\n" + TaskPercentCompleted + "<br>";
-                    markdownContent += "**Task Start Date**\n" + TaskStartDate + "<br>";
-                    markdownContent += "**Task Finish Date**\n" + TaskFinishDate + "<br>";
-                    markdownContent += "----\n\n";
-                }
-                markdownContent += "**Total Tasks :**\n" + tskcoll.Count + "<br>";
+                markdownContent = GetResourceTasksLoggedIn(context, project);
             }
+            //else if (GetUserGroup(context, "Project Managers (Project Web App Synchronized)"))
+            //{
+            //    markdownContent = GetAllProjectIssues(itemsIssue);
+            //}
             else
-                markdownContent = "No Tasks for this Project";
+            {
+                context.Load(project.Tasks);
+                context.ExecuteQuery();
+                PublishedTaskCollection tskcoll = project.Tasks;
+                if (tskcoll.Count > 0)
+                {
+                    foreach (PublishedTask tsk in tskcoll)
+                    {
+                        string TaskName = tsk.Name;
+                        string TaskDuration = tsk.Duration;
+                        string TaskPercentCompleted = tsk.PercentComplete.ToString();
+                        string TaskStartDate = tsk.Start.ToString();
+                        string TaskFinishDate = tsk.Finish.ToString();
+
+
+                        markdownContent += "**Task Name**\n" + TaskName + "<br>";
+                        markdownContent += "**Task Duration**\n" + TaskDuration + "<br/>";
+                        markdownContent += "**Task Percent Completed**\n" + TaskPercentCompleted + "<br>";
+                        markdownContent += "**Task Start Date**\n" + TaskStartDate + "<br>";
+                        markdownContent += "**Task Finish Date**\n" + TaskFinishDate + "<br>";
+                        markdownContent += "----\n\n";
+                    }
+                    markdownContent += "**Total Tasks :**\n" + tskcoll.Count + "<br>";
+                }
+            }
+
+
 
             return markdownContent;
         }
@@ -354,7 +702,7 @@ namespace Common
                     context.Load(ass.Task);
                     context.Load(ass.Resource);
                     context.ExecuteQuery();
-                    markdownContent += "**Task Name :**\n" +ass.Task.Name + "<br>";
+                    markdownContent += "**Task Name :**\n" + ass.Task.Name + "<br>";
                     markdownContent += "**Resource Name :**\n" + ass.Resource.Name + "<br>";
                     markdownContent += "**Start Date**\n" + ass.Start + "<br>";
                     markdownContent += "**Finish Date**\n" + ass.Finish + "<br>";
@@ -368,24 +716,37 @@ namespace Common
             return markdownContent;
         }
 
-        public Web SubSiteExists(string siteUrl, string subSiteTitle, ClientContext context)
+        public Web SubSiteExists(string siteUrl)
         {
-            var web = context.Web;
             Web projectweb = null;
-          //  bool exist = false;
-            context.Load(web, w => w.Webs);
-            context.ExecuteQuery();
-            foreach(Web ww in web.Webs)
+            using (ClientContext context = new ClientContext(_siteUri))
             {
-                
-                if (ww.Title.ToLower() == subSiteTitle.ToLower())
-                {
-                  //  exist = true;
-                    projectweb = ww;
-                    break;
-                }
+                SecureString passWord = new SecureString();
+                foreach (char c in ConfigurationManager.AppSettings["DomainAdminPassword"].ToCharArray()) passWord.AppendChar(c);
+                context.Credentials = new SharePointOnlineCredentials(ConfigurationManager.AppSettings["DomainAdmin"], passWord);
+
+                projectweb = context.Web;
+                context.Load(projectweb);
+                context.ExecuteQuery();
+
+                //  context.Load(oWebsite.Webs);
+                //   context.ExecuteQuery();
+
+                //foreach(Web w in oWebsite.Webs)
+                //{
+                //    //if (w.Id == proID)
+                //    //{
+                //    //    projectweb = w;
+                //    //    break;
+                //    //}
+                //    if (w.Title.ToLower() == subSiteTitle.ToLower())
+                //    {
+                //        projectweb = w;
+                //        break;
+                //    }
+                //}
+
             }
-           
             return projectweb;
         }
 
@@ -408,6 +769,8 @@ namespace Common
                     {
                         ClientResult<BasePermissions> permissions = subWeb.GetUserEffectivePermissions(user.LoginName);
                         context.ExecuteQuery();
+
+
                         if (permissions.Value.Has(PermissionKind.ViewListItems))
                         {
                             exist = true;
@@ -420,9 +783,9 @@ namespace Common
                     }
                     else
                         exist = false;
-                           
-                   
-                  
+
+
+
 
                 }
             }
@@ -430,21 +793,69 @@ namespace Common
             return exist;
         }
 
-    
+        public bool GetUserGroup(ProjectContext context, string groupName)
+        {
+            bool exist = false;
+
+            context.Load(context.Web);
+
+            //  context.Load(web.SiteUsers);
+            context.ExecuteQuery();
+
+            Web web = context.Web;
+
+            IEnumerable<User> user = context.LoadQuery(web.SiteUsers.Where(p => p.Email == _userName));
+            context.ExecuteQuery();
+
+            if (user.Any())
+            {
+                User userLogged = user.FirstOrDefault();
+
+                context.Load(userLogged.Groups);
+                context.ExecuteQuery();
+
+                GroupCollection group = userLogged.Groups;
+
+                IEnumerable<Group> usergroup = context.LoadQuery(userLogged.Groups.Where(p => p.Title == groupName));
+                context.ExecuteQuery();
+                if (!usergroup.Any())
+                {
+                    exist = false;
+                }
+                else
+                    exist = true;
+            }
+
+            return exist;
+        }
 
         private static PublishedProject GetProjectByName(string name, ProjectContext context)
         {
+            if (name.Contains(" - "))
+                name = name.Replace(" - ", "-");
             IEnumerable<PublishedProject> projs = context.LoadQuery(context.Projects.Where(p => p.Name == name));
             context.ExecuteQuery();
-            
             if (!projs.Any())       // no project found
             {
                 return null;
             }
             return projs.FirstOrDefault();
+
         }
 
-        public string GetProjectInfo(string pName, bool optionalDate = false, bool optionalDuration = false, bool optionalCompletion = false , bool optionalPM = false)
+        private static Web GetProjectWEB(string siteurl, ProjectContext context)
+        {
+            IEnumerable<Web> webs = context.LoadQuery(context.Web.Webs.Where(p => p.Url == siteurl));
+            context.ExecuteQuery();
+            if (!webs.Any())       // no project found
+            {
+                return null;
+            }
+            return webs.FirstOrDefault();
+
+        }
+
+        public string GetProjectInfo(string pName, bool optionalDate = false, bool optionalDuration = false, bool optionalCompletion = false, bool optionalPM = false)
         {
             var markdownContent = "";
 
@@ -453,9 +864,7 @@ namespace Common
                 SecureString passWord = new SecureString();
                 foreach (char c in _userPassword.ToCharArray()) passWord.AppendChar(c);
                 context.Credentials = new SharePointOnlineCredentials(_userName, passWord);
-                context.Load(context.Projects);
-                context.Load(context.Web);
-                context.ExecuteQuery();
+
                 PublishedProject project = GetProjectByName(pName, context);
 
                 if (project != null)
@@ -477,9 +886,12 @@ namespace Common
 
                     if (optionalPM == true)
                     {
-                        context.Load(project.Owner);
-                        context.ExecuteQuery();
-                        markdownContent += "**Project Manager Name :**\n" + project.Owner.Title + "<br>";
+                        if (GetUserGroup(context, "Team Members (Project Web App Synchronized)") == false)
+                        {
+                            context.Load(project.Owner);
+                            context.ExecuteQuery();
+                            markdownContent += "**Project Manager Name :**\n" + project.Owner.Title + "<br>";
+                        }
                     }
                 }
                 else
@@ -492,39 +904,6 @@ namespace Common
 
             }
             return markdownContent;
-        }
-              
-        public string GetProjectRiskStatus(string pName)
-        {
-            string strissues = string.Empty;
-            using (ProjectContext context = new ProjectContext(_siteUri + "/Demo"))
-            {
-                SecureString passWord = new SecureString();
-                foreach (char c in "Amman@123".ToCharArray()) passWord.AppendChar(c);
-                context.Credentials = new SharePointOnlineCredentials(_userName, passWord);
-                PublishedProject project = GetProjectByName("Demo", context);
-
-                context.Load(context.Web);
-                context.ExecuteQuery();
-
-                var issues = context.Web.Lists.GetByTitle("Risks");
-                CamlQuery query = CamlQuery.CreateAllItemsQuery();
-                ListItemCollection itemsIssue = issues.GetItems(query);
-
-                context.Load(issues);
-                context.Load(itemsIssue);
-                context.ExecuteQuery();
-
-
-                foreach (ListItem item in itemsIssue)
-                {
-                    string IssueName = (string)item["Title"];
-                    string riskStatus = (string)item["Status"];
-                    strissues = strissues + IssueName + "," + "," + riskStatus + "<br>";
-                }
-
-            }
-            return strissues;
         }
 
         public string FilterProjectsByDate(string FilterType, string pStartDate, string PEndDate, string ProjectSEdateFlag)
@@ -613,7 +992,7 @@ namespace Common
             {
                 markdownContent += "**No Availabel Projects**\n\n";
 
-               // return null;
+                // return null;
             }
             else
             {
@@ -627,7 +1006,7 @@ namespace Common
 
 
                 }
-                markdownContent +="**Total Projects :**\n" + retrivedProjects.Count() + "<br>";
+                markdownContent += "**Total Projects :**\n" + retrivedProjects.Count() + "<br>";
 
             }
 
@@ -662,7 +1041,7 @@ namespace Common
 
                 string fullEmail = string.Concat(ResourceName, ConfigurationManager.AppSettings["DomainEmail"]);
 
-                var user =context.Web.EnsureUser(ResourceName);
+                var user = context.Web.EnsureUser(ResourceName);
                 context.Load(user);
                 context.ExecuteQuery();
 
@@ -719,7 +1098,94 @@ namespace Common
 
                 return markdownContent;
             }
-            
+
+        }
+
+        public string GetResourceTasksLoggedIn(ProjectContext context, PublishedProject proj)
+        {
+            var markdownContent = "";
+            context.Load(proj.Assignments, da => da.Where(a => a.Resource.Email != string.Empty && a.Resource.Email == _userName));
+            context.ExecuteQuery();
+            if (proj.Assignments != null)
+            {
+                PublishedAssignmentCollection proAssignment = proj.Assignments;
+                foreach (PublishedAssignment ass in proAssignment)
+                {
+                    context.Load(ass.Task);
+                    context.Load(ass.Resource);
+
+                    context.ExecuteQuery();
+                    var tsk = ass.Task;
+                    string TaskName = tsk.Name;
+                    string TaskDuration = tsk.Duration;
+                    string TaskPercentCompleted = tsk.PercentComplete.ToString();
+                    string TaskStartDate = tsk.Start.ToString();
+                    string TaskFinishDate = tsk.Finish.ToString();
+
+
+                    markdownContent += "**Task Name**\n" + TaskName + "<br>";
+                    markdownContent += "**Task Duration**\n" + TaskDuration + "<br/>";
+                    markdownContent += "**Task Percent Completed**\n" + TaskPercentCompleted + "<br>";
+                    markdownContent += "**Task Start Date**\n" + TaskStartDate + "<br>";
+                    markdownContent += "**Task Finish Date**\n" + TaskFinishDate + "<br>";
+                    markdownContent += "----\n\n";
+
+                }
+                markdownContent += "**Total Assignes :**\n" + proAssignment.Count + "<br>";
+
+            }
+            else
+            {
+                markdownContent = "No assigned task for you on this project";
+            }
+
+            return markdownContent;
+
+
+        }
+
+
+        public string GetProjectTasks(string EndnodeTasks)
+        {
+
+            var markdownContent = "";
+
+
+            SecureString passWord = new SecureString();
+            foreach (char c in _userPassword.ToCharArray()) passWord.AppendChar(c);
+            SharePointOnlineCredentials credentials = new SharePointOnlineCredentials(_userName, passWord);
+            var webUri = new Uri(_siteUri);
+            using (var client = new WebClient())
+            {
+                client.Headers.Add("X-FORMS_BASED_AUTH_ACCEPTED", "f");
+                client.Credentials = credentials;
+                client.Headers.Add(HttpRequestHeader.ContentType, "application/json;odata=verbose");
+                client.Headers.Add(HttpRequestHeader.Accept, "application/json;odata=verbose");
+                var endpointUri = new Uri(EndnodeTasks);
+                var responce = client.DownloadString(endpointUri);
+                var t = JToken.Parse(responce);
+                JObject results = JObject.Parse(t["d"].ToString());
+                List<JToken> jArrays = ((Newtonsoft.Json.Linq.JContainer)((Newtonsoft.Json.Linq.JContainer)t["d"]).First).First.ToList();
+                foreach (var item in jArrays)
+                {
+                    string TaskName = (string)item["TaskName"];
+                    string TaskDuration = (string)item["TaskDuration"];
+                    string TaskPercentCompleted = (string)item["PercentCompleted"];
+                    string TaskStartDate = (string)item["TaskStartDate"];
+                    string TaskFinishDate = (string)item["TaskFinishDate"];
+
+
+                    markdownContent += "**Task Name**\n" + TaskName + "<br>";
+                    markdownContent += "**Task Duration**\n" + TaskDuration + "<br/>";
+                    markdownContent += "**Task Percent Completed**\n" + TaskPercentCompleted + "<br>";
+                    markdownContent += "**Task Start Date**\n" + TaskStartDate + "<br>";
+                    markdownContent += "**Task Finish Date**\n" + TaskFinishDate + "<br>";
+                    markdownContent += "----\n\n";
+                }
+
+
+                return markdownContent;
+            }
         }
     }
 }
