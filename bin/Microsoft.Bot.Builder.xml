@@ -2082,12 +2082,28 @@
             </summary>
             <typeparam name="T"> The type of the item.</typeparam>
         </member>
+        <member name="T:Microsoft.Bot.Builder.Dialogs.AwaitableFromSource`2">
+            <summary>
+            Creates a <see cref="T:Microsoft.Bot.Builder.Dialogs.IAwaitable`1"/> from source passed to constructor.
+            </summary>
+            <typeparam name="TSource"> The type of the source for build the item.</typeparam>
+            <typeparam name="TItem">The type if the item.</typeparam>
+        </member>
         <member name="M:Microsoft.Bot.Builder.Dialogs.Awaitable.FromItem``1(``0)">
             <summary>
             Wraps item in a <see cref="T:Microsoft.Bot.Builder.Dialogs.IAwaitable`1"/>.
             </summary>
             <typeparam name="T">Type of the item.</typeparam>
             <param name="item">The item that will be wrapped.</param>
+        </member>
+        <member name="M:Microsoft.Bot.Builder.Dialogs.Awaitable.FromSource``2(``0,System.Func{``0,System.Threading.Tasks.Task{``1}})">
+            <summary>
+            Wraps source to build item as a <see cref="T:Microsoft.Bot.Builder.Dialogs.IAwaitable`1"/>.
+            </summary>
+            <typeparam name="TSource"> The type of the source for build the item.</typeparam>
+            <typeparam name="TItem">The type if the item.</typeparam>
+            <param name="source">The source item that will be wrapped.</param>
+            <param name="resolver">The resolution function from source to item.</param>
         </member>
         <member name="M:Microsoft.Bot.Builder.Internals.Fibers.Extensions.Wait``2(Microsoft.Bot.Builder.Internals.Fibers.IFiber{``0},Microsoft.Bot.Builder.Internals.Fibers.Rest{``0,``1})">
             <summary>
@@ -3617,6 +3633,12 @@
             </summary>
             <param name="field">DateTime field.</param>
         </member>
+        <member name="T:Microsoft.Bot.Builder.FormFlow.Advanced.RecognizeAttachment`1">
+            <summary>
+            Recognize an attachment within the activity instance.
+            </summary>
+            <typeparam name="T">Form state.</typeparam>
+        </member>
         <member name="T:Microsoft.Bot.Builder.FormFlow.Advanced.TemplateBaseAttribute">
             <summary>
             Abstract base class used by all attributes that use \ref patterns.
@@ -3714,6 +3736,16 @@
             </summary>
             <param name="other">The template to copy from.</param>
         </member>
+        <member name="T:Microsoft.Bot.Builder.FormFlow.Advanced.AttachmentValidatorAttribute">
+            <summary>
+            Abstract base class used for attachment validation.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Bot.Builder.FormFlow.Advanced.AttachmentContentTypeValidatorAttribute">
+            <summary>
+            Attachment content-type validator attribute.
+            </summary>
+        </member>
         <member name="M:Microsoft.Bot.Builder.FormFlow.Advanced.Extensions.IsICollection(System.Type)">
             <summary>
             Type implements ICollection.
@@ -3776,6 +3808,20 @@
             </summary>
             <param name="type">Type to check.</param>
             <returns>True if nullable.</returns>
+        </member>
+        <member name="M:Microsoft.Bot.Builder.FormFlow.Advanced.Extensions.IsAttachmentCollection(System.Type)">
+            <summary>
+            Type is enumerable of awaitable attachments.
+            </summary>
+            <param name="type">Type to check.</param>
+            <returns>True if enumerable of awaitable attachments.</returns>
+        </member>
+        <member name="M:Microsoft.Bot.Builder.FormFlow.Advanced.Extensions.IsAttachmentType(System.Type)">
+            <summary>
+            Type is AwaitableAttachment or descendant.
+            </summary>
+            <param name="type">Type to check.</param>
+            <returns>True if awaitable attachment or descendant.</returns>
         </member>
         <member name="M:Microsoft.Bot.Builder.FormFlow.Advanced.Extensions.GetGenericElementType(System.Type)">
             <summary>
@@ -4683,6 +4729,46 @@
         <member name="F:Microsoft.Bot.Builder.FormFlow.TemplateUsage.None">
             <summary>   An enum constant representing the none option. </summary>
         </member>
+        <member name="F:Microsoft.Bot.Builder.FormFlow.TemplateUsage.AttachmentCollection">
+            <summary>
+            How to ask for an attachment collection. 
+            </summary>
+        </member>
+        <member name="F:Microsoft.Bot.Builder.FormFlow.TemplateUsage.AttachmentCollectionDescription">
+            <summary>
+            How to display attachment collection status.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Bot.Builder.FormFlow.TemplateUsage.AttachmentCollectionHelp">
+            <summary>
+            What you can enter when entering an attachment collection.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Bot.Builder.FormFlow.TemplateUsage.AttachmentContentTypeValidatorError">
+            <summary>
+            How to display attachment content-type validator errors.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Bot.Builder.FormFlow.TemplateUsage.AttachmentContentTypeValidatorHelp">
+            <summary>
+            How to display attachment content-type validator help.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Bot.Builder.FormFlow.TemplateUsage.AttachmentField">
+            <summary>
+            How to ask for an attachment collection. 
+            </summary>
+        </member>
+        <member name="F:Microsoft.Bot.Builder.FormFlow.TemplateUsage.AttachmentFieldDescription">
+            <summary>
+            How to display an attachment status.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Bot.Builder.FormFlow.TemplateUsage.AttachmentFieldHelp">
+            <summary>
+            What you can enter when entering an attachment collection.
+            </summary>
+        </member>
         <member name="F:Microsoft.Bot.Builder.FormFlow.TemplateUsage.Bool">
             <summary>
             How to ask for a boolean.
@@ -4994,6 +5080,19 @@
             Regular expression for validating the content of a string field.
             </summary>
             <param name="pattern">Regular expression for validation.</param>
+        </member>
+        <member name="T:Microsoft.Bot.Builder.FormFlow.IgnoreFieldAttribute">
+            <summary>
+            Define a field or property as excluded.
+            </summary>
+            <remarks>
+            The ignored field is a field that is excluded from the list of fields.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.Bot.Builder.FormFlow.IgnoreFieldAttribute.#ctor">
+            <summary>
+            Mark a field or property as excluded.
+            </summary>
         </member>
         <member name="T:Microsoft.Bot.Builder.FormFlow.ActiveDelegate`1">
             <summary>
@@ -5895,6 +5994,16 @@
               resource lookups using this strongly typed resource class.
             </summary>
         </member>
+        <member name="P:Microsoft.Bot.Builder.Resource.Resources.AttachmentContentTypeValidatorError">
+            <summary>
+              Looks up a localized string similar to Attachment &apos;{0}&apos; is invalid! The content-type should contain &apos;{1}&apos;..
+            </summary>
+        </member>
+        <member name="P:Microsoft.Bot.Builder.Resource.Resources.AttachmentContentTypeValidatorHelp">
+            <summary>
+              Looks up a localized string similar to You should provide an attachment where content-type has &apos;{0}&apos;..
+            </summary>
+        </member>
         <member name="P:Microsoft.Bot.Builder.Resource.Resources.BooleanChoices">
             <summary>
               Looks up a localized string similar to true=y,yes,yep,sure,ok,\u1f44d,\u1f44c|false=n,no,nope,\u1f44e,\\u270b,\\u1f590.
@@ -6068,6 +6177,36 @@
         <member name="P:Microsoft.Bot.Builder.Resource.Resources.PromptRetry">
             <summary>
               Looks up a localized string similar to I didn&apos;t understand. Say something in reply..
+            </summary>
+        </member>
+        <member name="P:Microsoft.Bot.Builder.Resource.Resources.TemplateAttachment">
+            <summary>
+              Looks up a localized string similar to Please submit an attachment for {&amp;}.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Bot.Builder.Resource.Resources.TemplateAttachmentCollection">
+            <summary>
+              Looks up a localized string similar to Please submit a collection of attachments for {&amp;}.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Bot.Builder.Resource.Resources.TemplateAttachmentCollectionDescription">
+            <summary>
+              Looks up a localized string similar to {0} attachment/s linked..
+            </summary>
+        </member>
+        <member name="P:Microsoft.Bot.Builder.Resource.Resources.TemplateAttachmentCollectionHelp">
+            <summary>
+              Looks up a localized string similar to You can submit one or more attachments.{0}.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Bot.Builder.Resource.Resources.TemplateAttachmentDescription">
+            <summary>
+              Looks up a localized string similar to Attachment named &apos;{0}&apos; with content-type &apos;{1}&apos;..
+            </summary>
+        </member>
+        <member name="P:Microsoft.Bot.Builder.Resource.Resources.TemplateAttachmentHelp">
+            <summary>
+              Looks up a localized string similar to You can submit one attachment.{0}.
             </summary>
         </member>
         <member name="P:Microsoft.Bot.Builder.Resource.Resources.TemplateBool">

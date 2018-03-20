@@ -248,7 +248,6 @@ C:\Projects\chatbot\PPM-ChatBot-LUIS-src\bin\EntityFramework.xml
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\bin\EntityFramework.SqlServer.xml
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\bin\Microsoft.Azure.KeyVault.Core.xml
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\bin\Microsoft.Bot.Builder.xml
-C:\Projects\chatbot\PPM-ChatBot-LUIS-src\bin\Microsoft.Bot.Builder.Autofac.xml
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\bin\Microsoft.Bot.Builder.Azure.xml
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\bin\Microsoft.Bot.Builder.History.xml
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\bin\Microsoft.Bot.Connector.xml
@@ -343,3 +342,4 @@ C:\Projects\chatbot\PPM-ChatBot-LUIS-src\bin\Microsoft.SharePoint.Client.Search.
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\bin\Microsoft.SharePoint.Client.Taxonomy.dll
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\bin\Microsoft.SharePoint.Client.UserProfiles.dll
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\bin\Microsoft.SharePoint.Client.WorkflowServices.dll
+C:\Projects\chatbot\PPM-ChatBot-LUIS-src\bin\Common.dll.config

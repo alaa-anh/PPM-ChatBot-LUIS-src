@@ -13,7 +13,7 @@ using Common.Contracts;
 using Common;
 using Microsoft.Bot.Builder.Dialogs.Internals;
 using Autofac;
-using LuisBot.Forms;
+//using LuisBot.Forms;
 using Microsoft.Bot.Builder.FormFlow;
 
 namespace Microsoft.Bot.Sample.LuisBot

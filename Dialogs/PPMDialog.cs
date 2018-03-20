@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using Microsoft.Bot.Builder.FormFlow;
-using LuisBot.Forms;
+//using LuisBot.Forms;
 using Common;
 using Newtonsoft.Json.Linq;
 
@@ -152,7 +152,7 @@ namespace Microsoft.Bot.Sample.LuisBot
 
 
 
-                await context.PostAsync(new Common.ProjectServer(userName, password).GetAllProjects(showCompletion, Pdate, pDuration, pPM));
+                await context.PostAsync(new Common.ProjectServer(userName, password).GetAllProjects(context , showCompletion, Pdate, pDuration, pPM));
 
 
             }
@@ -249,8 +249,8 @@ namespace Microsoft.Bot.Sample.LuisBot
             }
             else
             {
-                var form = new FormDialog<LoginForm>(new LoginForm(), LoginForm.BuildForm);
-                context.Call(form, SignUpComplete);
+                PromptDialog.Confirm(context, ResumeAfterConfirmation, "You are note allwed to access the data , do you want to login?");
+
             }
         }
 
@@ -310,8 +310,8 @@ namespace Microsoft.Bot.Sample.LuisBot
             }
             else
             {
-                var form = new FormDialog<LoginForm>(new LoginForm(), LoginForm.BuildForm);
-                context.Call(form, SignUpComplete);
+                PromptDialog.Confirm(context, ResumeAfterConfirmation, "You are note allwed to access the data , do you want to login?");
+
             }
         }
 
@@ -352,14 +352,14 @@ namespace Microsoft.Bot.Sample.LuisBot
             }
             else
             {
-                var form = new FormDialog<LoginForm>(new LoginForm(), LoginForm.BuildForm);
-                context.Call(form, SignUpComplete);
+                PromptDialog.Confirm(context, ResumeAfterConfirmation, "You are note allwed to access the data , do you want to login?");
+
             }
         }
 
 
-        private async Task SignUpComplete(IDialogContext context, IAwaitable<LoginForm> result)
-        { }
+        //private async Task SignUpComplete(IDialogContext context, IAwaitable<LoginForm> result)
+        //{ }
 
         public virtual async Task SignUpComplete(IDialogContext context, IAwaitable<string> pass)
         {
