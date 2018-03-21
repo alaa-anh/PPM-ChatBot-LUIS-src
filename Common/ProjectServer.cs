@@ -276,15 +276,17 @@ namespace Common
 
                 PublishedProject project = GetProjectByName(pName, context);
 
-                context.Load(project, p => p.ProjectSiteUrl);
-                context.ExecuteQuery();
-
-
-                projectsite = project.ProjectSiteUrl;
-                projectweb = GetProjectWEB(projectsite, context);
+              
 
                 if (project != null)
                 {
+                    context.Load(project, p => p.ProjectSiteUrl);
+                    context.ExecuteQuery();
+
+
+                    projectsite = project.ProjectSiteUrl;
+                    projectweb = GetProjectWEB(projectsite, context);
+
                     if (ListName == Enums.ListName.Tasks.ToString())
                     {
                         markdownContent = GetProjectTasks(context, project);
