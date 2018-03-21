@@ -81,9 +81,11 @@ namespace Common
             return null;
         }
 
-        public static bool checkAuthorizedUser(string name , string upassword)
+        public static string checkAuthorizedUser(string name , string upassword)
         {
             bool Authorized = false;
+            string UserLoggedInName = string.Empty ;
+
             try
             {
                 using (ClientContext ctx = new ClientContext(ConfigurationManager.AppSettings["PPMServerURL"]))
@@ -102,6 +104,8 @@ namespace Common
                     {
                        
                         Authorized = true;
+                        UserLoggedInName = user.Title;
+
                     }
                     else
                         Authorized = false;
@@ -111,7 +115,9 @@ namespace Common
             {
                 Authorized = false;
             }
-            return Authorized;
+
+            //return Authorized;
+            return UserLoggedInName;
         }
 
 

@@ -23,6 +23,7 @@ namespace Microsoft.Bot.Sample.LuisBot
     {
         private string userName;
         private string password;
+        private string UserLoggedInName;
 
         private DateTime msgReceivedDate;
         public PPMDialog(Activity activity) : base(new LuisService(new LuisModelAttribute(
@@ -53,15 +54,15 @@ namespace Microsoft.Bot.Sample.LuisBot
         public async Task GreetWelcome(IDialogContext context, LuisResult luisResult)
         {
             StringBuilder response = new StringBuilder();
-            if (context.UserData.TryGetValue<string>("UserName", out userName) && (context.UserData.TryGetValue<string>("Password", out password)))
+            if (context.UserData.TryGetValue<string>("UserLoggedInName", out UserLoggedInName))
             {
                 if (this.msgReceivedDate.ToString("tt") == "AM")
                 {
-                    response.Append($"Good morning, {userName}.. :)");
+                    response.Append($"Good morning, {UserLoggedInName}.. :)");
                 }
                 else
                 {
-                    response.Append($"Hey {userName}.. :)");
+                    response.Append($"Hey {UserLoggedInName}.. :)");
                 }
                 await context.PostAsync(response.ToString());
                 context.Wait(this.MessageReceived);
@@ -103,11 +104,11 @@ namespace Microsoft.Bot.Sample.LuisBot
 
                 if (this.msgReceivedDate.ToString("tt") == "AM")
                 {
-                    response = $"Good bye, {userName}.. Have a nice day. :)";
+                    response = $"Good bye, {UserLoggedInName}.. Have a nice day. :)";
                 }
                 else
                 {
-                    response = $"b'bye {userName}, Take care.";
+                    response = $"b'bye {UserLoggedInName}, Take care.";
                 }
 
 
@@ -152,7 +153,7 @@ namespace Microsoft.Bot.Sample.LuisBot
 
 
 
-                await context.PostAsync(new Common.ProjectServer(userName, password).GetAllProjects(context , showCompletion, Pdate, pDuration, pPM));
+                await context.PostAsync(new Common.ProjectServer(userName, password).GetAllProjects(context,showCompletion, Pdate, pDuration, pPM));
 
 
             }
@@ -366,28 +367,16 @@ namespace Microsoft.Bot.Sample.LuisBot
             string response = await pass;
             password = response;
 
-            //LoginForm form = null;
-            //try
-            //{
-            //    form = await result;
-            //}
-            //catch (OperationCanceledException)
-            //{
-            //}
-
-            //if (form == null)
-            //{
-            //    await context.PostAsync("You canceled the form.");
-            //}
-            //else
-            //{
-            // Here is where we could call our signup service here to complete the sign-up
-            if (TokenHelper.checkAuthorizedUser(userName, password) == true)
+           
+            string UserLoggedInName = TokenHelper.checkAuthorizedUser(userName, password);
+            if (UserLoggedInName != string.Empty)
             {
                 context.UserData.SetValue("UserName", userName);
                 context.UserData.SetValue("Password", password);
+                context.UserData.SetValue("UserLoggedInName", UserLoggedInName);
 
-                var message = $"You are currently Logged In. Please Enjoy Using our App. **{userName}**.";
+
+                var message = $"You are currently Logged In. Please Enjoy Using our App. **{UserLoggedInName}**.";
                 await context.PostAsync(message);
                 // context.Wait(MessageReceived);
             }

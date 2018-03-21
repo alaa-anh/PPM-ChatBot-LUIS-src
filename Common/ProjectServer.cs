@@ -33,215 +33,232 @@ namespace Common
         }
 
 
-        //public string GetAllProjects(bool showCompletion, bool ProjectDates, bool ProjectDuration, bool projectManager)
-        //{
-        //    var markdownContent = "";
-        //    using (ProjectContext context = new ProjectContext(_siteUri))
-        //    {
-        //        SecureString passWord = new SecureString();
-        //        foreach (char c in _userPassword.ToCharArray()) passWord.AppendChar(c);
-        //        SharePointOnlineCredentials credentials = new SharePointOnlineCredentials(_userName, passWord);
-        //        //   context.Credentials = new SharePointOnlineCredentials(_userName, passWord);
-
-        //        //    context.Load(context.Projects);
-        //        //    context.ExecuteQuery();
-
-        //        //   ICredentials credentials = context.Credentials;
-        //        var webUri = new Uri("https://m365x892385.sharepoint.com/sites/pwa/");
-        //        ///   GetList(webUri, credentials, "");
-
-
-        //        //ProjectCollection projectDetails = context.Projects;
-        //        //if (context.Projects.Count > 0)
-        //        //{
-        //        //    if (showCompletion == false && ProjectDates== false && ProjectDuration == false && projectManager == false)
-        //        //    {
-        //        //        //   markdownContent = string.Join("**Project Name**\n", projectDetails.Select(x => x.Name + "<br>" + "**Completed Percentage**\n" + x.PercentComplete + "%<br/>" + "**Start Date**\n" + x.StartDate + "<br>" + "**Finish Date**\n" + x.FinishDate + "<br>" + "**Project Manager**\n" + x.Owner.Title + "<br>"));
-
-        //        //        // markdownContent = string.Join("**Project Name :**\n", projectDetails.Select(""+ x => x.Name + "<br>" + "**Completed Percentage :**\n" + x.PercentComplete + "%<br/>" + "**Start Date :**\n" + x.StartDate + "<br>" + "**Finish Date :**\n" + x.FinishDate + "<br>" + "----\n\n"));
-
-
-        //        //        //   markdownContent += "**Project Name**\n\n" + "<br>";
-        //        //        foreach (PublishedProject pro in projectDetails)
-        //        //        {
-        //        //            markdownContent += "**Project Name**\n" + pro.Name + "<br>";
-        //        //            markdownContent += "**Completed Percentage**\n" + pro.PercentComplete + "%<br/>";
-        //        //            markdownContent += "**Start Date**\n" + pro.StartDate + "<br>";
-        //        //            markdownContent += "**Finish Date**\n" + pro.FinishDate + "<br>";
-        //        //            TimeSpan duration = pro.FinishDate - pro.StartDate;
-        //        //            markdownContent += "**Project Duration**\n" + duration.Days + "<br>";
-        //        //            context.Load(pro.Owner);
-        //        //            context.ExecuteQuery();
-        //        //            markdownContent += "**Project Manager**\n" + pro.Owner.Title + "<br>";
-
-        //        //            markdownContent += "----\n\n";
-        //        //        }
-        //        //        markdownContent += "**Total Projects :**\n" + projectDetails.Count + "<br>";
-        //        //    }
-        //        //    else
-        //        //    {
-        //        //        foreach (PublishedProject pro in projectDetails)
-        //        //        {
-        //        //            markdownContent += "**Project Name**\n" + pro.Name + "<br>";
-
-        //        //            if (showCompletion==true)
-        //        //                markdownContent += "**Completed Percentage**\n" + pro.PercentComplete + "%<br/>";
-
-        //        //            if (ProjectDates == true)
-        //        //            {
-        //        //                markdownContent += "**Start Date**\n" + pro.StartDate + "<br>";
-        //        //                markdownContent += "**Finish Date**\n" + pro.FinishDate + "<br>";
-        //        //            }
-
-        //        //            if (ProjectDuration == true)
-        //        //            {
-        //        //                TimeSpan duration = pro.FinishDate - pro.StartDate;
-        //        //                markdownContent += "**Project Duration**\n" + duration.Days + "<br>";
-        //        //            }
-
-
-        //        //            if (projectManager == true)
-        //        //            {
-        //        //                context.Load(pro.Owner);
-        //        //                context.ExecuteQuery();
-        //        //                markdownContent += "**Project Manager**\n" + pro.Owner.Title + "<br>";
-        //        //            }
-
-        //        //            markdownContent += "----\n\n";
-
-
-
-        //        //        }
-        //        //        markdownContent += "**Total Projects :**\n" + projectDetails.Count + "<br>";
-
-
-        //        //    }
-
-
-        //        //}
-        //        //else
-        //        //    markdownContent += "**No Availabel Projects**\n\n";
-
-
-        //    }
-
-        //    return markdownContent;
-        //}
-
-
-        public IMessageActivity GetAllProjects(IDialogContext context, bool showCompletion, bool ProjectDates, bool PDuration, bool projectManager)
+        public IMessageActivity GetAllProjects(IDialogContext dialogContext, bool showCompletion, bool ProjectDates, bool PDuration, bool projectManager)
         {
+            var markdownContent = "";
             IMessageActivity reply = null;
-            reply = context.MakeMessage();
-            SecureString passWord = new SecureString();
-            foreach (char c in _userPassword.ToCharArray()) passWord.AppendChar(c);
-            SharePointOnlineCredentials credentials = new SharePointOnlineCredentials(_userName, passWord);
-            var webUri = new Uri(_siteUri);
-            using (var client = new WebClient())
+            reply = dialogContext.MakeMessage();
+            using (ProjectContext context = new ProjectContext(_siteUri))
             {
-                client.Headers.Add("X-FORMS_BASED_AUTH_ACCEPTED", "f");
-                client.Credentials = credentials;
-                client.Headers.Add(HttpRequestHeader.ContentType, "application/json;odata=verbose");
-                client.Headers.Add(HttpRequestHeader.Accept, "application/json;odata=verbose");
-                var endpointUri = new Uri(webUri + "/_api/ProjectData/Projects");
-                var responce = client.DownloadString(endpointUri);
-                var t = JToken.Parse(responce);
-                JObject results = JObject.Parse(t["d"].ToString());
-                List<JToken> jArrays = ((Newtonsoft.Json.Linq.JContainer)((Newtonsoft.Json.Linq.JContainer)t["d"]).First).First.ToList();
-                foreach (var item in jArrays)
+                SecureString passWord = new SecureString();
+                foreach (char c in _userPassword.ToCharArray()) passWord.AppendChar(c);
+                SharePointOnlineCredentials credentials = new SharePointOnlineCredentials(_userName, passWord);
+                context.Credentials = new SharePointOnlineCredentials(_userName, passWord);
+
+                context.Load(context.Projects);
+                context.ExecuteQuery();
+
+
+                ProjectCollection projectDetails = context.Projects;
+                if (context.Projects.Count > 0)
                 {
-                    string ProjectName = (string)item["ProjectName"];
-                    string ProjectWorkspaceInternalUrl = (string)item["ProjectWorkspaceInternalUrl"];
-                    string ProjectPercentCompleted = (string)item["ProjectPercentCompleted"];
-                    string ProjectFinishDate = (string)item["ProjectFinishDate"];
-                    string ProjectStartDate = (string)item["ProjectStartDate"];
-                    string ProjectDuration = (string)item["ProjectDuration"];
-                    string ProjectOwnerName = (string)item["ProjectOwnerName"];
-                    List<JToken> jArraysTasks = ((Newtonsoft.Json.Linq.JContainer)((Newtonsoft.Json.Linq.JContainer)item["Tasks"]).First).First.ToList();
-
-                    string Tasks = (string)jArraysTasks[0];
-
-
-                    string SubtitleVal = "";
-
-                    if (showCompletion == true)
-                        SubtitleVal += "**Completed Percentage :**\n" + ProjectPercentCompleted + "%\n\r";
-
-                    if (ProjectDates == true)
+                    foreach (PublishedProject pro in projectDetails)
                     {
-                        SubtitleVal += "**Start Date :**\n" + ProjectStartDate + "\n\r";
-                        SubtitleVal += "**Finish Date :**\n" + ProjectFinishDate + "\n\r";
+                        string ProjectName = pro.Name;
+                        //    string ProjectWorkspaceInternalUrl = (string)pro["ProjectWorkspaceInternalUrl"];
+                        string ProjectPercentCompleted = pro.PercentComplete.ToString();
+                        string ProjectFinishDate = pro.FinishDate.ToString();
+                        string ProjectStartDate = pro.StartDate.ToString();
+                        TimeSpan duration = pro.FinishDate - pro.StartDate;
+
+                        string ProjectDuration = duration.Days.ToString();
+                        context.Load(pro.Owner);
+                        context.ExecuteQuery();
+                        string ProjectOwnerName = pro.Owner.Title;
+
+                        string SubtitleVal = "";
+
+                        if (showCompletion == false && ProjectDates == false && PDuration == false && projectManager == false)
+                        {
+                            SubtitleVal += "**Completed Percentage :**\n" + ProjectPercentCompleted + "%\n\r";
+                            SubtitleVal += "**Start Date :**\n" + ProjectStartDate + "\n\r";
+                            SubtitleVal += "**Finish Date :**\n" + ProjectFinishDate + "\n\r";
+                            SubtitleVal += "**Project Duration :**\n" + ProjectDuration + "\n\r";
+                            SubtitleVal += "**Project Manager :**\n" + ProjectOwnerName + "\n\r";
+                        }
+                        else if (showCompletion == true)
+                            SubtitleVal += "**Completed Percentage :**\n" + ProjectPercentCompleted + "%\n\r";
+
+                        else if (ProjectDates == true)
+                        {
+                            SubtitleVal += "**Start Date :**\n" + ProjectStartDate + "\n\r";
+                            SubtitleVal += "**Finish Date :**\n" + ProjectFinishDate + "\n\r";
+                        }
+
+                        else if (PDuration == true)
+                        {
+                            SubtitleVal += "**Project Duration :**\n" + ProjectDuration + "\n\r";
+                        }
+
+
+                        else if (projectManager == true)
+                        {
+                            SubtitleVal += "**Project Manager :**\n" + ProjectOwnerName + "\n\r";
+                        }
+
+
+
+                        HeroCard plCard = new HeroCard()
+                        {
+                            Title = ProjectName,
+                            Subtitle = SubtitleVal,
+
+                        };
+
+                        Microsoft.Bot.Connector.Attachment attachment = new Microsoft.Bot.Connector.Attachment()
+                        {
+                            ContentType = HeroCard.ContentType,
+                            Content = plCard
+                        };
+
+
+                        reply.Attachments.Add(attachment);
+
+
+
                     }
-
-                    if (PDuration == true)
+                    HeroCard plCardCounter = new HeroCard()
                     {
-                        SubtitleVal += "**Project Duration :**\n" + ProjectDuration + "\n\r";
-                    }
-
-
-                    if (projectManager == true)
-                    {
-                        SubtitleVal += "**Project Manager :**\n" + ProjectOwnerName + "\n\r";
-                    }
-
-
-                    //var actionsButton = new List<CardAction>();
-                    //CardAction buttonTasks = new CardAction()
-                    //{
-                    //    Value = "Tasks",
-                    //    Type = ActionTypes.PostBack,
-                    //  //  Image = strlike,
-                    //    Title = "Tasks"
-                    //};
-                    //actionsButton.Add(buttonTasks);
-                    //GetProjectTasks(Tasks);
-
-                    //CardAction buttonIssues = new CardAction()
-                    //{
-                    //    Value = "Issues",
-                    //    Type = ActionTypes.PostBack,
-                    //  //  Image = strlike,
-                    //    Title = "Issues"
-                    //};
-                    //actionsButton.Add(buttonIssues);
-
-                    HeroCard plCard = new HeroCard()
-                    {
-                        Title = ProjectName,
-                        Subtitle = SubtitleVal,// $" Wikipedia \r\r Page \n\r test",
-                                               //  Text = "line 1 \r\r line 2 \n\r line 3 \r line 4"
-
-                        //Title = ProjectName + $"I'm \r\r a hero \n\r card",
-                        //Subtitle = $" Wikipedia \r\r Page \n\r test",
-                        //Text = "line 1 \r\r line 2 \n\r line 3 \r line 4"
-                        // Buttons = actionsButton
+                        Title = "**Total Projects :**\n" + projectDetails.Count,
 
                     };
-
-                    Microsoft.Bot.Connector.Attachment attachment = new Microsoft.Bot.Connector.Attachment()
-                    {
-                        ContentType = HeroCard.ContentType,
-                        Content = plCard
-                    };
-
-
-                    reply.Attachments.Add(attachment);
+                    reply.Attachments.Add(plCardCounter.ToAttachment());
+                }
+                else
+                {
+                    HeroCard plCardNoData = new HeroCard()
+                    { Title = "**No Availabel Projects**\n\n" };
+                    reply.Attachments.Add(plCardNoData.ToAttachment());
                 }
 
-                HeroCard plCard2 = new HeroCard()
-                {
-                    Title = "Total Projects :" + jArrays.Count(),
-                    //  Text = "line 1 \r\r line 2 \n\r line 3 \r line 4"
-
-                    //Title = ProjectName + $"I'm \r\r a hero \n\r card",
-                    //Subtitle = $" Wikipedia \r\r Page \n\r test",
-                    //Text = "line 1 \r\r line 2 \n\r line 3 \r line 4"
-                };
-
-                reply.Attachments.Add(plCard2.ToAttachment());
-                return reply;
             }
+
+            return reply;
         }
+
+        //public IMessageActivity GetAllProjects(IDialogContext context, bool showCompletion, bool ProjectDates, bool PDuration, bool projectManager)
+        //{
+        //    IMessageActivity reply = null;
+        //    reply = context.MakeMessage();
+        //    SecureString passWord = new SecureString();
+        //    foreach (char c in _userPassword.ToCharArray()) passWord.AppendChar(c);
+        //    SharePointOnlineCredentials credentials = new SharePointOnlineCredentials(_userName, passWord);
+        //    var webUri = new Uri(_siteUri);
+        //    using (var client = new WebClient())
+        //    {
+        //        client.Headers.Add("X-FORMS_BASED_AUTH_ACCEPTED", "f");
+        //        client.Credentials = credentials;
+        //        client.Headers.Add(HttpRequestHeader.ContentType, "application/json;odata=verbose");
+        //        client.Headers.Add(HttpRequestHeader.Accept, "application/json;odata=verbose");
+        //        var endpointUri = new Uri(webUri + "/_api/ProjectData/Projects");
+        //        var responce = client.DownloadString(endpointUri);
+        //        var t = JToken.Parse(responce);
+        //        JObject results = JObject.Parse(t["d"].ToString());
+        //        List<JToken> jArrays = ((Newtonsoft.Json.Linq.JContainer)((Newtonsoft.Json.Linq.JContainer)t["d"]).First).First.ToList();
+        //        foreach (var item in jArrays)
+        //        {
+        //            string ProjectName = (string)item["ProjectName"];
+        //            string ProjectWorkspaceInternalUrl = (string)item["ProjectWorkspaceInternalUrl"];
+        //            string ProjectPercentCompleted = (string)item["ProjectPercentCompleted"];
+        //            string ProjectFinishDate = (string)item["ProjectFinishDate"];
+        //            string ProjectStartDate = (string)item["ProjectStartDate"];
+        //            string ProjectDuration = (string)item["ProjectDuration"];
+        //            string ProjectOwnerName = (string)item["ProjectOwnerName"];
+        //        //    List<JToken> jArraysTasks = ((Newtonsoft.Json.Linq.JContainer)((Newtonsoft.Json.Linq.JContainer)item["Tasks"]).First).First.ToList();
+
+        //         //   string Tasks = (string)jArraysTasks[0];
+
+
+        //            string SubtitleVal = "";
+
+        //            if (showCompletion == false && ProjectDates == false && PDuration == false && projectManager == false)
+        //            {
+        //                SubtitleVal += "**Completed Percentage :**\n" + ProjectPercentCompleted + "%\n\r";
+        //                SubtitleVal += "**Start Date :**\n" + ProjectStartDate + "\n\r";
+        //                SubtitleVal += "**Finish Date :**\n" + ProjectFinishDate + "\n\r";
+        //                SubtitleVal += "**Project Duration :**\n" + ProjectDuration + "\n\r";
+        //                SubtitleVal += "**Project Manager :**\n" + ProjectOwnerName + "\n\r";
+        //            }
+
+        //            else if (showCompletion == true)
+        //                SubtitleVal += "**Completed Percentage :**\n" + ProjectPercentCompleted + "%\n\r";
+
+        //            else if (ProjectDates == true)
+        //            {
+        //                SubtitleVal += "**Start Date :**\n" + ProjectStartDate + "\n\r";
+        //                SubtitleVal += "**Finish Date :**\n" + ProjectFinishDate + "\n\r";
+        //            }
+
+        //           else if (PDuration == true)
+        //            {
+        //                SubtitleVal += "**Project Duration :**\n" + ProjectDuration + "\n\r";
+        //            }
+
+
+        //            else if (projectManager == true)
+        //            {
+        //                SubtitleVal += "**Project Manager :**\n" + ProjectOwnerName + "\n\r";
+        //            }
+
+
+        //            var actionsButton = new List<CardAction>();
+        //            CardAction buttonProjectURL = new CardAction()
+        //            {
+        //                Value = ProjectWorkspaceInternalUrl,
+        //                Type = ActionTypes.OpenUrl,
+        //                //  Image = strlike,
+        //                Title = "Project Site"
+
+        //            };
+        //            actionsButton.Add(buttonProjectURL);
+        //           // GetProjectTasks(Tasks);
+
+        //            //CardAction buttonIssues = new CardAction()
+        //            //{
+        //            //    Value = "Issues",
+        //            //    Type = ActionTypes.PostBack,
+        //            //  //  Image = strlike,
+        //            //    Title = "Issues"
+        //            //};
+        //            //actionsButton.Add(buttonIssues);
+
+        //            HeroCard plCard = new HeroCard()
+        //            {
+        //                Title = ProjectName,
+        //                Subtitle = SubtitleVal,// $" Wikipedia \r\r Page \n\r test",
+        //                                       //  Text = "line 1 \r\r line 2 \n\r line 3 \r line 4"
+
+        //                //Title = ProjectName + $"I'm \r\r a hero \n\r card",
+        //                //Subtitle = $" Wikipedia \r\r Page \n\r test",
+        //                //Text = "line 1 \r\r line 2 \n\r line 3 \r line 4"
+        //                 Buttons = actionsButton,
+
+        //            };
+
+        //            Microsoft.Bot.Connector.Attachment attachment = new Microsoft.Bot.Connector.Attachment()
+        //            {
+        //                ContentType = HeroCard.ContentType,
+        //                Content = plCard
+        //            };
+
+
+        //            reply.Attachments.Add(attachment);
+        //        }
+
+        //        HeroCard plCard2 = new HeroCard()
+        //        {
+        //            Title = "Total Projects :" + jArrays.Count(),
+        //            //  Text = "line 1 \r\r line 2 \n\r line 3 \r line 4"
+
+        //            //Title = ProjectName + $"I'm \r\r a hero \n\r card",
+        //            //Subtitle = $" Wikipedia \r\r Page \n\r test",
+        //            //Text = "line 1 \r\r line 2 \n\r line 3 \r line 4"
+        //        };
+
+        //        reply.Attachments.Add(plCard2.ToAttachment());
+        //        return reply;
+        //    }
+        //}
 
 
 
