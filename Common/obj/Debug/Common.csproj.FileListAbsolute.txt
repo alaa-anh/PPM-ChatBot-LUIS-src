@@ -87,7 +87,6 @@ C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\Autofac.xml
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\Microsoft.IdentityModel.Logging.dll
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\Microsoft.IdentityModel.Logging.xml
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\System.Buffers.xml
-C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\Common.dll.config
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\Chronic.dll
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\Microsoft.Bot.Builder.Autofac.dll
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\Microsoft.Bot.Builder.dll

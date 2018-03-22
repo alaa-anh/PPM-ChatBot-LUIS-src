@@ -342,4 +342,3 @@ C:\Projects\chatbot\PPM-ChatBot-LUIS-src\bin\Microsoft.SharePoint.Client.Search.
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\bin\Microsoft.SharePoint.Client.Taxonomy.dll
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\bin\Microsoft.SharePoint.Client.UserProfiles.dll
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\bin\Microsoft.SharePoint.Client.WorkflowServices.dll
-C:\Projects\chatbot\PPM-ChatBot-LUIS-src\bin\Common.dll.config

@@ -186,11 +186,13 @@
     <Compile Include="TokenHelper.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Images\CompanyLogo.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -35,9 +35,10 @@ namespace Common
 
         public IMessageActivity GetAllProjects(IDialogContext dialogContext, bool showCompletion, bool ProjectDates, bool PDuration, bool projectManager)
         {
-            var markdownContent = "";
             IMessageActivity reply = null;
             reply = dialogContext.MakeMessage();
+          //  reply.AttachmentLayout = AttachmentLayoutTypes.Carousel;// "carousel";
+
             using (ProjectContext context = new ProjectContext(_siteUri))
             {
                 SecureString passWord = new SecureString();
@@ -54,17 +55,22 @@ namespace Common
                 {
                     foreach (PublishedProject pro in projectDetails)
                     {
+                        context.Load(pro.Owner);
+                        context.Load(pro, p => p.ProjectSiteUrl);
+
+                        context.ExecuteQuery();
+
                         string ProjectName = pro.Name;
-                        //    string ProjectWorkspaceInternalUrl = (string)pro["ProjectWorkspaceInternalUrl"];
+                        string ProjectWorkspaceInternalUrl = pro.ProjectSiteUrl;
                         string ProjectPercentCompleted = pro.PercentComplete.ToString();
                         string ProjectFinishDate = pro.FinishDate.ToString();
                         string ProjectStartDate = pro.StartDate.ToString();
                         TimeSpan duration = pro.FinishDate - pro.StartDate;
 
                         string ProjectDuration = duration.Days.ToString();
-                        context.Load(pro.Owner);
-                        context.ExecuteQuery();
+                       
                         string ProjectOwnerName = pro.Owner.Title;
+                       
 
                         string SubtitleVal = "";
 
@@ -96,12 +102,27 @@ namespace Common
                             SubtitleVal += "**Project Manager :**\n" + ProjectOwnerName + "\n\r";
                         }
 
+                        string ImageURL ="https://m365x892385.sharepoint.com/sites/pwa/PublishingImages/CompanyLogo.jpg";
 
+                        List<CardImage> cardImages = new List<CardImage>();
+                        cardImages.Add(new CardImage(url: ImageURL));
 
-                        HeroCard plCard = new HeroCard()
+                        
+                        CardAction btnWebsite = new CardAction()
                         {
-                            Title = ProjectName,
+                            Type =ActionTypes.OpenUrl,
+                            Title = "Open",
+                            Value = ProjectWorkspaceInternalUrl + "?redirect_uri={" + ProjectWorkspaceInternalUrl + "}",
+                        };
+
+
+                        ThumbnailCard plCard = new ThumbnailCard()
+                        {
+                            Title =ProjectName,
                             Subtitle = SubtitleVal,
+                            Images = cardImages,
+                           
+                            Tap = btnWebsite,
 
                         };
 
