@@ -219,7 +219,7 @@ namespace Microsoft.Bot.Sample.LuisBot
                 {
                     if (ListName != string.Empty)
                     {
-                        await context.PostAsync(new Common.ProjectServer(userName, password).GetProjectSubItems(searchTerm_ProjectName, ListName));
+                        await context.PostAsync(new Common.ProjectServer(userName, password).GetProjectSubItems(context, searchTerm_ProjectName, ListName));
                         context.Wait(this.MessageReceived);
                     }
                     else

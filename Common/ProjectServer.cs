@@ -37,8 +37,6 @@ namespace Common
         {
             IMessageActivity reply = null;
             reply = dialogContext.MakeMessage();
-          //  reply.AttachmentLayout = AttachmentLayoutTypes.Carousel;// "carousel";
-
             using (ProjectContext context = new ProjectContext(_siteUri))
             {
                 SecureString passWord = new SecureString();
@@ -48,13 +46,15 @@ namespace Common
 
                 context.Load(context.Projects);
                 context.ExecuteQuery();
-
-
+                
                 ProjectCollection projectDetails = context.Projects;
                 if (context.Projects.Count > 0)
                 {
                     foreach (PublishedProject pro in projectDetails)
                     {
+
+                        PublishedProject project = GetProjectByName(pro.Name, context);
+
                         context.Load(pro.Owner);
                         context.Load(pro, p => p.ProjectSiteUrl);
 
@@ -68,9 +68,9 @@ namespace Common
                         TimeSpan duration = pro.FinishDate - pro.StartDate;
 
                         string ProjectDuration = duration.Days.ToString();
-                       
+
                         string ProjectOwnerName = pro.Owner.Title;
-                       
+
 
                         string SubtitleVal = "";
 
@@ -102,27 +102,43 @@ namespace Common
                             SubtitleVal += "**Project Manager :**\n" + ProjectOwnerName + "\n\r";
                         }
 
-                        string ImageURL ="https://m365x892385.sharepoint.com/sites/pwa/PublishingImages/CompanyLogo.jpg";
+                        string ImageURL = "https://images.g2crowd.com/uploads/product/hd_favicon/1487566556/microsoft-project-server.png";// "https://m365x892385.sharepoint.com/sites/pwa/PublishingImages/CompanyLogo.jpg";
 
                         List<CardImage> cardImages = new List<CardImage>();
+                        List<CardAction> cardactions = new List<CardAction>();
                         cardImages.Add(new CardImage(url: ImageURL));
 
-                        
+
                         CardAction btnWebsite = new CardAction()
                         {
-                            Type =ActionTypes.OpenUrl,
+                            Type = ActionTypes.OpenUrl,
                             Title = "Open",
                             Value = ProjectWorkspaceInternalUrl + "?redirect_uri={" + ProjectWorkspaceInternalUrl + "}",
                         };
 
-
-                        ThumbnailCard plCard = new ThumbnailCard()
+                        CardAction btnTasks = new CardAction()
                         {
-                            Title =ProjectName,
+                            Type = ActionTypes.PostBack,
+                            Title = "Tasks",
+                            Value = "show a list of " + ProjectName + " tasks",
+                        };
+                        cardactions.Add(btnTasks);
+
+                        CardAction btnIssues = new CardAction()
+                        {
+                            Type = ActionTypes.PostBack,
+                            Title = "Issues",
+                            Value = "show a list of " + ProjectName + " issues",
+                        };
+                        cardactions.Add(btnIssues);
+
+                        HeroCard plCard = new HeroCard()
+                        {
+                            Title = ProjectName,
                             Subtitle = SubtitleVal,
                             Images = cardImages,
-                           
-                            Tap = btnWebsite,
+                            Buttons = cardactions,
+                            Tap = btnTasks,
 
                         };
 
@@ -131,12 +147,7 @@ namespace Common
                             ContentType = HeroCard.ContentType,
                             Content = plCard
                         };
-
-
                         reply.Attachments.Add(attachment);
-
-
-
                     }
                     HeroCard plCardCounter = new HeroCard()
                     {
@@ -156,137 +167,15 @@ namespace Common
 
             return reply;
         }
-
-        //public IMessageActivity GetAllProjects(IDialogContext context, bool showCompletion, bool ProjectDates, bool PDuration, bool projectManager)
-        //{
-        //    IMessageActivity reply = null;
-        //    reply = context.MakeMessage();
-        //    SecureString passWord = new SecureString();
-        //    foreach (char c in _userPassword.ToCharArray()) passWord.AppendChar(c);
-        //    SharePointOnlineCredentials credentials = new SharePointOnlineCredentials(_userName, passWord);
-        //    var webUri = new Uri(_siteUri);
-        //    using (var client = new WebClient())
-        //    {
-        //        client.Headers.Add("X-FORMS_BASED_AUTH_ACCEPTED", "f");
-        //        client.Credentials = credentials;
-        //        client.Headers.Add(HttpRequestHeader.ContentType, "application/json;odata=verbose");
-        //        client.Headers.Add(HttpRequestHeader.Accept, "application/json;odata=verbose");
-        //        var endpointUri = new Uri(webUri + "/_api/ProjectData/Projects");
-        //        var responce = client.DownloadString(endpointUri);
-        //        var t = JToken.Parse(responce);
-        //        JObject results = JObject.Parse(t["d"].ToString());
-        //        List<JToken> jArrays = ((Newtonsoft.Json.Linq.JContainer)((Newtonsoft.Json.Linq.JContainer)t["d"]).First).First.ToList();
-        //        foreach (var item in jArrays)
-        //        {
-        //            string ProjectName = (string)item["ProjectName"];
-        //            string ProjectWorkspaceInternalUrl = (string)item["ProjectWorkspaceInternalUrl"];
-        //            string ProjectPercentCompleted = (string)item["ProjectPercentCompleted"];
-        //            string ProjectFinishDate = (string)item["ProjectFinishDate"];
-        //            string ProjectStartDate = (string)item["ProjectStartDate"];
-        //            string ProjectDuration = (string)item["ProjectDuration"];
-        //            string ProjectOwnerName = (string)item["ProjectOwnerName"];
-        //        //    List<JToken> jArraysTasks = ((Newtonsoft.Json.Linq.JContainer)((Newtonsoft.Json.Linq.JContainer)item["Tasks"]).First).First.ToList();
-
-        //         //   string Tasks = (string)jArraysTasks[0];
-
-
-        //            string SubtitleVal = "";
-
-        //            if (showCompletion == false && ProjectDates == false && PDuration == false && projectManager == false)
-        //            {
-        //                SubtitleVal += "**Completed Percentage :**\n" + ProjectPercentCompleted + "%\n\r";
-        //                SubtitleVal += "**Start Date :**\n" + ProjectStartDate + "\n\r";
-        //                SubtitleVal += "**Finish Date :**\n" + ProjectFinishDate + "\n\r";
-        //                SubtitleVal += "**Project Duration :**\n" + ProjectDuration + "\n\r";
-        //                SubtitleVal += "**Project Manager :**\n" + ProjectOwnerName + "\n\r";
-        //            }
-
-        //            else if (showCompletion == true)
-        //                SubtitleVal += "**Completed Percentage :**\n" + ProjectPercentCompleted + "%\n\r";
-
-        //            else if (ProjectDates == true)
-        //            {
-        //                SubtitleVal += "**Start Date :**\n" + ProjectStartDate + "\n\r";
-        //                SubtitleVal += "**Finish Date :**\n" + ProjectFinishDate + "\n\r";
-        //            }
-
-        //           else if (PDuration == true)
-        //            {
-        //                SubtitleVal += "**Project Duration :**\n" + ProjectDuration + "\n\r";
-        //            }
-
-
-        //            else if (projectManager == true)
-        //            {
-        //                SubtitleVal += "**Project Manager :**\n" + ProjectOwnerName + "\n\r";
-        //            }
-
-
-        //            var actionsButton = new List<CardAction>();
-        //            CardAction buttonProjectURL = new CardAction()
-        //            {
-        //                Value = ProjectWorkspaceInternalUrl,
-        //                Type = ActionTypes.OpenUrl,
-        //                //  Image = strlike,
-        //                Title = "Project Site"
-
-        //            };
-        //            actionsButton.Add(buttonProjectURL);
-        //           // GetProjectTasks(Tasks);
-
-        //            //CardAction buttonIssues = new CardAction()
-        //            //{
-        //            //    Value = "Issues",
-        //            //    Type = ActionTypes.PostBack,
-        //            //  //  Image = strlike,
-        //            //    Title = "Issues"
-        //            //};
-        //            //actionsButton.Add(buttonIssues);
-
-        //            HeroCard plCard = new HeroCard()
-        //            {
-        //                Title = ProjectName,
-        //                Subtitle = SubtitleVal,// $" Wikipedia \r\r Page \n\r test",
-        //                                       //  Text = "line 1 \r\r line 2 \n\r line 3 \r line 4"
-
-        //                //Title = ProjectName + $"I'm \r\r a hero \n\r card",
-        //                //Subtitle = $" Wikipedia \r\r Page \n\r test",
-        //                //Text = "line 1 \r\r line 2 \n\r line 3 \r line 4"
-        //                 Buttons = actionsButton,
-
-        //            };
-
-        //            Microsoft.Bot.Connector.Attachment attachment = new Microsoft.Bot.Connector.Attachment()
-        //            {
-        //                ContentType = HeroCard.ContentType,
-        //                Content = plCard
-        //            };
-
-
-        //            reply.Attachments.Add(attachment);
-        //        }
-
-        //        HeroCard plCard2 = new HeroCard()
-        //        {
-        //            Title = "Total Projects :" + jArrays.Count(),
-        //            //  Text = "line 1 \r\r line 2 \n\r line 3 \r line 4"
-
-        //            //Title = ProjectName + $"I'm \r\r a hero \n\r card",
-        //            //Subtitle = $" Wikipedia \r\r Page \n\r test",
-        //            //Text = "line 1 \r\r line 2 \n\r line 3 \r line 4"
-        //        };
-
-        //        reply.Attachments.Add(plCard2.ToAttachment());
-        //        return reply;
-        //    }
-        //}
-
-
-
-
-        public string GetProjectSubItems(string pName, string ListName)
+        
+        public string GetProjectSubItems(IDialogContext dialogContext ,  string pName, string ListName)
         {
             var markdownContent = "";
+            string SubtitleVal = "";
+
+            IMessageActivity reply = null;
+            reply = dialogContext.MakeMessage();
+
             string projectsite = string.Empty;
             Web projectweb;
             using (ProjectContext context = new ProjectContext(_siteUri))
@@ -294,23 +183,15 @@ namespace Common
                 SecureString passWord = new SecureString();
                 foreach (char c in _userPassword.ToCharArray()) passWord.AppendChar(c);
                 context.Credentials = new SharePointOnlineCredentials(_userName, passWord);
-
-                PublishedProject project = GetProjectByName(pName, context);
-
-              
-
+                PublishedProject project = GetProjectByName(pName, context);                
                 if (project != null)
                 {
                     context.Load(project, p => p.ProjectSiteUrl);
                     context.ExecuteQuery();
 
-
-                    projectsite = project.ProjectSiteUrl;
-                    projectweb = GetProjectWEB(projectsite, context);
-
                     if (ListName == Enums.ListName.Tasks.ToString())
                     {
-                        markdownContent = GetProjectTasks(context, project);
+                        markdownContent = GetProjectTasks(dialogContext , context, project);
                     }
                     else if (ListName == Enums.ListName.Assignments.ToString())
                     {
@@ -318,29 +199,18 @@ namespace Common
                     }
                     else
                     {
-                        if (projectsite != string.Empty)
+                        projectsite = project.ProjectSiteUrl;
+                        projectweb = GetProjectWEB(projectsite, context);
+
+                        if (projectsite != null)
                         {
-                            //   Web projectweb = SubSiteExists(projectsite);
-                            if (projectweb != null)
-                            {
-                                // if (UserHavePermissionOnaProjects(_siteUri, pName, context))
-                                //  {
-                                if (ListName == Common.Enums.ListName.Issues.ToString())
-                                    markdownContent = GetProjectIssues(projectweb, context);
-
-                                if (ListName == Common.Enums.ListName.Risks.ToString())
-                                    markdownContent = GetProjectRisks(projectweb, context);
-
-                                if (ListName == Common.Enums.ListName.Deliverables.ToString())
-                                    markdownContent = GetProjectDeliverables(projectweb, context);
-                                //}
-                                //else
-                                //{
-                                //    markdownContent = "Sorry , You don't have access to this project";
-                                //}
-                            }
+                            if (ListName == Common.Enums.ListName.Issues.ToString())
+                                markdownContent = GetProjectIssues( dialogContext, projectweb, context);
+                            if (ListName == Common.Enums.ListName.Risks.ToString())
+                                markdownContent = GetProjectRisks(projectweb, context);
+                            if (ListName == Common.Enums.ListName.Deliverables.ToString())
+                                markdownContent = GetProjectDeliverables(projectweb, context);
                         }
-
                         else
                         {
                             markdownContent = "Site Project Not Created";
@@ -357,50 +227,43 @@ namespace Common
             return markdownContent;
         }
 
-        public string GetProjectIssues(Web projectweb, ProjectContext context)
+        public string GetProjectIssues( IDialogContext dialogContext, Web projectweb, ProjectContext context)
         {
-            var markdownContent = "";
+            IMessageActivity reply = null;
+            reply = dialogContext.MakeMessage();
+            string markdownContent = string.Empty;
             string IssueName = string.Empty;
             string IssueStatus = string.Empty;
             string IssuePriority = string.Empty;
+
             var issues = projectweb.Lists.GetByTitle(Enums.ListName.Issues.ToString());
             CamlQuery query = CamlQuery.CreateAllItemsQuery();
             ListItemCollection itemsIssue = issues.GetItems(query);
 
-            projectweb.Context.Load(issues);
-            projectweb.Context.Load(itemsIssue);
-            projectweb.Context.ExecuteQuery();
+            context.Load(issues);
+            context.Load(itemsIssue);
+            context.ExecuteQuery();
 
             if (GetUserGroup(context, "Team Members (Project Web App Synchronized)"))
             {
-                markdownContent = getresourceassignedrisksIssues(itemsIssue);
-            }
-            else if (GetUserGroup(context, "Project Managers (Project Web App Synchronized)"))
-            {
-                markdownContent = GetAllProjectIssues(itemsIssue);
+                markdownContent = getresourceassignedrisksIssues(dialogContext, itemsIssue);
             }
             else
             {
-                markdownContent = GetAllProjectIssues(itemsIssue);
+                markdownContent = GetAllProjectIssues(dialogContext, itemsIssue);
             }
 
-            //if (GetUserGroup(context, "Project Managers (Project Web App Synchronized)") || GetUserGroup(context, "Portfolio Managers for Project Web App") || GetUserGroup(context, "Portfolio Managers for Project Web App") || GetUserGroup(context, "Web Administrators (Project Web App Synchronized)"))
-            //{
-            //    markdownContent = GetAllProjectIssues(itemsIssue);
-            //}
-            //else if (GetUserGroup(context, "Team Members (Project Web App Synchronized)"))
-            //{
-            //    markdownContent = getresourceassignedrisksIssues(itemsIssue);
-            //}
+            
 
             return markdownContent;
         }
 
-
-
-        public string GetAllProjectIssues(ListItemCollection itemsIssue)
+        public string GetAllProjectIssues(IDialogContext dialogContext , ListItemCollection itemsIssue)
         {
-            var markdownContent = "";
+            IMessageActivity reply = null;
+            reply = dialogContext.MakeMessage();
+            string SubtitleVal = "";
+            string markdownContent = string.Empty;
             string IssueName = string.Empty;
             string IssueStatus = string.Empty;
             string IssuePriority = string.Empty;
@@ -410,6 +273,7 @@ namespace Common
             {
                 foreach (ListItem item in itemsIssue)
                 {
+
                     if (item["Title"] != null)
                         IssueName = (string)item["Title"];
                     if (item["Status"] != null)
@@ -417,22 +281,61 @@ namespace Common
                     if (item["Priority"] != null)
                         IssuePriority = (string)item["Priority"];
                     markdownContent += "**Title**\n" + IssueName + "<br>";
-                    markdownContent += "**Status**\n" + IssueStatus + "<br/>";
-                    markdownContent += "**Priority**\n" + IssuePriority + "<br>";
+                    markdownContent += "**Status**\n" + IssueStatus + "\n\r";
+                    markdownContent += "**Priority**\n" + IssuePriority + "\n\r";
                     markdownContent += "----\n\n";
+
+                    //if (item["Title"] != null)
+                    //    IssueName = (string)item["Title"];
+                    //if (item["Status"] != null)
+                    //    IssueStatus = (string)item["Status"];
+                    //if (item["Priority"] != null)
+                    //    IssuePriority = (string)item["Priority"];
+                    ////   SubtitleVal += "**Title**\n" + IssueName + "<br>";
+                    //SubtitleVal += "**Status**\n" + IssueStatus + "\n\r";
+                    //SubtitleVal += "**Priority**\n" + IssuePriority + "\n\r";
+
+                    //HeroCard plCard = new HeroCard()
+                    //{
+                    //    Title = IssueName,
+                    //    Subtitle = SubtitleVal,
+                    //};
+
+                    //Microsoft.Bot.Connector.Attachment attachment = new Microsoft.Bot.Connector.Attachment()
+                    //{
+                    //    ContentType = HeroCard.ContentType,
+                    //    Content = plCard
+                    //};
+
+                    //reply.Attachments.Add(attachment);
+
                 }
 
-                markdownContent += "**Total Issues :**\n" + itemsIssue.Count + "<br>";
+                //HeroCard plCardCounter = new HeroCard()
+                //{ Title = "**Total Issues :**\n" + itemsIssue.Count, };
+                //reply.Attachments.Add(plCardCounter.ToAttachment());
+                markdownContent += "**Total Issues :**\n" + itemsIssue.Count + "\n\r";
+
             }
             else
-                markdownContent = "No Issies for this Project";
+            {
+                //HeroCard plCardNoData = new HeroCard()
+                //{ Title = "**No Issies for this Project**\n\n" };
+                //reply.Attachments.Add(plCardNoData.ToAttachment());
+                markdownContent += "**No Issies for this Project**\n\n";
+
+
+            }
 
             return markdownContent;
         }
 
-        public string getresourceassignedrisksIssues(ListItemCollection itemsIssue)
+        public string getresourceassignedrisksIssues(IDialogContext dialogContext , ListItemCollection itemsIssue)
         {
-            var markdownContent = "";
+            IMessageActivity reply = null;
+            reply = dialogContext.MakeMessage();
+            string SubtitleVal = "";
+            string markdownContent = string.Empty;
             string IssueName = string.Empty;
             string IssueStatus = string.Empty;
             string IssuePriority = string.Empty;
@@ -449,6 +352,7 @@ namespace Common
                         FieldUserValue fuv = (FieldUserValue)item["AssignedTo"];
                         if (fuv.Email == _userName)
                         {
+
                             if (item["Title"] != null)
                                 IssueName = (string)item["Title"];
                             if (item["Status"] != null)
@@ -456,17 +360,55 @@ namespace Common
                             if (item["Priority"] != null)
                                 IssuePriority = (string)item["Priority"];
                             markdownContent += "**Title**\n" + IssueName + "<br>";
-                            markdownContent += "**Status**\n" + IssueStatus + "<br/>";
-                            markdownContent += "**Priority**\n" + IssuePriority + "<br>";
+                            markdownContent += "**Status**\n" + IssueStatus + "\n\r";
+                            markdownContent += "**Priority**\n" + IssuePriority + "\n\r";
                             markdownContent += "----\n\n";
+                            //  if (item["Title"] != null)
+                            //      IssueName = (string)item["Title"];
+                            //  if (item["Status"] != null)
+                            //      IssueStatus = (string)item["Status"];
+                            //  if (item["Priority"] != null)
+                            //      IssuePriority = (string)item["Priority"];
+                            ////  SubtitleVal += "**Title**\n" + IssueName + "<br>";
+                            //  SubtitleVal += "**Status**\n" + IssueStatus + "\n\r";
+                            //  SubtitleVal += "**Priority**\n" + IssuePriority + "\n\r";
+
+
+
+
+                            //HeroCard plCard = new HeroCard()
+                            //{
+                            //    Title = IssueName,
+                            //    Subtitle = SubtitleVal,
+                            //};
+
+                            //Microsoft.Bot.Connector.Attachment attachment = new Microsoft.Bot.Connector.Attachment()
+                            //{
+                            //    ContentType = HeroCard.ContentType,
+                            //    Content = plCard
+                            //};
+
+                            //reply.Attachments.Add(attachment);
                         }
+
+
                     }
                 }
+                //HeroCard plCardCounter = new HeroCard()
+                //{ Title = "**Total Issues :**\n" + count, };
+                //reply.Attachments.Add(plCardCounter.ToAttachment());
+                            markdownContent += "**Total Issues :**\n" + count + "\n\r";
 
-                markdownContent += "**Total Issues :**\n" + count + "<br>";
+
             }
             else
-                markdownContent = "No Issues assigned to you on this project";
+            {
+                //HeroCard plCardNoData = new HeroCard()
+                //{ Title = "**No Issues assigned to you on this project**\n\n" };
+                //reply.Attachments.Add(plCardNoData.ToAttachment());
+                markdownContent += "**No Issues assigned to you on this project**\n\n";
+
+            }
 
             return markdownContent;
         }
@@ -474,9 +416,6 @@ namespace Common
         public string GetProjectRisks(Web projectweb, ProjectContext context)
         {
             var markdownContent = "";
-
-
-
 
             var risks = projectweb.Lists.GetByTitle(Enums.ListName.Risks.ToString());
             CamlQuery query = CamlQuery.CreateAllItemsQuery();
@@ -685,49 +624,85 @@ namespace Common
             return markdownContent;
         }
 
-        public string GetProjectTasks(ProjectContext context, PublishedProject project)
+        public string GetProjectTasks(IDialogContext dialogContext ,  ProjectContext context, PublishedProject project)
         {
-            var markdownContent = "";
+            var SubtitleVal = "";
+            IMessageActivity reply = null;
+            string markdownContent = string.Empty;
+            reply = dialogContext.MakeMessage();
 
             if (GetUserGroup(context, "Team Members (Project Web App Synchronized)"))
             {
-                markdownContent = GetResourceTasksLoggedIn(context, project);
+                markdownContent = GetResourceTasksLoggedIn(dialogContext ,context, project);
             }
-            //else if (GetUserGroup(context, "Project Managers (Project Web App Synchronized)"))
-            //{
-            //    markdownContent = GetAllProjectIssues(itemsIssue);
-            //}
             else
             {
-                context.Load(project.Tasks);
+                context.Load(project.Owner);
                 context.ExecuteQuery();
-                PublishedTaskCollection tskcoll = project.Tasks;
-                if (tskcoll.Count > 0)
+                if (project.Owner.Email == _userName) // if the logged in user is a project manager on this project
                 {
-                    foreach (PublishedTask tsk in tskcoll)
+                    context.Load(project.Tasks);
+                    context.ExecuteQuery();
+                    PublishedTaskCollection tskcoll = project.Tasks;
+                    if (tskcoll.Count > 0)
                     {
-                        string TaskName = tsk.Name;
-                        string TaskDuration = tsk.Duration;
-                        string TaskPercentCompleted = tsk.PercentComplete.ToString();
-                        string TaskStartDate = tsk.Start.ToString();
-                        string TaskFinishDate = tsk.Finish.ToString();
+                        foreach (PublishedTask tsk in tskcoll)
+                        {
+                            string TaskName = tsk.Name;
+                            string TaskDuration = tsk.Duration;
+                            string TaskPercentCompleted = tsk.PercentComplete.ToString();
+                            string TaskStartDate = tsk.Start.ToString();
+                            string TaskFinishDate = tsk.Finish.ToString();
 
+                            markdownContent += "**Task Name**\n" + TaskName+ "\n\r";
 
-                        markdownContent += "**Task Name**\n" + TaskName + "<br>";
-                        markdownContent += "**Task Duration**\n" + TaskDuration + "<br/>";
-                        markdownContent += "**Task Percent Completed**\n" + TaskPercentCompleted + "<br>";
-                        markdownContent += "**Task Start Date**\n" + TaskStartDate + "<br>";
-                        markdownContent += "**Task Finish Date**\n" + TaskFinishDate + "<br>";
-                        markdownContent += "----\n\n";
+                            markdownContent += "**Task Duration**\n" + TaskDuration + "\n\r";
+                            markdownContent += "**Task Percent Completed**\n" + TaskPercentCompleted + "\n\r";
+                            markdownContent += "**Task Start Date**\n" + TaskStartDate + "\n\r";
+                            markdownContent += "**Task Finish Date**\n" + TaskFinishDate + "\n\r";
+                            markdownContent += "----\n\n";
+
+                            //SubtitleVal += "**Task Duration**\n" + TaskDuration + "\n\r";
+                            //SubtitleVal += "**Task Percent Completed**\n" + TaskPercentCompleted + "\n\r";
+                            //SubtitleVal += "**Task Start Date**\n" + TaskStartDate + "\n\r";
+                            //SubtitleVal += "**Task Finish Date**\n" + TaskFinishDate + "\n\r";
+
+                            //HeroCard plCard = new HeroCard()
+                            //{
+                            //    Title = TaskName,
+                            //    Subtitle = SubtitleVal,
+                            //};
+
+                            //reply.Attachments.Add(plCard.ToAttachment());
+                        }
+                        //HeroCard plCardCounter = new HeroCard()
+                        //{ Title = "**Total Tasks :**\n" + tskcoll.Count, };
+                        //reply.Attachments.Add(plCardCounter.ToAttachment());
+                        markdownContent += "**Total Tasks :**\n" + tskcoll.Count + "\n\r";
+
                     }
-                    markdownContent += "**Total Tasks :**\n" + tskcoll.Count + "<br>";
+                    else
+                    {
+                        //HeroCard plCardNoData = new HeroCard()
+                        //{ Title = "**No Tasks For This Project**\n\n" };
+                        //reply.Attachments.Add(plCardNoData.ToAttachment());
+                        markdownContent += "**No Tasks For This Project**\n\n";
+
+                    }
+
                 }
-            }
+                else
+                {
+                    markdownContent = GetResourceTasksLoggedIn(dialogContext, context, project);
+                    }
+
+                }
 
 
 
             return markdownContent;
         }
+
         public string GetProjectTAssignments(ProjectContext context, PublishedProject project)
         {
             var markdownContent = "";
@@ -755,41 +730,7 @@ namespace Common
 
             return markdownContent;
         }
-
-        public Web SubSiteExists(string siteUrl)
-        {
-            Web projectweb = null;
-            using (ClientContext context = new ClientContext(_siteUri))
-            {
-                SecureString passWord = new SecureString();
-                foreach (char c in ConfigurationManager.AppSettings["DomainAdminPassword"].ToCharArray()) passWord.AppendChar(c);
-                context.Credentials = new SharePointOnlineCredentials(ConfigurationManager.AppSettings["DomainAdmin"], passWord);
-
-                projectweb = context.Web;
-                context.Load(projectweb);
-                context.ExecuteQuery();
-
-                //  context.Load(oWebsite.Webs);
-                //   context.ExecuteQuery();
-
-                //foreach(Web w in oWebsite.Webs)
-                //{
-                //    //if (w.Id == proID)
-                //    //{
-                //    //    projectweb = w;
-                //    //    break;
-                //    //}
-                //    if (w.Title.ToLower() == subSiteTitle.ToLower())
-                //    {
-                //        projectweb = w;
-                //        break;
-                //    }
-                //}
-
-            }
-            return projectweb;
-        }
-
+        
         public bool UserHavePermissionOnaProjects(string siteUrl, string subSiteTitle, ProjectContext context)
         {
 
@@ -1141,9 +1082,12 @@ namespace Common
 
         }
 
-        public string GetResourceTasksLoggedIn(ProjectContext context, PublishedProject proj)
+        public string GetResourceTasksLoggedIn(IDialogContext dialogContext, ProjectContext context, PublishedProject proj)
         {
-            var markdownContent = "";
+            var SubtitleVal = "";
+            IMessageActivity reply = null;
+            reply = dialogContext.MakeMessage();
+            string markdownContent = string.Empty;
             context.Load(proj.Assignments, da => da.Where(a => a.Resource.Email != string.Empty && a.Resource.Email == _userName));
             context.ExecuteQuery();
             if (proj.Assignments != null)
@@ -1163,69 +1107,55 @@ namespace Common
                     string TaskFinishDate = tsk.Finish.ToString();
 
 
-                    markdownContent += "**Task Name**\n" + TaskName + "<br>";
-                    markdownContent += "**Task Duration**\n" + TaskDuration + "<br/>";
-                    markdownContent += "**Task Percent Completed**\n" + TaskPercentCompleted + "<br>";
-                    markdownContent += "**Task Start Date**\n" + TaskStartDate + "<br>";
-                    markdownContent += "**Task Finish Date**\n" + TaskFinishDate + "<br>";
+                    markdownContent += "**Task Name**\n" + TaskName + "\n\r";
+                    markdownContent += "**Task Duration**\n" + TaskDuration + "\n\r";
+                    markdownContent += "**Task Percent Completed**\n" + TaskPercentCompleted + "\n\r";
+                    markdownContent += "**Task Start Date**\n" + TaskStartDate + "\n\r";
+                    markdownContent += "**Task Finish Date**\n" + TaskFinishDate + "\n\r";
                     markdownContent += "----\n\n";
 
+                    //SubtitleVal += "**Task Name**\n" + TaskName + "\n\r";
+                    //SubtitleVal += "**Task Duration**\n" + TaskDuration + "\n\r";
+                    //SubtitleVal += "**Task Percent Completed**\n" + TaskPercentCompleted + "\n\r";
+                    //SubtitleVal += "**Task Start Date**\n" + TaskStartDate + "\n\r";
+                    //SubtitleVal += "**Task Finish Date**\n" + TaskFinishDate + "\n\r";
+
+                    //HeroCard plCard = new HeroCard()
+                    //{
+                    //    Title = TaskName,
+                    //    Subtitle = SubtitleVal,
+
+                    //};
+
+                    //Microsoft.Bot.Connector.Attachment attachment = new Microsoft.Bot.Connector.Attachment()
+                    //{
+                    //    ContentType = HeroCard.ContentType,
+                    //    Content = plCard
+                    //};
+
+
+                    //reply.Attachments.Add(attachment);
+
                 }
-                markdownContent += "**Total Assignes :**\n" + proAssignment.Count + "<br>";
+                //HeroCard plCardCounter = new HeroCard()
+                //{ Title = "**Total Tasks :**\n" + proAssignment.Count, };
+                //reply.Attachments.Add(plCardCounter.ToAttachment());
+                markdownContent += "**Total Tasks :**\n" + proAssignment.Count + "\n\r";
+
 
             }
             else
             {
-                markdownContent = "No assigned task for you on this project";
+                //HeroCard plCardNoData = new HeroCard()
+                //{ Title = "**No assigned task for you on this project**\n" };
+                //reply.Attachments.Add(plCardNoData.ToAttachment());
+                markdownContent += "**No assigned task for you on this project**\n";
+
             }
 
             return markdownContent;
 
 
-        }
-
-
-        public string GetProjectTasks(string EndnodeTasks)
-        {
-
-            var markdownContent = "";
-
-
-            SecureString passWord = new SecureString();
-            foreach (char c in _userPassword.ToCharArray()) passWord.AppendChar(c);
-            SharePointOnlineCredentials credentials = new SharePointOnlineCredentials(_userName, passWord);
-            var webUri = new Uri(_siteUri);
-            using (var client = new WebClient())
-            {
-                client.Headers.Add("X-FORMS_BASED_AUTH_ACCEPTED", "f");
-                client.Credentials = credentials;
-                client.Headers.Add(HttpRequestHeader.ContentType, "application/json;odata=verbose");
-                client.Headers.Add(HttpRequestHeader.Accept, "application/json;odata=verbose");
-                var endpointUri = new Uri(EndnodeTasks);
-                var responce = client.DownloadString(endpointUri);
-                var t = JToken.Parse(responce);
-                JObject results = JObject.Parse(t["d"].ToString());
-                List<JToken> jArrays = ((Newtonsoft.Json.Linq.JContainer)((Newtonsoft.Json.Linq.JContainer)t["d"]).First).First.ToList();
-                foreach (var item in jArrays)
-                {
-                    string TaskName = (string)item["TaskName"];
-                    string TaskDuration = (string)item["TaskDuration"];
-                    string TaskPercentCompleted = (string)item["PercentCompleted"];
-                    string TaskStartDate = (string)item["TaskStartDate"];
-                    string TaskFinishDate = (string)item["TaskFinishDate"];
-
-
-                    markdownContent += "**Task Name**\n" + TaskName + "<br>";
-                    markdownContent += "**Task Duration**\n" + TaskDuration + "<br/>";
-                    markdownContent += "**Task Percent Completed**\n" + TaskPercentCompleted + "<br>";
-                    markdownContent += "**Task Start Date**\n" + TaskStartDate + "<br>";
-                    markdownContent += "**Task Finish Date**\n" + TaskFinishDate + "<br>";
-                    markdownContent += "----\n\n";
-                }
-
-
-                return markdownContent;
-            }
         }
     }
 }
