@@ -130,7 +130,7 @@ namespace Microsoft.Bot.Sample.LuisBot
         {
             IMessageActivity reply = null;
             reply = context.MakeMessage();
-            if (context.UserData.TryGetValue<string>("UserName", out userName) && (context.UserData.TryGetValue<string>("Password", out password)))
+            if (context.UserData.TryGetValue<string>("UserName", out userName) && (context.UserData.TryGetValue<string>("Password", out password)) && (context.UserData.TryGetValue<string>("UserLoggedInName", out UserLoggedInName)))
             {
                 EntityRecommendation projectSDate, projectEDate, projectDuration, projectCompletion, projectDate, projectPM;
 
@@ -153,7 +153,7 @@ namespace Microsoft.Bot.Sample.LuisBot
 
 
 
-                await context.PostAsync(new Common.ProjectServer(userName, password).GetAllProjects(context,showCompletion, Pdate, pDuration, pPM));
+                await context.PostAsync(new Common.ProjectServerAPI(userName, password , UserLoggedInName).GetAllProjects(context,showCompletion, Pdate, pDuration, pPM));
 
 
             }
