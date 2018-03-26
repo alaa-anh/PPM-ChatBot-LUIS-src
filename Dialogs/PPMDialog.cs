@@ -153,7 +153,7 @@ namespace Microsoft.Bot.Sample.LuisBot
 
 
 
-                await context.PostAsync(new Common.ProjectServerAPI(userName, password , UserLoggedInName).GetAllProjects(context,showCompletion, Pdate, pDuration, pPM));
+                await context.PostAsync(new Common.ProjectServer(userName, password).GetAllProjects(context,showCompletion, Pdate, pDuration, pPM));
 
 
             }
