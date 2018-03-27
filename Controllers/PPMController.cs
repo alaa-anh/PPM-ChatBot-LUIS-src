@@ -9,7 +9,6 @@ using System.Net.Http;
 using System.Diagnostics;
 using System.Collections.Generic;
 using System.Web;
-using Common.Contracts;
 using Common;
 using Microsoft.Bot.Builder.Dialogs.Internals;
 using Autofac;

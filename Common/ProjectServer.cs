@@ -7,7 +7,6 @@ using System.Net.Http;
 using System.Security;
 using System.Text;
 using System.Web.Script.Serialization;
-//using Common.Contracts;
 using Microsoft.ProjectServer.Client;
 using Microsoft.SharePoint.Client;
 using Newtonsoft.Json;
@@ -33,7 +32,7 @@ namespace Common
         }
 
 
-        public IMessageActivity GetAllProjects(IDialogContext dialogContext, bool showCompletion, bool ProjectDates, bool PDuration, bool projectManager)
+        public IMessageActivity GetAllProjects(IDialogContext dialogContext,int SIndex, bool showCompletion, bool ProjectDates, bool PDuration, bool projectManager , out int Counter)
         {
             IMessageActivity reply = null;
             reply = dialogContext.MakeMessage();
@@ -46,18 +45,22 @@ namespace Common
 
                 context.Load(context.Projects);
                 context.ExecuteQuery();
-                
+                int inDexToVal = SIndex + 10;
+
+                if (inDexToVal >= context.Projects.Count)
+                    inDexToVal = context.Projects.Count;
                 ProjectCollection projectDetails = context.Projects;
+
+                Counter = context.Projects.Count;
+
                 if (context.Projects.Count > 0)
                 {
-                    foreach (PublishedProject pro in projectDetails)
+                    
+                    for (int startIndex= SIndex; startIndex < inDexToVal; startIndex++)
                     {
-
-                        PublishedProject project = GetProjectByName(pro.Name, context);
-
+                        PublishedProject pro = context.Projects[startIndex];
                         context.Load(pro.Owner);
                         context.Load(pro, p => p.ProjectSiteUrl);
-
                         context.ExecuteQuery();
 
                         string ProjectName = pro.Name;
@@ -106,6 +109,7 @@ namespace Common
 
                         List<CardImage> cardImages = new List<CardImage>();
                         List<CardAction> cardactions = new List<CardAction>();
+                      
                         cardImages.Add(new CardImage(url: ImageURL));
 
 
@@ -132,6 +136,7 @@ namespace Common
                         };
                         cardactions.Add(btnIssues);
 
+                       
                         HeroCard plCard = new HeroCard()
                         {
                             Title = ProjectName,
@@ -149,12 +154,38 @@ namespace Common
                         };
                         reply.Attachments.Add(attachment);
                     }
-                    HeroCard plCardCounter = new HeroCard()
-                    {
-                        Title = "**Total Projects :**\n" + projectDetails.Count,
 
-                    };
-                    reply.Attachments.Add(plCardCounter.ToAttachment());
+                    if (context.Projects.Count >= 10)
+                    {
+                     //   List<CardAction> cardButtons = CreateButtonsProjectsPaging(context.Projects.Count);
+                        string subTitle = string.Empty;
+                        if (SIndex == 0)
+                            subTitle = "You are viwing the first page , each page view 10 projects";
+                        else if (SIndex > 0)
+                        {
+                            int pagenumber = SIndex / 10 + 1;
+                            subTitle = "You are viwing the page number "+ pagenumber + " , each page view 10 projects";
+                        }
+                        HeroCard plCardCounter = new HeroCard()
+                        {
+                            Title = "**Total Number Of availabel Projects :**\n" + projectDetails.Count,
+                            Subtitle = subTitle,
+                      //      Buttons = cardButtons,
+
+                        };
+                        reply.AttachmentLayout = AttachmentLayoutTypes.Carousel;
+                        reply.Attachments.Add(plCardCounter.ToAttachment());
+                    }
+                    else
+                    {
+                        HeroCard plCardCounter = new HeroCard()
+                        {
+                            Title = "**Total Number Of availabel Projects :**\n" + projectDetails.Count,
+
+                        };
+                      
+                        reply.Attachments.Add(plCardCounter.ToAttachment());
+                    }
                 }
                 else
                 {
@@ -167,7 +198,103 @@ namespace Common
 
             return reply;
         }
-        
+
+
+        //public  List<CardAction> CreateButtonsProjectsPaging( int totalCount)
+        //{
+        //    List<CardAction> cardButtons = new List<CardAction>();
+        //    //double p = totalCount * 0.1;
+        //    //double result = Math.Ceiling(p);
+        //    //int pagenumber = int.Parse(result.ToString());
+
+        //    //string valuebutton = string.Empty;
+        //    //for (int i = 0; i < pagenumber; i++)
+        //    //{
+        //    //    string CurrentNumber = Convert.ToString(i);
+
+
+        //    //    if (i == 0)
+        //    //    {
+        //    //        valuebutton = "get all projects at index 0";
+        //    //    }
+        //    //    else
+        //    //        valuebutton = "get all projects at index " + i * 10;
+
+        //    //    CurrentNumber = Convert.ToString(i + 1);
+        //    //    CardAction CardButton = new CardAction()
+        //    //    {
+        //    //        Type = ActionTypes.PostBack,
+        //    //        Title = CurrentNumber,
+        //    //        Value = valuebutton,
+        //    //        Image = "http://www.kidsmathgamesonline.com/images/pictures/numbers600/number"+i+".jpg"
+        //    //    };
+        //    //    cardButtons.Add(CardButton);
+
+
+
+        //    //}
+        //    return cardButtons;
+        //}
+
+
+        public IMessageActivity CreateButtonsProjects(IDialogContext dialogContext , int totalCount)
+        {
+            IMessageActivity reply = null;
+            reply = dialogContext.MakeMessage();
+            reply.AttachmentLayout = AttachmentLayoutTypes.Carousel;
+            if(totalCount >10)
+            { 
+            List<CardAction> cardButtons = new List<CardAction>();
+            double p = totalCount * 0.1;
+            double result = Math.Ceiling(p);
+            int pagenumber = int.Parse(result.ToString());
+
+            string valuebutton = string.Empty;
+                for (int i = 0; i < pagenumber; i++)
+                {
+                    string CurrentNumber = Convert.ToString(i);
+
+
+                    if (i == 0)
+                    {
+                        valuebutton = "get all projects at index 0";
+                    }
+                    else
+                        valuebutton = "get all projects at index " + i * 10;
+
+                    CurrentNumber = Convert.ToString(i + 1);
+                    CardAction CardButton = new CardAction()
+                    {
+                        Type = ActionTypes.PostBack,
+                        Title = CurrentNumber,
+                        Value = valuebutton,
+                    };
+                    // cardButtons.Add(CardButton);
+
+
+                    List<CardImage> cardImages = new List<CardImage>();
+
+                    cardImages.Add(new CardImage(url: "http://www.kidsmathgamesonline.com/images/pictures/numbers600/number" + i + ".jpg"));
+
+
+                    ThumbnailCard plCardCounter = new ThumbnailCard()
+                    {
+                        // Title = "Page" + CurrentNumber,
+                        Images = cardImages,
+                        Tap = CardButton,
+
+                    };
+
+                    reply.Attachments.Add(plCardCounter.ToAttachment());
+                }
+            }
+
+           
+          
+
+            return reply;
+        }
+
         public string GetProjectSubItems(IDialogContext dialogContext ,  string pName, string ListName)
         {
             var markdownContent = "";

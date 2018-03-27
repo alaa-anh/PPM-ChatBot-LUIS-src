@@ -128,16 +128,25 @@ namespace Microsoft.Bot.Sample.LuisBot
         [LuisIntent("GetAllProjectsData")]
         public async Task GetAllProjectsData(IDialogContext context, LuisResult luisResult)
         {
-            IMessageActivity reply = null;
-            reply = context.MakeMessage();
+
+            var reply = context.MakeMessage();
+
             if (context.UserData.TryGetValue<string>("UserName", out userName) && (context.UserData.TryGetValue<string>("Password", out password)) && (context.UserData.TryGetValue<string>("UserLoggedInName", out UserLoggedInName)))
             {
                 EntityRecommendation projectSDate, projectEDate, projectDuration, projectCompletion, projectDate, projectPM;
+                EntityRecommendation ProjectItemIndex;
 
                 bool showCompletion = false;
                 bool Pdate = false;
                 bool pDuration = false;
                 bool pPM = false;
+                int itemStartIndex = 0;
+                int Counter;
+
+                if (luisResult.TryFindEntity("ItemIndex", out ProjectItemIndex))
+                {
+                    itemStartIndex = int.Parse(ProjectItemIndex.Entity);
+                }
 
                 if (luisResult.TryFindEntity("Project.Completion", out projectCompletion))
                     showCompletion = true;
@@ -153,8 +162,8 @@ namespace Microsoft.Bot.Sample.LuisBot
 
 
 
-                await context.PostAsync(new Common.ProjectServer(userName, password).GetAllProjects(context,showCompletion, Pdate, pDuration, pPM));
-
+                await context.PostAsync(new Common.ProjectServer(userName, password).GetAllProjects(context, itemStartIndex, showCompletion, Pdate, pDuration, pPM , out Counter));
+                await context.PostAsync(new Common.ProjectServer(userName, password).CreateButtonsProjects(context , Counter));
 
             }
             else
@@ -164,7 +173,8 @@ namespace Microsoft.Bot.Sample.LuisBot
         }
 
 
-
+       
+      
 
         [LuisIntent("GetProjectInfo")]
         public async Task GetProjectInfo(IDialogContext context, LuisResult luisResult)
@@ -188,6 +198,8 @@ namespace Microsoft.Bot.Sample.LuisBot
                 {
                     searchTerm_ProjectName = projectname.Entity;
                 }
+
+               
 
                 if (luisResult.TryFindEntity("Project.Issues", out projectIssues))
                 {
@@ -335,11 +347,7 @@ namespace Microsoft.Bot.Sample.LuisBot
                     searchTerm_ResourceName = resoursename.Entity;
                 }
 
-                //if (luisResult.TryFindEntity("user.assignment", out resourceassignment))
-                //{
-                //    ListName = Common.Enums.ListName.Issues.ToString();
-                //}
-
+               
 
                 if (string.IsNullOrWhiteSpace(searchTerm_ResourceName))
                 {
@@ -359,8 +367,7 @@ namespace Microsoft.Bot.Sample.LuisBot
         }
 
 
-        //private async Task SignUpComplete(IDialogContext context, IAwaitable<LoginForm> result)
-        //{ }
+        
 
         public virtual async Task SignUpComplete(IDialogContext context, IAwaitable<string> pass)
         {
@@ -378,7 +385,6 @@ namespace Microsoft.Bot.Sample.LuisBot
 
                 var message = $"You are currently Logged In. Please Enjoy Using our App. **{UserLoggedInName}**.";
                 await context.PostAsync(message);
-                // context.Wait(MessageReceived);
             }
             else
             {
@@ -386,9 +392,6 @@ namespace Microsoft.Bot.Sample.LuisBot
 
 
             }
-            // }
-
-            // context.Wait(MessageReceived);
         }
 
         private async Task ResumeAfterConfirmation(IDialogContext context, IAwaitable<bool> result)
