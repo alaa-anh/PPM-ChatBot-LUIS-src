@@ -275,7 +275,7 @@ namespace Common
                     //cardImages.Add(new CardImage(url: "http://www.kidsmathgamesonline.com/images/pictures/numbers600/number" + i + ".jpg"));
 
 
-                    ThumbnailCard plCardCounter = new ThumbnailCard()
+                    HeroCard plCardCounter = new HeroCard()
                     {
                         // Title = "Page" + CurrentNumber,
                      //   Images = cardImages,
