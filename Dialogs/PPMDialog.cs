@@ -158,7 +158,7 @@ namespace Microsoft.Bot.Sample.LuisBot
 
 
                 await context.PostAsync(new Common.ProjectServer(userName, password).GetAllProjects(context, itemStartIndex, showCompletion, Pdate, pDuration, pPM , out Counter));
-               await context.PostAsync(new Common.ProjectServer(userName, password).CreateButtonsProjects(context , Counter));
+               //await context.PostAsync(new Common.ProjectServer(userName, password).CreateButtonsProjects(context , Counter));
 
             }
             else
