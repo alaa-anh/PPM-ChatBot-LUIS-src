@@ -198,41 +198,41 @@ namespace Common
         }
 
 
-        public List<CardAction> CreateButtonsProjectsPaging(int totalCount)
-        {
-            List<CardAction> cardButtons = new List<CardAction>();
-            double p = totalCount * 0.1;
-            double result = Math.Ceiling(p);
-            int pagenumber = int.Parse(result.ToString());
+        //public List<CardAction> CreateButtonsProjectsPaging(int totalCount)
+        //{
+        //    List<CardAction> cardButtons = new List<CardAction>();
+        //    double p = totalCount * 0.1;
+        //    double result = Math.Ceiling(p);
+        //    int pagenumber = int.Parse(result.ToString());
 
-            string valuebutton = string.Empty;
-            for (int i = 0; i < pagenumber; i++)
-            {
-                string CurrentNumber = Convert.ToString(i);
-
-
-                if (i == 0)
-                {
-                    valuebutton = "get all projects at index 0";
-                }
-                else
-                    valuebutton = "get all projects at index " + i * 10;
-
-                CurrentNumber = Convert.ToString(i + 1);
-                CardAction CardButton = new CardAction()
-                {
-                    Type = ActionTypes.PostBack,
-                    Title = CurrentNumber,
-                    Value = valuebutton,
-                 //   Image = "http://www.kidsmathgamesonline.com/images/pictures/numbers600/number" + i + ".jpg"
-                };
-                cardButtons.Add(CardButton);
+        //    string valuebutton = string.Empty;
+        //    for (int i = 0; i < pagenumber; i++)
+        //    {
+        //        string CurrentNumber = Convert.ToString(i);
 
 
+        //        if (i == 0)
+        //        {
+        //            valuebutton = "get all projects at index 0";
+        //        }
+        //        else
+        //            valuebutton = "get all projects at index " + i * 10;
 
-                }
-                return cardButtons;
-        }
+        //        CurrentNumber = Convert.ToString(i + 1);
+        //        CardAction CardButton = new CardAction()
+        //        {
+        //            Type = ActionTypes.PostBack,
+        //            Title = CurrentNumber,
+        //            Value = valuebutton,
+        //         //   Image = "http://www.kidsmathgamesonline.com/images/pictures/numbers600/number" + i + ".jpg"
+        //        };
+        //        cardButtons.Add(CardButton);
+
+
+
+        //        }
+        //        return cardButtons;
+        //}
 
 
         public IMessageActivity CreateButtonsProjects(IDialogContext dialogContext, int totalCount)
