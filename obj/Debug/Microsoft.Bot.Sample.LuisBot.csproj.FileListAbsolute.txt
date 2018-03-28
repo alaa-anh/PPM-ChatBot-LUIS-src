@@ -267,7 +267,6 @@ C:\Projects\chatbot\PPM-ChatBot-LUIS-src\bin\MongoDB.Driver.xml
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\bin\MongoDB.Driver.Core.xml
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\bin\MongoDB.Driver.GridFS.xml
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\bin\Nemiro.OAuth.xml
-C:\Projects\chatbot\PPM-ChatBot-LUIS-src\bin\Newtonsoft.Json.xml
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\bin\System.Buffers.xml
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\bin\System.IdentityModel.Tokens.Jwt.xml
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\bin\System.Net.Http.Formatting.xml
@@ -342,3 +341,5 @@ C:\Projects\chatbot\PPM-ChatBot-LUIS-src\bin\Microsoft.SharePoint.Client.Search.
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\bin\Microsoft.SharePoint.Client.Taxonomy.dll
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\bin\Microsoft.SharePoint.Client.UserProfiles.dll
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\bin\Microsoft.SharePoint.Client.WorkflowServices.dll
+C:\Projects\chatbot\PPM-ChatBot-LUIS-src\bin\Common.dll.config
+C:\Projects\chatbot\PPM-ChatBot-LUIS-src\bin\Newtonsoft.Json.xml

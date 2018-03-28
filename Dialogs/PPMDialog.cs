@@ -9,12 +9,7 @@ using Microsoft.Bot.Connector;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using Microsoft.Bot.Builder.FormFlow;
-//using LuisBot.Forms;
 using Common;
-using Newtonsoft.Json.Linq;
-
-using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Sample.LuisBot
 {

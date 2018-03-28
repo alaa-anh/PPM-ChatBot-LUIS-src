@@ -9,8 +9,6 @@ using System.Text;
 using System.Web.Script.Serialization;
 using Microsoft.ProjectServer.Client;
 using Microsoft.SharePoint.Client;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System.Threading.Tasks;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Builder.Dialogs;
@@ -105,7 +103,7 @@ namespace Common
                             SubtitleVal += "**Project Manager :**\n" + ProjectOwnerName + "\n\r";
                         }
 
-                        string ImageURL = "https://images.g2crowd.com/uploads/product/hd_favicon/1487566556/microsoft-project-server.png";// "https://m365x892385.sharepoint.com/sites/pwa/PublishingImages/CompanyLogo.jpg";
+                        string ImageURL = "http://02-code.com/images/logo.jpg";
 
                         List<CardImage> cardImages = new List<CardImage>();
                         List<CardAction> cardactions = new List<CardAction>();
@@ -274,13 +272,13 @@ namespace Common
 
                     List<CardImage> cardImages = new List<CardImage>();
 
-                    cardImages.Add(new CardImage(url: "http://www.kidsmathgamesonline.com/images/pictures/numbers600/number" + i + ".jpg"));
+                  //  cardImages.Add(new CardImage(url: "https://ppm-chatbot-luis.scm.azurewebsites.net/dev/wwwroot/Images/"+ CurrentNumber + ".jpg"));
 
 
                     ThumbnailCard plCardCounter = new ThumbnailCard()
                     {
-                        // Title = "Page" + CurrentNumber,
-                        Images = cardImages,
+                         Title = "Page " + CurrentNumber,
+                       // Images = cardImages,
                         Tap = CardButton,
 
                     };
