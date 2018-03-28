@@ -157,9 +157,9 @@ namespace Microsoft.Bot.Sample.LuisBot
 
 
 
-                await context.PostAsync(new Common.ProjectServer(userName, password).GetAllProjects(context, itemStartIndex, showCompletion, Pdate, pDuration, pPM , out Counter));
-                await context.PostAsync(new Common.ProjectServer(userName, password).TotalCountGeneralMessage(context, itemStartIndex,Counter));
-                await context.PostAsync(new Common.ProjectServer(userName, password).CreateButtonsPager(context , Counter));
+                await context.PostAsync(new Common.ProjectServerTelegram(userName, password).GetAllProjectsBasic(context, itemStartIndex, showCompletion, Pdate, pDuration, pPM , out Counter));
+             //   await context.PostAsync(new Common.ProjectServerTelegram(userName, password).TotalCountGeneralMessage(context, itemStartIndex,Counter));
+              //  await context.PostAsync(new Common.ProjectServerTelegram(userName, password).CreateButtonsPager(context , Counter));
 
             }
             else

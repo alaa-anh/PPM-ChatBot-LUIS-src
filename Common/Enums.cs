@@ -14,7 +14,8 @@ namespace Common
             Tasks = 2,
             Risks = 3,
             Deliverables = 4,
-            Assignments = 5
+            Assignments = 5,
+            Projects = 6,
         }
     }
 }
