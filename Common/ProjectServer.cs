@@ -277,7 +277,7 @@ namespace Common
 
                     HeroCard plCardCounter = new HeroCard()
                     {
-                        // Title = "Page" + CurrentNumber,
+                         Title = "Page" + CurrentNumber,
                      //   Images = cardImages,
                         Tap = CardButton,
 
