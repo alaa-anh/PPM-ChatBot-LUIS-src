@@ -153,89 +153,98 @@ namespace Common
                         reply.Attachments.Add(attachment);
                     }
 
-                    if (context.Projects.Count >= 10)
-                    {
-                        //List<CardAction> cardButtons = CreateButtonsProjectsPaging(context.Projects.Count);
-                        string subTitle = string.Empty;
-                        if (SIndex == 0)
-                            subTitle = "You are viwing the first page , each page view 10 projects";
-                        else if (SIndex > 0)
-                        {
-                            int pagenumber = SIndex / 10 + 1;
-                            subTitle = "You are viwing the page number "+ pagenumber + " , each page view 10 projects";
-                        }
-                        HeroCard plCardCounter = new HeroCard()
-                        {
-                            Title = "**Total Number Of availabel Projects :**\n" + projectDetails.Count,
-                            Subtitle = subTitle,
-                          //  Buttons = cardButtons,
+                    //if (context.Projects.Count >= 10)
+                    //{
+                    //    //List<CardAction> cardButtons = CreateButtonsProjectsPaging(context.Projects.Count);
+                    //    string subTitle = string.Empty;
+                    //    if (SIndex == 0)
+                    //        subTitle = "You are viwing the first page , each page view 10 projects";
+                    //    else if (SIndex > 0)
+                    //    {
+                    //        int pagenumber = SIndex / 10 + 1;
+                    //        subTitle = "You are viwing the page number "+ pagenumber + " , each page view 10 projects";
+                    //    }
+                    //    HeroCard plCardCounter = new HeroCard()
+                    //    {
+                    //        Title = "**Total Number Of availabel Projects :**\n" + projectDetails.Count,
+                    //        Subtitle = subTitle,
+                    //      //  Buttons = cardButtons,
 
-                        };
-                        reply.AttachmentLayout = AttachmentLayoutTypes.Carousel;
-                        reply.Attachments.Add(plCardCounter.ToAttachment());
-                    }
-                    else
-                    {
-                        HeroCard plCardCounter = new HeroCard()
-                        {
-                            Title = "**Total Number Of availabel Projects :**\n" + projectDetails.Count,
+                    //    };
+                    //    reply.AttachmentLayout = AttachmentLayoutTypes.Carousel;
+                    //    reply.Attachments.Add(plCardCounter.ToAttachment());
+                    //}
+                    //else
+                    //{
+                    //    HeroCard plCardCounter = new HeroCard()
+                    //    {
+                    //        Title = "**Total Number Of availabel Projects :**\n" + projectDetails.Count,
 
-                        };
+                    //    };
                       
-                        reply.Attachments.Add(plCardCounter.ToAttachment());
-                    }
+                    //    reply.Attachments.Add(plCardCounter.ToAttachment());
+                    //}
                 }
-                else
-                {
-                    HeroCard plCardNoData = new HeroCard()
-                    { Title = "**No Availabel Projects**\n\n" };
-                    reply.Attachments.Add(plCardNoData.ToAttachment());
-                }
+                //else
+                //{
+                //    HeroCard plCardNoData = new HeroCard()
+                //    { Title = "**No Availabel Projects**\n\n" };
+                //    reply.Attachments.Add(plCardNoData.ToAttachment());
+                //}
 
             }
 
             return reply;
         }
 
+        public IMessageActivity TotalCountGeneralMessage(IDialogContext dialogContext, int SIndex, int Counter)
+        {
+            IMessageActivity reply = null;
+            reply = dialogContext.MakeMessage();
+            if (Counter > 0)
+            {
+                if (Counter >= 10)
+                {
+                    string subTitle = string.Empty;
+                    if (SIndex == 0)
+                        subTitle = "You are viwing the first page , each page view 10 projects";
+                    else if (SIndex > 0)
+                    {
+                        int pagenumber = SIndex / 10 + 1;
+                        subTitle = "You are viwing the page number " + pagenumber + " , each page view 10 projects";
+                    }
+                    HeroCard plCardCounter = new HeroCard()
+                    {
+                        Title = "**Total Number Of availabel Projects :**\n" + Counter,
+                        Subtitle = subTitle,
+                        //  Buttons = cardButtons,
+                    };
+                    reply.AttachmentLayout = AttachmentLayoutTypes.Carousel;
+                    reply.Attachments.Add(plCardCounter.ToAttachment());
+                }
+                else
+                {
+                    HeroCard plCardCounter = new HeroCard()
+                    {
+                        Title = "**Total Number Of availabel Projects :**\n" + Counter,
+                    };
+                    reply.Attachments.Add(plCardCounter.ToAttachment());
+                }
+            }
+            else
+            {
+                HeroCard plCardNoData = new HeroCard()
+                { Title = "**No Availabel Projects**\n\n" };
+                reply.Attachments.Add(plCardNoData.ToAttachment());
+            }
+            return reply;
+        }
 
-        //public List<CardAction> CreateButtonsProjectsPaging(int totalCount)
-        //{
-        //    List<CardAction> cardButtons = new List<CardAction>();
-        //    double p = totalCount * 0.1;
-        //    double result = Math.Ceiling(p);
-        //    int pagenumber = int.Parse(result.ToString());
 
-        //    string valuebutton = string.Empty;
-        //    for (int i = 0; i < pagenumber; i++)
-        //    {
-        //        string CurrentNumber = Convert.ToString(i);
+        
 
 
-        //        if (i == 0)
-        //        {
-        //            valuebutton = "get all projects at index 0";
-        //        }
-        //        else
-        //            valuebutton = "get all projects at index " + i * 10;
-
-        //        CurrentNumber = Convert.ToString(i + 1);
-        //        CardAction CardButton = new CardAction()
-        //        {
-        //            Type = ActionTypes.PostBack,
-        //            Title = CurrentNumber,
-        //            Value = valuebutton,
-        //         //   Image = "http://www.kidsmathgamesonline.com/images/pictures/numbers600/number" + i + ".jpg"
-        //        };
-        //        cardButtons.Add(CardButton);
-
-
-
-        //        }
-        //        return cardButtons;
-        //}
-
-
-        public IMessageActivity CreateButtonsProjects(IDialogContext dialogContext, int totalCount)
+        public IMessageActivity CreateButtonsPager(IDialogContext dialogContext, int totalCount)
         {
             IMessageActivity reply = null;
             reply = dialogContext.MakeMessage();
