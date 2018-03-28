@@ -270,15 +270,15 @@ namespace Common
                     // cardButtons.Add(CardButton);
 
 
-           //         List<CardImage> cardImages = new List<CardImage>();
+                    List<CardImage> cardImages = new List<CardImage>();
 
-                  //  cardImages.Add(new CardImage(url: "https://ppm-chatbot-luis.scm.azurewebsites.net/dev/wwwroot/Images/"+ CurrentNumber + ".jpg"));
+                    cardImages.Add(new CardImage(url: "https://ppm-chatbot-luis.scm.azurewebsites.net/dev/wwwroot/Images/" + CurrentNumber + ".jpg"));
 
 
                     ThumbnailCard plCardCounter = new ThumbnailCard()
                     {
                          Title = "Page " + CurrentNumber,
-                       // Images = cardImages,
+                        Images = cardImages,
                         Tap = CardButton,
 
                     };
