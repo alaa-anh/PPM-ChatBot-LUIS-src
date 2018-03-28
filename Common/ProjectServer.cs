@@ -155,7 +155,7 @@ namespace Common
 
                     if (context.Projects.Count >= 10)
                     {
-                        List<CardAction> cardButtons = CreateButtonsProjectsPaging(context.Projects.Count);
+                        //List<CardAction> cardButtons = CreateButtonsProjectsPaging(context.Projects.Count);
                         string subTitle = string.Empty;
                         if (SIndex == 0)
                             subTitle = "You are viwing the first page , each page view 10 projects";
@@ -168,10 +168,10 @@ namespace Common
                         {
                             Title = "**Total Number Of availabel Projects :**\n" + projectDetails.Count,
                             Subtitle = subTitle,
-                            Buttons = cardButtons,
+                          //  Buttons = cardButtons,
 
                         };
-                       // reply.AttachmentLayout = AttachmentLayoutTypes.Carousel;
+                        reply.AttachmentLayout = AttachmentLayoutTypes.Carousel;
                         reply.Attachments.Add(plCardCounter.ToAttachment());
                     }
                     else
@@ -224,7 +224,7 @@ namespace Common
                     Type = ActionTypes.PostBack,
                     Title = CurrentNumber,
                     Value = valuebutton,
-                    Image = "http://www.kidsmathgamesonline.com/images/pictures/numbers600/number" + i + ".jpg"
+                 //   Image = "http://www.kidsmathgamesonline.com/images/pictures/numbers600/number" + i + ".jpg"
                 };
                 cardButtons.Add(CardButton);
 
@@ -235,19 +235,19 @@ namespace Common
         }
 
 
-        public IMessageActivity CreateButtonsProjects(IDialogContext dialogContext , int totalCount)
+        public IMessageActivity CreateButtonsProjects(IDialogContext dialogContext, int totalCount)
         {
             IMessageActivity reply = null;
             reply = dialogContext.MakeMessage();
             reply.AttachmentLayout = AttachmentLayoutTypes.Carousel;
-            if(totalCount >10)
-            { 
-            List<CardAction> cardButtons = new List<CardAction>();
-            double p = totalCount * 0.1;
-            double result = Math.Ceiling(p);
-            int pagenumber = int.Parse(result.ToString());
+            if (totalCount > 10)
+            {
+                List<CardAction> cardButtons = new List<CardAction>();
+                double p = totalCount * 0.1;
+                double result = Math.Ceiling(p);
+                int pagenumber = int.Parse(result.ToString());
 
-            string valuebutton = string.Empty;
+                string valuebutton = string.Empty;
                 for (int i = 0; i < pagenumber; i++)
                 {
                     string CurrentNumber = Convert.ToString(i);
@@ -272,12 +272,12 @@ namespace Common
 
                     List<CardImage> cardImages = new List<CardImage>();
 
-                    cardImages.Add(new CardImage(url: "https://ppm-chatbot-luis.scm.azurewebsites.net/dev/wwwroot/Images/" + CurrentNumber + ".jpg"));
+                    cardImages.Add(new CardImage(url: "http://www.kidsmathgamesonline.com/images/pictures/numbers600/number" + i + ".jpg"));
 
 
                     ThumbnailCard plCardCounter = new ThumbnailCard()
                     {
-                         Title = "Page " + CurrentNumber,
+                        // Title = "Page" + CurrentNumber,
                         Images = cardImages,
                         Tap = CardButton,
 
@@ -287,8 +287,8 @@ namespace Common
                 }
             }
 
-           
-          
+
+
 
             return reply;
         }
