@@ -136,6 +136,31 @@ namespace Common
                         cardactions.Add(btnIssues);
 
 
+                        CardAction btnRisks = new CardAction()
+                        {
+                            Type = ActionTypes.PostBack,
+                            Title = "Risks",
+                            Value = "Show risks and the assigned resources of " + ProjectName,
+                        };
+                        cardactions.Add(btnRisks);
+
+
+                        CardAction btnDeliverables = new CardAction()
+                        {
+                            Type = ActionTypes.PostBack,
+                            Title = "Deliverables",
+                            Value = "Show "+ProjectName+" deliverables",
+                        };
+                        cardactions.Add(btnDeliverables);
+
+                        CardAction btnDAssignments = new CardAction()
+                        {
+                            Type = ActionTypes.PostBack,
+                            Title = "Assignments",
+                            Value = "get "+ProjectName+" assignments",
+                        };
+                        cardactions.Add(btnDAssignments);
+
                         HeroCard plCard = new HeroCard()
                         {
                             Title = ProjectName,
@@ -144,14 +169,8 @@ namespace Common
                             Buttons = cardactions,
                             Tap = btnTasks,
 
-                        };
-
-                        Microsoft.Bot.Connector.Attachment attachment = new Microsoft.Bot.Connector.Attachment()
-                        {
-                            ContentType = HeroCard.ContentType,
-                            Content = plCard
-                        };
-                        reply.Attachments.Add(attachment);
+                        };                      
+                        reply.Attachments.Add(plCard.ToAttachment());
                     }
 
 
