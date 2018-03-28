@@ -34,6 +34,7 @@ namespace Common
         {
             IMessageActivity reply = null;
             reply = dialogContext.MakeMessage();
+            reply.AttachmentLayout = AttachmentLayoutTypes.Carousel;
             using (ProjectContext context = new ProjectContext(_siteUri))
             {
                 SecureString passWord = new SecureString();
@@ -44,17 +45,17 @@ namespace Common
                 context.Load(context.Projects);
                 context.ExecuteQuery();
                 int inDexToVal = SIndex + 10;
-
+                Counter = context.Projects.Count;
                 if (inDexToVal >= context.Projects.Count)
                     inDexToVal = context.Projects.Count;
                 ProjectCollection projectDetails = context.Projects;
 
-                Counter = context.Projects.Count;
+
 
                 if (context.Projects.Count > 0)
                 {
-                    
-                    for (int startIndex= SIndex; startIndex < inDexToVal; startIndex++)
+
+                    for (int startIndex = SIndex; startIndex < inDexToVal; startIndex++)
                     {
                         PublishedProject pro = context.Projects[startIndex];
                         context.Load(pro.Owner);
@@ -107,7 +108,7 @@ namespace Common
 
                         List<CardImage> cardImages = new List<CardImage>();
                         List<CardAction> cardactions = new List<CardAction>();
-                      
+
                         cardImages.Add(new CardImage(url: ImageURL));
 
 
@@ -134,7 +135,7 @@ namespace Common
                         };
                         cardactions.Add(btnIssues);
 
-                       
+
                         HeroCard plCard = new HeroCard()
                         {
                             Title = ProjectName,
@@ -153,44 +154,8 @@ namespace Common
                         reply.Attachments.Add(attachment);
                     }
 
-                    //if (context.Projects.Count >= 10)
-                    //{
-                    //    //List<CardAction> cardButtons = CreateButtonsProjectsPaging(context.Projects.Count);
-                    //    string subTitle = string.Empty;
-                    //    if (SIndex == 0)
-                    //        subTitle = "You are viwing the first page , each page view 10 projects";
-                    //    else if (SIndex > 0)
-                    //    {
-                    //        int pagenumber = SIndex / 10 + 1;
-                    //        subTitle = "You are viwing the page number "+ pagenumber + " , each page view 10 projects";
-                    //    }
-                    //    HeroCard plCardCounter = new HeroCard()
-                    //    {
-                    //        Title = "**Total Number Of availabel Projects :**\n" + projectDetails.Count,
-                    //        Subtitle = subTitle,
-                    //      //  Buttons = cardButtons,
 
-                    //    };
-                    //    reply.AttachmentLayout = AttachmentLayoutTypes.Carousel;
-                    //    reply.Attachments.Add(plCardCounter.ToAttachment());
-                    //}
-                    //else
-                    //{
-                    //    HeroCard plCardCounter = new HeroCard()
-                    //    {
-                    //        Title = "**Total Number Of availabel Projects :**\n" + projectDetails.Count,
-
-                    //    };
-                      
-                    //    reply.Attachments.Add(plCardCounter.ToAttachment());
-                    //}
                 }
-                //else
-                //{
-                //    HeroCard plCardNoData = new HeroCard()
-                //    { Title = "**No Availabel Projects**\n\n" };
-                //    reply.Attachments.Add(plCardNoData.ToAttachment());
-                //}
 
             }
 

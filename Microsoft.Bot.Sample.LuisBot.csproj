@@ -256,6 +256,7 @@
     <Compile Include="Controllers\PPMController.cs" />
     <Compile Include="Dialogs\BasicLuisDialog.cs" />
     <Compile Include="Controllers\MessagesController.cs" />
+    <Compile Include="Dialogs\PPMDialogTelegram.cs" />
     <Compile Include="Dialogs\PPMDialog.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>

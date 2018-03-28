@@ -14,14 +14,14 @@ using Common;
 namespace Microsoft.Bot.Sample.LuisBot
 {
     [Serializable]
-    public class PPMDialog : LuisDialog<object>
+    public class PPMDialogTelegram : LuisDialog<object>
     {
         private string userName;
         private string password;
         private string UserLoggedInName;
 
         private DateTime msgReceivedDate;
-        public PPMDialog(Activity activity) : base(new LuisService(new LuisModelAttribute(
+        public PPMDialogTelegram(Activity activity) : base(new LuisService(new LuisModelAttribute(
 
 
             ConfigurationManager.AppSettings["LuisAppId"],
@@ -53,7 +53,7 @@ namespace Microsoft.Bot.Sample.LuisBot
             {
                 if (this.msgReceivedDate.ToString("tt") == "AM")
                 {
-                    response.Append($"Good morning, {UserLoggedInName}.. :)");
+                    response.Append($"Good morningldfjksldkjflsdfjlskdfjl, {UserLoggedInName}.. :)");
                 }
                 else
                 {
@@ -156,7 +156,7 @@ namespace Microsoft.Bot.Sample.LuisBot
                     pPM = true;
 
 
-                
+
                 await context.PostAsync(new Common.ProjectServer(userName, password).GetAllProjects(context, itemStartIndex, showCompletion, Pdate, pDuration, pPM , out Counter));
                 await context.PostAsync(new Common.ProjectServer(userName, password).TotalCountGeneralMessage(context, itemStartIndex,Counter));
                 await context.PostAsync(new Common.ProjectServer(userName, password).CreateButtonsPager(context , Counter));
