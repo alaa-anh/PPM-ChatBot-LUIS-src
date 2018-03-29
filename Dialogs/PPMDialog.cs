@@ -160,7 +160,7 @@ namespace Microsoft.Bot.Sample.LuisBot
                 await context.PostAsync(new Common.ProjectServer(userName, password).GetAllProjects(context, itemStartIndex, showCompletion, Pdate, pDuration, pPM , out Counter));
                 await context.PostAsync(new Common.ProjectServer(userName, password).TotalCountGeneralMessage(context, itemStartIndex,Counter ,Enums.ListName.Projects.ToString()));
                 if(Counter > 10)
-                    await context.PostAsync(new Common.ProjectServer(userName, password).CreateButtonsPager(context , Counter , Enums.ListName.Projects.ToString() , ""));
+                    await context.PostAsync(new Common.ProjectServer(userName, password).CreateButtonsPager(context , Counter , Enums.ListName.Projects.ToString() , "" , ""));
 
             }
             else
@@ -220,7 +220,7 @@ namespace Microsoft.Bot.Sample.LuisBot
                         }
                         await context.PostAsync(new Common.ProjectServer(userName, password).TotalCountGeneralMessage(context, itemStartIndex, Counter, ListName));
                         if (Counter > 10)
-                            await context.PostAsync(new Common.ProjectServer(userName, password).CreateButtonsPager(context, Counter, ListName, searchTerm_ProjectName));
+                            await context.PostAsync(new Common.ProjectServer(userName, password).CreateButtonsPager(context, Counter, ListName, searchTerm_ProjectName , ""));
 
 
                     }
@@ -235,7 +235,7 @@ namespace Microsoft.Bot.Sample.LuisBot
                         }
                         await context.PostAsync(new Common.ProjectServer(userName, password).TotalCountGeneralMessage(context, itemStartIndex, Counter, ListName));
                         if (Counter > 10)
-                            await context.PostAsync(new Common.ProjectServer(userName, password).CreateButtonsPager(context, Counter, ListName, searchTerm_ProjectName));
+                            await context.PostAsync(new Common.ProjectServer(userName, password).CreateButtonsPager(context, Counter, ListName, searchTerm_ProjectName ,""));
 
 
                     }
@@ -250,7 +250,7 @@ namespace Microsoft.Bot.Sample.LuisBot
 
                         await context.PostAsync(new Common.ProjectServer(userName, password).TotalCountGeneralMessage(context, itemStartIndex, Counter, ListName));
                         if (Counter > 10)
-                            await context.PostAsync(new Common.ProjectServer(userName, password).CreateButtonsPager(context, Counter, ListName, searchTerm_ProjectName));
+                            await context.PostAsync(new Common.ProjectServer(userName, password).CreateButtonsPager(context, Counter, ListName, searchTerm_ProjectName , ""));
 
                     }
                     else if (luisResult.TryFindEntity("Project.Deliverables", out projectDeliverables))
@@ -263,7 +263,7 @@ namespace Microsoft.Bot.Sample.LuisBot
                         }
                         await context.PostAsync(new Common.ProjectServer(userName, password).TotalCountGeneralMessage(context, itemStartIndex, Counter, ListName));
                         if (Counter > 10)
-                            await context.PostAsync(new Common.ProjectServer(userName, password).CreateButtonsPager(context, Counter, ListName, searchTerm_ProjectName));
+                            await context.PostAsync(new Common.ProjectServer(userName, password).CreateButtonsPager(context, Counter, ListName, searchTerm_ProjectName , ""));
 
                     }
                     else if (luisResult.TryFindEntity("Project.Assignments", out projectAssignments))
@@ -276,7 +276,7 @@ namespace Microsoft.Bot.Sample.LuisBot
                         }
                         await context.PostAsync(new Common.ProjectServer(userName, password).TotalCountGeneralMessage(context, itemStartIndex, Counter, ListName));
                         if (Counter > 10)
-                            await context.PostAsync(new Common.ProjectServer(userName, password).CreateButtonsPager(context, Counter, ListName, searchTerm_ProjectName));
+                            await context.PostAsync(new Common.ProjectServer(userName, password).CreateButtonsPager(context, Counter, ListName, searchTerm_ProjectName , ""));
 
                     }
                     else if(ListName =="")
@@ -299,9 +299,9 @@ namespace Microsoft.Bot.Sample.LuisBot
                         if (luisResult.TryFindEntity("Project.PM", out projectManager))
                             PMshow = true;
 
+                        await context.PostAsync(new Common.ProjectServer(userName, password).GetProjectInfo(context, searchTerm_ProjectName, Pdate, pDuration, PCompletion, PMshow));
 
-                        await context.PostAsync(new Common.ProjectServer(userName, password).GetProjectInfo(searchTerm_ProjectName, Pdate, pDuration, PCompletion, PMshow));
-                        //context.Wait(this.MessageReceived);
+
                     }
 
                 }
@@ -331,7 +331,10 @@ namespace Microsoft.Bot.Sample.LuisBot
                 var filterDate = (object)null;
 
                 EntityRecommendation dateTimeEntity, dateRangeEntity, ProjectS, ProjectE;
+                EntityRecommendation ItemIndex;
 
+                int itemStartIndex = 0;
+                int Counter;
 
                 if (luisResult.TryFindEntity("builtin.datetimeV2.daterange", out dateRangeEntity))
                 {
@@ -362,12 +365,16 @@ namespace Microsoft.Bot.Sample.LuisBot
 
 
                 if (filterDate != null)
-                    await context.PostAsync(new Common.ProjectServer(this.userName, password).FilterProjectsByDate(FilterType, ProjectSDate, ProjectEDate, ProjectSEdateFlag));
-
-
-
-
-                context.Wait(this.MessageReceived);
+                {
+                    IMessageActivity messageActivity = new Common.ProjectServer(userName, password).FilterProjectsByDate(context, FilterType, ProjectSDate, ProjectEDate, ProjectSEdateFlag , out Counter);
+                    if (messageActivity.Attachments.Count > 0)
+                    {
+                        await context.PostAsync(messageActivity);
+                    }
+                    await context.PostAsync(new Common.ProjectServer(userName, password).TotalCountGeneralMessage(context, itemStartIndex, Counter, "FilterByDate"));
+                    if (Counter > 10)
+                        await context.PostAsync(new Common.ProjectServer(userName, password).CreateButtonsPager(context, Counter, "FilterByDate", "" , luisResult.Query));
+                }
             }
             else
             {
@@ -438,7 +445,6 @@ namespace Microsoft.Bot.Sample.LuisBot
             {
                 PromptDialog.Confirm(context, ResumeAfterConfirmation, "The User Don't have permission , do you want to try another cridentials?");
 
-
             }
         }
 
@@ -475,66 +481,8 @@ namespace Microsoft.Bot.Sample.LuisBot
             //  await context.PostAsync(confirmation ? "You do want to order." : "You don't want to order.");
         }
 
-        //public virtual async Task MessageReceivedAsync(IDialogContext context, IAwaitable<IMessageActivity> argument)
-        //{
-        //    var msg = await argument;
-        //    if (msg.ChannelId == "ppmDL")
-        //    {
-        //        string botChatSecret = ConfigurationManager.AppSettings["BotChatDirectLineSecret"];
-        //        var request = new HttpRequestMessage(HttpMethod.Get, "https://webchat.botframework.com/api/tokens");
-        //        request.Headers.Add("Authorization", "BOTCONNECTOR " + botChatSecret);
-        //        using (HttpResponseMessage response = await new HttpClient().SendAsync(request))
-        //        {
-        //            string token = await response.Content.ReadAsStringAsync();
-        //            Token = token.Replace("\"", "");
-        //        }
-
-        //    }
-        //    else if (msg.ChannelId == "facebook")
-        //    {
-        //        var reply = context.MakeMessage();
-        //        reply.ChannelData = new FacebookMessage
-        //        (
-        //            text: "Please share your location with me.",
-        //            quickReplies: new List<FacebookQuickReply>
-        //            {
-        //                // If content_type is location, title and payload are not used
-        //                // see https://developers.facebook.com/docs/messenger-platform/send-api-reference/quick-replies#fields
-        //                // for more information.
-        //                new FacebookQuickReply(
-        //                    contentType: FacebookQuickReply.ContentTypes.Location,
-        //                    title: default(string),
-        //                    payload: default(string)
-        //                )
-        //            }
-        //        );
-        //        await context.PostAsync(reply);
-        //      //  context.Wait(LocationReceivedAsync);
-        //    }
-        //    else if (msg.ChannelId == "email")
-        //    { }
-        //    else if (msg.ChannelId == "skype")
-        //    { }
-        //    else if (msg.ChannelId == "slack")
-        //    { }
-        //    else
-        //    {
-        //        context.Done(default(Place));
-        //    }
-        //}
-
-        //public virtual async Task LocationReceivedAsync(IDialogContext context, IAwaitable<IMessageActivity> argument)
-        //{
-        //    var msg = await argument;
-        //    var location = msg.Entities?.Where(t => t.Type == "Place").Select(t => t.GetAs<Place>()).FirstOrDefault();
-        //    context.Done(location);
-        //}
-        public static IEnumerable<IEnumerable<T>> Split<T>(IEnumerable<T> list, int parts)
-        {
-            return list.Select((item, ix) => new { ix, item })
-                       .GroupBy(x => x.ix % parts)
-                       .Select(x => x.Select(y => y.item));
-        }
+        
+      
 
 
     }

@@ -251,7 +251,7 @@ namespace Microsoft.Bot.Sample.LuisBot
                             PMshow = true;
 
 
-                        await context.PostAsync(new Common.ProjectServer(userName, password).GetProjectInfo(searchTerm_ProjectName, Pdate, pDuration, PCompletion, PMshow));
+                       // await context.PostAsync(new Common.ProjectServer(userName, password).GetProjectInfo(searchTerm_ProjectName, Pdate, pDuration, PCompletion, PMshow));
                         context.Wait(this.MessageReceived);
                     }
                 }
@@ -309,8 +309,8 @@ namespace Microsoft.Bot.Sample.LuisBot
                 }
 
 
-                if (filterDate != null)
-                    await context.PostAsync(new Common.ProjectServer(this.userName, password).FilterProjectsByDate(FilterType, ProjectSDate, ProjectEDate, ProjectSEdateFlag));
+                //if (filterDate != null)
+                //    await context.PostAsync(new Common.ProjectServer(this.userName, password).FilterProjectsByDate(FilterType, ProjectSDate, ProjectEDate, ProjectSEdateFlag));
 
 
 

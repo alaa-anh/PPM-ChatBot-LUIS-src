@@ -452,6 +452,190 @@ namespace Common
             }
             return reply;
         }
+
+        public IMessageActivity FilterProjectsByDate(IDialogContext dialogContext, string FilterType, string pStartDate, string PEndDate, string ProjectSEdateFlag , out int Counter)
+        {
+            IMessageActivity reply = null;
+            reply = dialogContext.MakeMessage();
+            reply.AttachmentLayout = AttachmentLayoutTypes.Carousel;
+            Counter = 0;
+            IEnumerable<PublishedProject> retrivedProjects = null; ;
+            using (ProjectContext context = new ProjectContext(_siteUri))
+            {
+                SecureString passWord = new SecureString();
+                foreach (char c in _userPassword.ToCharArray()) passWord.AppendChar(c);
+                context.Credentials = new SharePointOnlineCredentials(_userName, passWord);
+                DateTime startdate = new DateTime();
+                DateTime endate = new DateTime();
+
+                if (!string.IsNullOrEmpty(pStartDate))
+                    startdate = DateTime.Parse(pStartDate);
+
+                if (!string.IsNullOrEmpty(PEndDate))
+                    endate = DateTime.Parse(PEndDate);
+
+
+                if (ProjectSEdateFlag == "START")
+                {
+
+                    if (FilterType.ToUpper() == "BEFORE" && pStartDate != "")
+                    {
+                        var pubProjects = context.Projects
+                                  .Where(p => (p.StartDate <= startdate))
+                                  .Select(p => p);
+                        retrivedProjects = context.LoadQuery(pubProjects);
+
+
+                    }
+                    else if (FilterType.ToUpper() == "AFTER" && pStartDate != "")
+                    {
+                        var pubProjects = context.Projects
+                            .Where(p => p.IsEnterpriseProject == true
+                            && p.StartDate >= startdate);
+                        retrivedProjects = context.LoadQuery(pubProjects);
+
+                    }
+
+                    else if (FilterType.ToUpper() == "BETWEEN" && pStartDate != "")
+                    {
+                        var pubProjects = context.Projects
+                            .Where(p => p.IsEnterpriseProject == true
+                            && p.StartDate >= startdate && p.StartDate <= endate);
+                        retrivedProjects = context.LoadQuery(pubProjects);
+
+                    }
+                }
+                else
+                {
+
+                    if (FilterType.ToUpper() == "BEFORE" && PEndDate != "")
+                    {
+                        var pubProjects = context.Projects
+                            .Where(p => p.IsEnterpriseProject == true
+                            && p.FinishDate <= endate);
+                        retrivedProjects = context.LoadQuery(pubProjects);
+
+                    }
+
+                    else if (FilterType.ToUpper() == "AFTER" && PEndDate != "")
+                    {
+                        var pubProjects = context.Projects
+                            .Where(p => p.IsEnterpriseProject == true
+                            && p.StartDate >= endate);
+                        retrivedProjects = context.LoadQuery(pubProjects);
+
+                    }
+                    else if (FilterType.ToUpper() == "BETWEEN" && PEndDate != "")
+                    {
+                        var pubProjects = context.Projects
+                            .Where(p => p.IsEnterpriseProject == true
+                            && p.FinishDate >= startdate && p.FinishDate <= endate);
+                        retrivedProjects = context.LoadQuery(pubProjects);
+
+                    }
+                }
+
+                context.ExecuteQuery();
+                if (retrivedProjects.Count() > 0)
+                {
+                    Counter = retrivedProjects.Count();
+                    foreach (var item in retrivedProjects)
+                    {
+                        string SubtitleVal = "";
+
+
+                        string ProjectName = item.Name;
+                        SubtitleVal += "**Start Date**\n" + item.StartDate + "\n\r";
+                        SubtitleVal += "**Finish Date**\n" + item.FinishDate + "\n\r";
+                        SubtitleVal += "**Actual Cost**\n" + item.DefaultFixedCostAccrual.ToString() + "\n\r";
+
+                        HeroCard plCard = new HeroCard()
+                        {
+                            Title = ProjectName,
+                            Subtitle = SubtitleVal,
+                        };
+                        reply.Attachments.Add(plCard.ToAttachment());
+
+
+                    }
+                }
+            }
+
+
+
+
+
+            return reply;
+        }
+
+        public IMessageActivity GetProjectInfo(IDialogContext dialogContext, string pName, bool optionalDate = false, bool optionalDuration = false, bool optionalCompletion = false, bool optionalPM = false)
+        {
+            IMessageActivity reply = null;
+            reply = dialogContext.MakeMessage();
+            reply.AttachmentLayout = AttachmentLayoutTypes.Carousel;
+            string SubtitleVal = "";
+
+            using (ProjectContext context = new ProjectContext(_siteUri))
+            {
+                SecureString passWord = new SecureString();
+                foreach (char c in _userPassword.ToCharArray()) passWord.AppendChar(c);
+                context.Credentials = new SharePointOnlineCredentials(_userName, passWord);
+
+                PublishedProject project = GetProjectByName(pName, context);
+
+                if (project != null)
+                {
+                    if (optionalDate == true)
+                    {
+                        SubtitleVal += "**Start Date :**\n" + project.StartDate + "\n\r";
+                        SubtitleVal += "**Finish Date :**\n" + project.FinishDate + "\n\r";
+                    }
+
+                    if (optionalDuration == true)
+                    {
+                        TimeSpan duration = project.FinishDate - project.StartDate;
+                        SubtitleVal += "**Project Duration :**\n" + duration.Days + "\n\r";
+                    }
+
+                    if (optionalCompletion == true)
+                        SubtitleVal += "**Project Completed Percentage :**\n" + project.PercentComplete + "%\n\r";
+
+                    if (optionalPM == true)
+                    {
+                        if (GetUserGroup(context, "Team Members (Project Web App Synchronized)") == false)
+                        {
+                            context.Load(project.Owner);
+                            context.ExecuteQuery();
+                            SubtitleVal += "**Project Manager Name :**\n" + project.Owner.Title + "\n\r";
+                        }
+                    }
+
+                    HeroCard plCard = new HeroCard()
+                    {
+                        Title = pName,
+                        Subtitle = SubtitleVal,
+                    };
+                    reply.Attachments.Add(plCard.ToAttachment());
+                    
+                }
+                else
+                {
+                    HeroCard plCardNoData = new HeroCard()
+                    {
+                        Title = "Project Name Not Exist",
+                    };
+                    reply.Attachments.Add(plCardNoData.ToAttachment());
+
+                }
+
+
+              
+
+
+            }
+            return reply;
+        }
+
         public IMessageActivity TotalCountGeneralMessage(IDialogContext dialogContext, int SIndex, int Counter , string ListName)
         {
             IMessageActivity reply = null;
@@ -690,10 +874,51 @@ namespace Common
                     reply.Attachments.Add(plCardNoData.ToAttachment());
                 }
             }
+            else if (ListName == "FilterByDate")
+            {
+                if (Counter > 0)
+                {
+                    if (Counter >= 10)
+                    {
+                        string subTitle = string.Empty;
+                        if (SIndex == 0)
+                            subTitle = "You are viwing the first page , each page view 10 Projects";
+                        else if (SIndex > 0)
+                        {
+                            int pagenumber = SIndex / 10 + 1;
+                            subTitle = "You are viwing the page number " + pagenumber + " , each page view 10 Deliverables";
+                        }
+                        HeroCard plCardCounter = new HeroCard()
+                        {
+                            Title = "**Total Number Of availabel Projects :**\n" + Counter,
+                            Subtitle = subTitle,
+                            //  Buttons = cardButtons,
+                        };
+                        reply.AttachmentLayout = AttachmentLayoutTypes.Carousel;
+                        reply.Attachments.Add(plCardCounter.ToAttachment());
+                    }
+                    else
+                    {
+                        HeroCard plCardCounter = new HeroCard()
+                        {
+                            Title = "**Total Number Of availabel Projects :**\n" + Counter,
+                        };
+                        reply.Attachments.Add(plCardCounter.ToAttachment());
+                    }
+                }
+                else
+                {
+                    HeroCard plCardNoData = new HeroCard()
+                    { Title = "**No Availabel Projects**\n\n" };
+                    reply.Attachments.Add(plCardNoData.ToAttachment());
+                }
+            }
+
+            
             return reply;
         }
 
-        public IMessageActivity CreateButtonsPager(IDialogContext dialogContext, int totalCount , string ListName , string projectName)
+        public IMessageActivity CreateButtonsPager(IDialogContext dialogContext, int totalCount , string ListName , string projectName , string query)
         {
             IMessageActivity reply = null;
             reply = dialogContext.MakeMessage();
@@ -766,6 +991,16 @@ namespace Common
                         }
                         else
                             valuebutton = "get " + projectName + " assignments at index " + i * 10;
+
+                    }
+                    else if (ListName == "FilterByDate" && query !="")
+                    {
+                        if (i == 0)
+                        {
+                            valuebutton = query + " at index 0";
+                        }
+                        else
+                            valuebutton = query + " at index " + i * 10;
 
                     }
 
@@ -1309,163 +1544,8 @@ namespace Common
 
         }
 
-        public string GetProjectInfo(string pName, bool optionalDate = false, bool optionalDuration = false, bool optionalCompletion = false, bool optionalPM = false)
-        {
-            var markdownContent = "";
-
-            using (ProjectContext context = new ProjectContext(_siteUri))
-            {
-                SecureString passWord = new SecureString();
-                foreach (char c in _userPassword.ToCharArray()) passWord.AppendChar(c);
-                context.Credentials = new SharePointOnlineCredentials(_userName, passWord);
-
-                PublishedProject project = GetProjectByName(pName, context);
-
-                if (project != null)
-                {
-                    if (optionalDate == true)
-                    {
-                        markdownContent += "**Start Date :**\n" + project.StartDate + "<br>";
-                        markdownContent += "**Finish Date :**\n" + project.FinishDate + "<br>";
-                    }
-
-                    if (optionalDuration == true)
-                    {
-                        TimeSpan duration = project.FinishDate - project.StartDate;
-                        markdownContent += "**Project Duration :**\n" + duration.Days + "<br>";
-                    }
-
-                    if (optionalCompletion == true)
-                        markdownContent += "**Project Completed Percentage :**\n" + project.PercentComplete + "%<br>";
-
-                    if (optionalPM == true)
-                    {
-                        if (GetUserGroup(context, "Team Members (Project Web App Synchronized)") == false)
-                        {
-                            context.Load(project.Owner);
-                            context.ExecuteQuery();
-                            markdownContent += "**Project Manager Name :**\n" + project.Owner.Title + "<br>";
-                        }
-                    }
-                }
-                else
-                {
-                    markdownContent = "Project Name Not Exist";
-
-                }
-
-
-
-            }
-            return markdownContent;
-        }
-
-        public string FilterProjectsByDate(string FilterType, string pStartDate, string PEndDate, string ProjectSEdateFlag)
-        {
-            string markdownContent = string.Empty;
-            IEnumerable<PublishedProject> retrivedProjects = null; ;
-            using (ProjectContext context = new ProjectContext(_siteUri))
-            {
-                SecureString passWord = new SecureString();
-                foreach (char c in _userPassword.ToCharArray()) passWord.AppendChar(c);
-                context.Credentials = new SharePointOnlineCredentials(_userName, passWord);
-                DateTime startdate = new DateTime();
-                DateTime endate = new DateTime();
-
-                if (!string.IsNullOrEmpty(pStartDate))
-                    startdate = DateTime.Parse(pStartDate);
-
-                if (!string.IsNullOrEmpty(PEndDate))
-                    endate = DateTime.Parse(PEndDate);
-
-
-                if (ProjectSEdateFlag == "START")
-                {
-
-                    if (FilterType.ToUpper() == "BEFORE" && pStartDate != "")
-                    {
-                        var pubProjects = context.Projects
-                                  .Where(p => (p.StartDate <= startdate))
-                                  .Select(p => p);
-                        retrivedProjects = context.LoadQuery(pubProjects);
-
-
-                    }
-                    else if (FilterType.ToUpper() == "AFTER" && pStartDate != "")
-                    {
-                        var pubProjects = context.Projects
-                            .Where(p => p.IsEnterpriseProject == true
-                            && p.StartDate >= startdate);
-                        retrivedProjects = context.LoadQuery(pubProjects);
-
-                    }
-
-                    else if (FilterType.ToUpper() == "BETWEEN" && pStartDate != "")
-                    {
-                        var pubProjects = context.Projects
-                            .Where(p => p.IsEnterpriseProject == true
-                            && p.StartDate >= startdate && p.StartDate <= endate);
-                        retrivedProjects = context.LoadQuery(pubProjects);
-
-                    }
-                }
-                else
-                {
-
-                    if (FilterType.ToUpper() == "BEFORE" && PEndDate != "")
-                    {
-                        var pubProjects = context.Projects
-                            .Where(p => p.IsEnterpriseProject == true
-                            && p.FinishDate <= endate);
-                        retrivedProjects = context.LoadQuery(pubProjects);
-
-                    }
-
-                    else if (FilterType.ToUpper() == "AFTER" && PEndDate != "")
-                    {
-                        var pubProjects = context.Projects
-                            .Where(p => p.IsEnterpriseProject == true
-                            && p.StartDate >= endate);
-                        retrivedProjects = context.LoadQuery(pubProjects);
-
-                    }
-                    else if (FilterType.ToUpper() == "BETWEEN" && PEndDate != "")
-                    {
-                        var pubProjects = context.Projects
-                            .Where(p => p.IsEnterpriseProject == true
-                            && p.FinishDate >= startdate && p.FinishDate <= endate);
-                        retrivedProjects = context.LoadQuery(pubProjects);
-
-                    }
-                }
-
-                context.ExecuteQuery();
-
-            }
-            if (!retrivedProjects.Any())       // no project found
-            {
-                markdownContent += "**No Availabel Projects**\n\n";
-
-                // return null;
-            }
-            else
-            {
-                foreach (var item in retrivedProjects)
-                {
-                    markdownContent += "**Project Name**\n" + item.Name + "<br>";
-                    markdownContent += "**Start Date**\n" + item.StartDate + "<br>";
-                    markdownContent += "**Finish Date**\n" + item.FinishDate + "<br>";
-                    markdownContent += "**Actual Cost**\n" + item.DefaultFixedCostAccrual.ToString() + "<br>";
-                    markdownContent += "----\n\n";
-
-
-                }
-                markdownContent += "**Total Projects :**\n" + retrivedProjects.Count() + "<br>";
-
-            }
-
-            return markdownContent;
-        }
+      
+      
 
         public string GetResourceAssignments(string ResourceName)
         {
