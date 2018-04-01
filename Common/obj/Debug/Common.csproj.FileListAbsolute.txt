@@ -108,7 +108,7 @@ C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\nl\Microsoft.Bot.Build
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\pt-BR\Microsoft.Bot.Builder.resources.dll
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\ru\Microsoft.Bot.Builder.resources.dll
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\zh-hans\Microsoft.Bot.Builder.resources.dll
+C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\obj\Debug\Common.csprojResolveAssemblyReference.cache
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\obj\Debug\Common.csproj.CoreCompileInputs.cache
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\obj\Debug\Common.dll
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\obj\Debug\Common.pdb
-C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\obj\Debug\Common.csprojResolveAssemblyReference.cache

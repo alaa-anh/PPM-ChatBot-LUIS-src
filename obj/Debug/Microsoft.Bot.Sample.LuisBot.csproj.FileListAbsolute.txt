@@ -171,8 +171,6 @@ C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\obj\Debug\LuisBot.dl
 C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\obj\Debug\LuisBot.pdb
 C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\bin\Common.dll.config
 C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\bin\Microsoft.Bot.Connector.DirectLine.dll
-C:\Projects\chatbot\PPM-ChatBot-LUIS-src\obj\Debug\Microsoft.Bot.Sample.LuisBot.csprojResolveAssemblyReference.cache
-C:\Projects\chatbot\PPM-ChatBot-LUIS-src\obj\Debug\Microsoft.Bot.Sample.LuisBot.csproj.CoreCompileInputs.cache
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\bin\Microsoft.Azure.Documents.ServiceInterop.dll
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\bin\DocumentDB.Spatial.Sql.dll
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\bin\roslyn\csc.exe
@@ -340,5 +338,7 @@ C:\Projects\chatbot\PPM-ChatBot-LUIS-src\bin\ko\System.Spatial.resources.dll
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\bin\ru\System.Spatial.resources.dll
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\bin\zh-Hans\System.Spatial.resources.dll
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\bin\zh-Hant\System.Spatial.resources.dll
+C:\Projects\chatbot\PPM-ChatBot-LUIS-src\obj\Debug\Microsoft.Bot.Sample.LuisBot.csprojResolveAssemblyReference.cache
+C:\Projects\chatbot\PPM-ChatBot-LUIS-src\obj\Debug\Microsoft.Bot.Sample.LuisBot.csproj.CoreCompileInputs.cache
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\obj\Debug\LuisBot.dll
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\obj\Debug\LuisBot.pdb
