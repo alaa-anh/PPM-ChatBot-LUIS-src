@@ -351,7 +351,7 @@ namespace Microsoft.Bot.Sample.LuisBot
                 }
                 else
                 {
-                    await context.PostAsync(new Common.ProjectServer(this.userName, password).GetResourceAssignments(searchTerm_ResourceName));
+                  //  await context.PostAsync(new Common.ProjectServer(this.userName, password).GetResourceAssignments(searchTerm_ResourceName));
                     context.Wait(this.MessageReceived);
                 }
             }

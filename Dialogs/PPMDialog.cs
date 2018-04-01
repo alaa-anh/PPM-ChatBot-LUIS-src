@@ -157,7 +157,7 @@ namespace Microsoft.Bot.Sample.LuisBot
 
 
                 
-                await context.PostAsync(new Common.ProjectServer(userName, password).GetAllProjects(context, itemStartIndex, showCompletion, Pdate, pDuration, pPM , out Counter));
+                await context.PostAsync(new Common.ProjectServer(userName, password).GetMSProjects(context, itemStartIndex, showCompletion, Pdate, pDuration, pPM , out Counter));
                 await context.PostAsync(new Common.ProjectServer(userName, password).TotalCountGeneralMessage(context, itemStartIndex,Counter ,Enums.ListName.Projects.ToString()));
                 if(Counter > 10)
                     await context.PostAsync(new Common.ProjectServer(userName, password).CreateButtonsPager(context , Counter , Enums.ListName.Projects.ToString() , "" , ""));
@@ -391,12 +391,19 @@ namespace Microsoft.Bot.Sample.LuisBot
 
 
                 EntityRecommendation resoursename, resourceassignment;
+                EntityRecommendation ItemIndex;
 
 
                 string searchTerm_ResourceName = string.Empty;
                 string ListName = string.Empty;
+                int itemStartIndex = 0;
+                int Counter;
 
 
+                if (luisResult.TryFindEntity("ItemIndex", out ItemIndex))
+                {
+                    itemStartIndex = int.Parse(ItemIndex.Entity);
+                }
                 if (luisResult.TryFindEntity("user.name", out resoursename))
                 {
                     searchTerm_ResourceName = resoursename.Entity;
@@ -410,8 +417,15 @@ namespace Microsoft.Bot.Sample.LuisBot
                 }
                 else
                 {
-                    await context.PostAsync(new Common.ProjectServer(this.userName, password).GetResourceAssignments(searchTerm_ResourceName));
-                    context.Wait(this.MessageReceived);
+                    IMessageActivity messageActivity = new Common.ProjectServer(userName, password).GetResourceAssignments(context, itemStartIndex, searchTerm_ResourceName, out Counter);
+                    if (messageActivity.Attachments.Count > 0)
+                    {
+                        await context.PostAsync(messageActivity);
+                    }
+                    await context.PostAsync(new Common.ProjectServer(userName, password).TotalCountGeneralMessage(context, itemStartIndex, Counter, "UserAssignments"));
+                    if (Counter > 10)
+                        await context.PostAsync(new Common.ProjectServer(userName, password).CreateButtonsPager(context, Counter, "UserAssignments", searchTerm_ResourceName, luisResult.Query));
+
                 }
             }
             else

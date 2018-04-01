@@ -19,6 +19,8 @@ namespace Common
     {
         private string _userName;
         private string _userPassword;
+        private string _userNameAdmin = ConfigurationManager.AppSettings["DomainAdmin"];
+        private string _userPasswordAdmin = ConfigurationManager.AppSettings["DomainAdminPassword"];
 
         private string _siteUri;
         public ProjectServer(string userName, string password)
@@ -30,7 +32,7 @@ namespace Common
         }
 
 
-        public IMessageActivity GetAllProjects(IDialogContext dialogContext,int SIndex, bool showCompletion, bool ProjectDates, bool PDuration, bool projectManager , out int Counter)
+        public IMessageActivity GetMSProjects(IDialogContext dialogContext,int SIndex, bool showCompletion, bool ProjectDates, bool PDuration, bool projectManager , out int Counter)
         {
             IMessageActivity reply = null;
             reply = dialogContext.MakeMessage();
@@ -44,138 +46,257 @@ namespace Common
 
                 context.Load(context.Projects);
                 context.ExecuteQuery();
-                int inDexToVal = SIndex + 10;
-                Counter = context.Projects.Count;
-                if (inDexToVal >= context.Projects.Count)
-                    inDexToVal = context.Projects.Count;
+
+                Counter = 0;
                 ProjectCollection projectDetails = context.Projects;
+                int ProjectCounter = 0;
 
 
 
                 if (context.Projects.Count > 0)
                 {
 
-                    for (int startIndex = SIndex; startIndex < inDexToVal; startIndex++)
+                    if (GetUserGroup(context, "Team Members (Project Web App Synchronized)"))
                     {
-                        PublishedProject pro = context.Projects[startIndex];
-                        context.Load(pro.Owner);
-                        context.Load(pro, p => p.ProjectSiteUrl);
-                        context.ExecuteQuery();
-
-                        string ProjectName = pro.Name;
-                        string ProjectWorkspaceInternalUrl = pro.ProjectSiteUrl;
-                        string ProjectPercentCompleted = pro.PercentComplete.ToString();
-                        string ProjectFinishDate = pro.FinishDate.ToString();
-                        string ProjectStartDate = pro.StartDate.ToString();
-                        TimeSpan duration = pro.FinishDate - pro.StartDate;
-
-                        string ProjectDuration = duration.Days.ToString();
-
-                        string ProjectOwnerName = pro.Owner.Title;
-
-
-                        string SubtitleVal = "";
-
-                        if (showCompletion == false && ProjectDates == false && PDuration == false && projectManager == false)
-                        {
-                            SubtitleVal += "**Completed Percentage :**\n" + ProjectPercentCompleted + "%\n\r";
-                            SubtitleVal += "**Start Date :**\n" + ProjectStartDate + "\n\r";
-                            SubtitleVal += "**Finish Date :**\n" + ProjectFinishDate + "\n\r";
-                            SubtitleVal += "**Project Duration :**\n" + ProjectDuration + "\n\r";
-                            SubtitleVal += "**Project Manager :**\n" + ProjectOwnerName + "\n\r";
-                        }
-                        else if (showCompletion == true)
-                            SubtitleVal += "**Completed Percentage :**\n" + ProjectPercentCompleted + "%\n\r";
-
-                        else if (ProjectDates == true)
-                        {
-                            SubtitleVal += "**Start Date :**\n" + ProjectStartDate + "\n\r";
-                            SubtitleVal += "**Finish Date :**\n" + ProjectFinishDate + "\n\r";
-                        }
-
-                        else if (PDuration == true)
-                        {
-                            SubtitleVal += "**Project Duration :**\n" + ProjectDuration + "\n\r";
-                        }
-
-
-                        else if (projectManager == true)
-                        {
-                            SubtitleVal += "**Project Manager :**\n" + ProjectOwnerName + "\n\r";
-                        }
-
-                        string ImageURL = "http://02-code.com/images/logo.jpg";
-
-                        List<CardImage> cardImages = new List<CardImage>();
-                        List<CardAction> cardactions = new List<CardAction>();
-
-                        cardImages.Add(new CardImage(url: ImageURL));
-
-
-                        CardAction btnWebsite = new CardAction()
-                        {
-                            Type = ActionTypes.OpenUrl,
-                            Title = "Open",
-                            Value = ProjectWorkspaceInternalUrl + "?redirect_uri={" + ProjectWorkspaceInternalUrl + "}",
-                        };
-
-                        CardAction btnTasks = new CardAction()
-                        {
-                            Type = ActionTypes.PostBack,
-                            Title = "Tasks",
-                            Value = "show a list of " + ProjectName + " tasks",
-                        };
-                        cardactions.Add(btnTasks);
-
-                        CardAction btnIssues = new CardAction()
-                        {
-                            Type = ActionTypes.PostBack,
-                            Title = "Issues",
-                            Value = "show a list of " + ProjectName + " issues",
-                        };
-                        cardactions.Add(btnIssues);
-
-
-                        CardAction btnRisks = new CardAction()
-                        {
-                            Type = ActionTypes.PostBack,
-                            Title = "Risks",
-                            Value = "Show risks and the assigned resources of " + ProjectName,
-                        };
-                        cardactions.Add(btnRisks);
-
-
-                        CardAction btnDeliverables = new CardAction()
-                        {
-                            Type = ActionTypes.PostBack,
-                            Title = "Deliverables",
-                            Value = "Show "+ProjectName+" deliverables",
-                        };
-                        cardactions.Add(btnDeliverables);
-
-                        CardAction btnDAssignments = new CardAction()
-                        {
-                            Type = ActionTypes.PostBack,
-                            Title = "Assignments",
-                            Value = "get "+ProjectName+" assignments",
-                        };
-                        cardactions.Add(btnDAssignments);
-
-                        HeroCard plCard = new HeroCard()
-                        {
-                            Title = ProjectName,
-                            Subtitle = SubtitleVal,
-                            Images = cardImages,
-                            Buttons = cardactions,
-                            Tap = btnTasks,
-
-                        };                      
-                        reply.Attachments.Add(plCard.ToAttachment());
+                        reply = GetResourceLoggedInProjects(dialogContext, context, projectDetails, SIndex, showCompletion, ProjectDates, PDuration, projectManager, out ProjectCounter);
+                    }
+                    else
+                    {
+                        reply = GetAllProjects(dialogContext , context, projectDetails, SIndex, showCompletion, ProjectDates , PDuration, projectManager, out ProjectCounter);
                     }
 
-
+                    Counter = ProjectCounter;
                 }
 
+            }
+
+           
+            return reply;
+        }
+
+        public IMessageActivity GetAllProjects(IDialogContext dialogContext , ProjectContext context, ProjectCollection projectDetails, int SIndex, bool showCompletion, bool ProjectDates, bool PDuration, bool projectManager, out int Counter)
+        {
+            IMessageActivity reply = null;
+            reply = dialogContext.MakeMessage();
+            reply.AttachmentLayout = AttachmentLayoutTypes.Carousel;
+
+            int inDexToVal = SIndex + 10;
+            Counter = projectDetails.Count;
+            if (inDexToVal >= projectDetails.Count)
+                inDexToVal = projectDetails.Count;
+
+            for (int startIndex = SIndex; startIndex < inDexToVal; startIndex++)
+            {
+                PublishedProject pro = context.Projects[startIndex];
+                context.Load(pro.Owner);
+                context.Load(pro, p => p.ProjectSiteUrl);
+                context.ExecuteQuery();
+
+                string ProjectName = pro.Name;
+                string ProjectWorkspaceInternalUrl = pro.ProjectSiteUrl;
+                string ProjectPercentCompleted = pro.PercentComplete.ToString();
+                string ProjectFinishDate = pro.FinishDate.ToString();
+                string ProjectStartDate = pro.StartDate.ToString();
+                TimeSpan duration = pro.FinishDate - pro.StartDate;
+                string ProjectDuration = duration.Days.ToString();
+                string ProjectOwnerName = pro.Owner.Title;
+                string SubtitleVal = "";
+                if (showCompletion == false && ProjectDates == false && PDuration == false && projectManager == false)
+                {
+                    SubtitleVal += "**Completed Percentage :**\n" + ProjectPercentCompleted + "%\n\r";
+                    SubtitleVal += "**Start Date :**\n" + ProjectStartDate + "\n\r";
+                    SubtitleVal += "**Finish Date :**\n" + ProjectFinishDate + "\n\r";
+                    SubtitleVal += "**Project Duration :**\n" + ProjectDuration + "\n\r";
+                    SubtitleVal += "**Project Manager :**\n" + ProjectOwnerName + "\n\r";
+                }
+                else if (showCompletion == true)
+                    SubtitleVal += "**Completed Percentage :**\n" + ProjectPercentCompleted + "%\n\r";
+                else if (ProjectDates == true)
+                {
+                    SubtitleVal += "**Start Date :**\n" + ProjectStartDate + "\n\r";
+                    SubtitleVal += "**Finish Date :**\n" + ProjectFinishDate + "\n\r";
+                }
+                else if (PDuration == true)
+                {
+                    SubtitleVal += "**Project Duration :**\n" + ProjectDuration + "\n\r";
+                }
+                else if (projectManager == true)
+                {
+                    SubtitleVal += "**Project Manager :**\n" + ProjectOwnerName + "\n\r";
+                }
+                string ImageURL = "http://02-code.com/images/logo.jpg";
+                List<CardImage> cardImages = new List<CardImage>();
+                List<CardAction> cardactions = new List<CardAction>();
+                cardImages.Add(new CardImage(url: ImageURL));
+                CardAction btnWebsite = new CardAction()
+                {
+                    Type = ActionTypes.OpenUrl,
+                    Title = "Open",
+                    Value = ProjectWorkspaceInternalUrl + "?redirect_uri={" + ProjectWorkspaceInternalUrl + "}",
+                };
+                CardAction btnTasks = new CardAction()
+                {
+                    Type = ActionTypes.PostBack,
+                    Title = "Tasks",
+                    Value = "show a list of " + ProjectName + " tasks",
+                };
+                cardactions.Add(btnTasks);
+
+                CardAction btnIssues = new CardAction()
+                {
+                    Type = ActionTypes.PostBack,
+                    Title = "Issues",
+                    Value = "show a list of " + ProjectName + " issues",
+                };
+                cardactions.Add(btnIssues);
+
+                CardAction btnRisks = new CardAction()
+                {
+                    Type = ActionTypes.PostBack,
+                    Title = "Risks",
+                    Value = "Show risks and the assigned resources of " + ProjectName,
+                };
+                cardactions.Add(btnRisks);
+
+                CardAction btnDeliverables = new CardAction()
+                {
+                    Type = ActionTypes.PostBack,
+                    Title = "Deliverables",
+                    Value = "Show " + ProjectName + " deliverables",
+                };
+                cardactions.Add(btnDeliverables);
+
+                CardAction btnDAssignments = new CardAction()
+                {
+                    Type = ActionTypes.PostBack,
+                    Title = "Assignments",
+                    Value = "get " + ProjectName + " assignments",
+                };
+                cardactions.Add(btnDAssignments);
+
+                HeroCard plCard = new HeroCard()
+                {
+                    Title = ProjectName,
+                    Subtitle = SubtitleVal,
+                    Images = cardImages,
+                    Buttons = cardactions,
+                    Tap = btnTasks,
+                };
+                reply.Attachments.Add(plCard.ToAttachment());
+            }
+
+            return reply;
+        }
+
+        public IMessageActivity GetResourceLoggedInProjects(IDialogContext dialogContext, ProjectContext context, ProjectCollection projectDetails, int SIndex, bool showCompletion, bool ProjectDates, bool PDuration, bool projectManager, out int Counter)
+        {
+            IMessageActivity reply = null;
+            reply = dialogContext.MakeMessage();
+            reply.AttachmentLayout = AttachmentLayoutTypes.Carousel;
+
+            int inDexToVal = SIndex + 10;
+            Counter = projectDetails.Count;
+            if (inDexToVal >= projectDetails.Count)
+                inDexToVal = projectDetails.Count;
+
+            for (int startIndex = SIndex; startIndex < inDexToVal; startIndex++)
+            {
+                PublishedProject pro = context.Projects[startIndex];
+                context.Load(pro.Owner);
+              //  context.Load(pro, p => p.ProjectSiteUrl);
+                context.ExecuteQuery();
+
+                string ProjectName = pro.Name;
+           //     string ProjectWorkspaceInternalUrl = pro.ProjectSiteUrl;
+                string ProjectPercentCompleted = pro.PercentComplete.ToString();
+                string ProjectFinishDate = pro.FinishDate.ToString();
+                string ProjectStartDate = pro.StartDate.ToString();
+                TimeSpan duration = pro.FinishDate - pro.StartDate;
+                string ProjectDuration = duration.Days.ToString();
+               // string ProjectOwnerName = pro.Owner.Title;
+                string SubtitleVal = "";
+                if (showCompletion == false && ProjectDates == false && PDuration == false && projectManager == false)
+                {
+                    SubtitleVal += "**Completed Percentage :**\n" + ProjectPercentCompleted + "%\n\r";
+                    SubtitleVal += "**Start Date :**\n" + ProjectStartDate + "\n\r";
+                    SubtitleVal += "**Finish Date :**\n" + ProjectFinishDate + "\n\r";
+                    SubtitleVal += "**Project Duration :**\n" + ProjectDuration + "\n\r";
+                 //   SubtitleVal += "**Project Manager :**\n" + ProjectOwnerName + "\n\r";
+                }
+                else if (showCompletion == true)
+                    SubtitleVal += "**Completed Percentage :**\n" + ProjectPercentCompleted + "%\n\r";
+                else if (ProjectDates == true)
+                {
+                    SubtitleVal += "**Start Date :**\n" + ProjectStartDate + "\n\r";
+                    SubtitleVal += "**Finish Date :**\n" + ProjectFinishDate + "\n\r";
+                }
+                else if (PDuration == true)
+                {
+                    SubtitleVal += "**Project Duration :**\n" + ProjectDuration + "\n\r";
+                }
+                //else if (projectManager == true)
+                //{
+                //    SubtitleVal += "**Project Manager :**\n" + ProjectOwnerName + "\n\r";
+                //}
+                string ImageURL = "http://02-code.com/images/logo.jpg";
+                List<CardImage> cardImages = new List<CardImage>();
+                List<CardAction> cardactions = new List<CardAction>();
+                cardImages.Add(new CardImage(url: ImageURL));
+                //CardAction btnWebsite = new CardAction()
+                //{
+                //    Type = ActionTypes.OpenUrl,
+                //    Title = "Open",
+                //    Value = ProjectWorkspaceInternalUrl + "?redirect_uri={" + ProjectWorkspaceInternalUrl + "}",
+                //};
+                CardAction btnTasks = new CardAction()
+                {
+                    Type = ActionTypes.PostBack,
+                    Title = "Tasks",
+                    Value = "show a list of " + ProjectName + " tasks",
+                };
+                cardactions.Add(btnTasks);
+
+                CardAction btnIssues = new CardAction()
+                {
+                    Type = ActionTypes.PostBack,
+                    Title = "Issues",
+                    Value = "show a list of " + ProjectName + " issues",
+                };
+                cardactions.Add(btnIssues);
+
+                CardAction btnRisks = new CardAction()
+                {
+                    Type = ActionTypes.PostBack,
+                    Title = "Risks",
+                    Value = "Show risks and the assigned resources of " + ProjectName,
+                };
+                cardactions.Add(btnRisks);
+
+                //CardAction btnDeliverables = new CardAction()
+                //{
+                //    Type = ActionTypes.PostBack,
+                //    Title = "Deliverables",
+                //    Value = "Show " + ProjectName + " deliverables",
+                //};
+                //cardactions.Add(btnDeliverables);
+
+                CardAction btnDAssignments = new CardAction()
+                {
+                    Type = ActionTypes.PostBack,
+                    Title = "Assignments",
+                    Value = "get " + ProjectName + " assignments",
+                };
+                cardactions.Add(btnDAssignments);
+
+                HeroCard plCard = new HeroCard()
+                {
+                    Title = ProjectName,
+                    Subtitle = SubtitleVal,
+                    Images = cardImages,
+                    Buttons = cardactions,
+                    Tap = btnTasks,
+                };
+                reply.Attachments.Add(plCard.ToAttachment());
             }
 
             return reply;
@@ -210,21 +331,21 @@ namespace Common
                     {
                         if (GetUserGroup(context, "Team Members (Project Web App Synchronized)"))
                         {
-                            reply = GetResourceLoggedInTasks(dialogContext, context, project);
+                            reply = GetResourceLoggedInTasks(dialogContext, itemStartIndex, context, project , out TaskCounter);
                         }
                         else if (GetUserGroup(context, "Project Managers (Project Web App Synchronized)"))
                         {
-                            //  context.Load(project.Owner);
-                            //context.ExecuteQuery();
-                            //if (project.Owner.Email == _userName) // if the logged in user is a project manager on this project
-                            //{
-                            reply = GetAllTasks(dialogContext, itemStartIndex, publishedTask, project, out TaskCounter);
-                            //}
-                            //else
-                            //{
-                            //    reply = GetResourceLoggedInTasks(dialogContext, context, project);
+                            context.Load(project.Owner);
+                            context.ExecuteQuery();
+                            if (project.Owner.Email == _userName) // if the logged in user is a project manager on this project
+                            {
+                                reply = GetAllTasks(dialogContext, itemStartIndex, publishedTask, project, out TaskCounter);
+                            }
+                            else
+                            {
+                                reply = GetResourceLoggedInTasks(dialogContext, itemStartIndex , context, project , out TaskCounter);
 
-                            //}
+                            }
                         }
                         else
                         {
@@ -248,37 +369,47 @@ namespace Common
             using (ProjectContext context = new ProjectContext(_siteUri))
             {
                 SecureString passWord = new SecureString();
-                foreach (char c in _userPassword.ToCharArray()) passWord.AppendChar(c);
-                SharePointOnlineCredentials credentials = new SharePointOnlineCredentials(_userName, passWord);
-                context.Credentials = new SharePointOnlineCredentials(_userName, passWord);
+                foreach (char c in _userPasswordAdmin.ToCharArray()) passWord.AppendChar(c);
+                SharePointOnlineCredentials credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
+                context.Credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
                 PublishedProject project = GetProjectByName(pName, context);
                 if (project != null)
                 {
-                    string IssueName = string.Empty;
-                    string IssueStatus = string.Empty;
-                    string IssuePriority = string.Empty;
-
                     context.Load(project, p => p.ProjectSiteUrl);
-                    context.ExecuteQuery();
+                    context.Load(project.Owner);
 
+                    context.ExecuteQuery();
                     projectsite = project.ProjectSiteUrl;
                     projectweb = GetProjectWEB(projectsite, context);
-
                     var issues = projectweb.Lists.GetByTitle(Enums.ListName.Issues.ToString());
                     CamlQuery query = CamlQuery.CreateAllItemsQuery();
                     ListItemCollection itemsIssue = issues.GetItems(query);
-
                     context.Load(issues);
                     context.Load(itemsIssue);
                     context.ExecuteQuery();
+                    if (itemsIssue.Count() > 0)
+                    {
+                        if (GetUserGroup(context, "Team Members (Project Web App Synchronized)"))
+                        {
+                             reply = GetResourceLoggedInIssues(dialogContext, itemsIssue , itemStartIndex, out TaskCounter);
+                        }
+                        if (GetUserGroup(context, "Project Managers (Project Web App Synchronized)"))
+                        {
+                            if (project.Owner.Email == _userName)
+                            {
+                                reply = GetAllIssues(dialogContext, itemsIssue, itemStartIndex, out TaskCounter);
+                            }
+                            else
+                            {
+                                reply = GetResourceLoggedInIssues(dialogContext, itemsIssue , itemStartIndex, out TaskCounter);
 
-                    if (GetUserGroup(context, "Team Members (Project Web App Synchronized)"))
-                    {
-                       // reply = getresourceassignedrisksIssues(dialogContext, itemsIssue);
-                    }
-                    else
-                    {
-                        reply = GetAllIssues(dialogContext, itemsIssue , itemStartIndex, out TaskCounter);
+                            }
+
+                        }
+                        else
+                        {
+                            reply = GetAllIssues(dialogContext, itemsIssue, itemStartIndex, out TaskCounter);
+                        }
                     }
                 }
             }
@@ -297,9 +428,9 @@ namespace Common
             using (ProjectContext context = new ProjectContext(_siteUri))
             {
                 SecureString passWord = new SecureString();
-                foreach (char c in _userPassword.ToCharArray()) passWord.AppendChar(c);
-                SharePointOnlineCredentials credentials = new SharePointOnlineCredentials(_userName, passWord);
-                context.Credentials = new SharePointOnlineCredentials(_userName, passWord);
+                foreach (char c in _userPasswordAdmin.ToCharArray()) passWord.AppendChar(c);
+                SharePointOnlineCredentials credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
+                context.Credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
                 PublishedProject project = GetProjectByName(pName, context);
 
                 if (project != null)
@@ -320,11 +451,21 @@ namespace Common
 
                     if (GetUserGroup(context, "Team Members (Project Web App Synchronized)"))
                     {
-                      //  markdownContent = getresourceassignedrisks(itemsRisk);
+                        reply = GetResourceLoggedInRisks(dialogContext, itemsRisk, itemStartIndex, out TaskCounter);
                     }
                     else if (GetUserGroup(context, "Project Managers (Project Web App Synchronized)"))
                     {
-                      //  markdownContent = getallrisks(itemsRisk);
+                        context.Load(project.Owner);
+                        context.ExecuteQuery();
+                        if (project.Owner.Email == _userName) // if the logged in user is a project manager on this project
+                        {
+                            reply = GetAllRisks(dialogContext, itemsRisk, itemStartIndex, out TaskCounter);
+                        }
+                        else
+                        {
+                            reply = GetResourceLoggedInRisks(dialogContext, itemsRisk, itemStartIndex, out TaskCounter);
+
+                        }
                     }
                     else
                     {
@@ -353,37 +494,69 @@ namespace Common
             using (ProjectContext context = new ProjectContext(_siteUri))
             {
                 SecureString passWord = new SecureString();
-                foreach (char c in _userPassword.ToCharArray()) passWord.AppendChar(c);
-                SharePointOnlineCredentials credentials = new SharePointOnlineCredentials(_userName, passWord);
-                context.Credentials = new SharePointOnlineCredentials(_userName, passWord);
+                foreach (char c in _userPasswordAdmin.ToCharArray()) passWord.AppendChar(c);
+                SharePointOnlineCredentials credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
+                context.Credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
                 PublishedProject project = GetProjectByName(pName, context);
 
                 if (project != null)
                 {
-                    context.Load(project, p => p.ProjectSiteUrl);
-                    context.ExecuteQuery();
-
-                    projectsite = project.ProjectSiteUrl;
-                    projectweb = GetProjectWEB(projectsite, context);
-
-                    var delive = projectweb.Lists.GetByTitle(Enums.ListName.Deliverables.ToString());
-                    CamlQuery query = CamlQuery.CreateAllItemsQuery();
-                    ListItemCollection itemsdelive = delive.GetItems(query);
-
-                    projectweb.Context.Load(delive);
-                    projectweb.Context.Load(itemsdelive);
-                    projectweb.Context.ExecuteQuery();
+                    
 
                     if (GetUserGroup(context, "Team Members (Project Web App Synchronized)"))
                     {
-                        //  markdownContent = getresourceassignedrisks(itemsRisk);
+                        HeroCard plCard = new HeroCard()
+                        {
+                            Title = "You Don't have permission to view the deliverabels of this projects",
+                        };
+                        reply.Attachments.Add(plCard.ToAttachment());
                     }
                     else if (GetUserGroup(context, "Project Managers (Project Web App Synchronized)"))
                     {
-                        //  markdownContent = getallrisks(itemsRisk);
+                        context.Load(project, p => p.ProjectSiteUrl);
+                        context.ExecuteQuery();
+
+                        projectsite = project.ProjectSiteUrl;
+                        projectweb = GetProjectWEB(projectsite, context);
+
+                        var delive = projectweb.Lists.GetByTitle(Enums.ListName.Deliverables.ToString());
+                        CamlQuery query = CamlQuery.CreateAllItemsQuery();
+                        ListItemCollection itemsdelive = delive.GetItems(query);
+
+                        projectweb.Context.Load(delive);
+                        projectweb.Context.Load(itemsdelive);
+                        projectweb.Context.ExecuteQuery();
+                        context.Load(project.Owner);
+                        context.ExecuteQuery();
+                        if (project.Owner.Email == _userName) // if the logged in user is a project manager on this project
+                        {
+                            reply = GetAllDeliverabels(dialogContext, itemsdelive, itemStartIndex, out TaskCounter);
+                        }
+                        else
+                        {
+                            HeroCard plCard = new HeroCard()
+                            {
+                                Title = "You Don't have permission to view the deliverabels of this projects",
+                            };
+                            reply.Attachments.Add(plCard.ToAttachment());
+
+                        }
                     }
                     else
                     {
+                        context.Load(project, p => p.ProjectSiteUrl);
+                        context.ExecuteQuery();
+
+                        projectsite = project.ProjectSiteUrl;
+                        projectweb = GetProjectWEB(projectsite, context);
+
+                        var delive = projectweb.Lists.GetByTitle(Enums.ListName.Deliverables.ToString());
+                        CamlQuery query = CamlQuery.CreateAllItemsQuery();
+                        ListItemCollection itemsdelive = delive.GetItems(query);
+
+                        projectweb.Context.Load(delive);
+                        projectweb.Context.Load(itemsdelive);
+                        projectweb.Context.ExecuteQuery();
                         reply = GetAllDeliverabels(dialogContext, itemsdelive, itemStartIndex, out TaskCounter);
                     }
                   
@@ -400,7 +573,6 @@ namespace Common
             reply = dialogContext.MakeMessage();
             reply.AttachmentLayout = AttachmentLayoutTypes.Carousel;
             string projectsite = string.Empty;
-            Web projectweb;
             int TaskCounter = 0;
 
             using (ProjectContext context = new ProjectContext(_siteUri))
@@ -415,41 +587,32 @@ namespace Common
                 {
                     context.Load(project.Assignments);
                     context.ExecuteQuery();
-                    PublishedAssignmentCollection asscoll = project.Assignments;
-                    Counter = asscoll.Count;
-                    if (asscoll.Count > 0)
+                    PublishedAssignmentCollection itemsAssignments = project.Assignments;
+                    if (GetUserGroup(context, "Team Members (Project Web App Synchronized)"))
                     {
-
-                        
-
-                        int inDexToVal = itemStartIndex + 10;
-                        if (inDexToVal >= asscoll.Count)
-                            inDexToVal = asscoll.Count;
-
-                        for (int startIndex = itemStartIndex; startIndex < inDexToVal; startIndex++)
+                        reply = GetResourceLoggedInAssignments(dialogContext,context, itemsAssignments, itemStartIndex, _userName, out TaskCounter);
+                    }
+                    else if (GetUserGroup(context, "Project Managers (Project Web App Synchronized)"))
+                    {
+                        context.Load(project.Owner);
+                        context.ExecuteQuery();
+                        if (project.Owner.Email == _userName) // if the logged in user is a project manager on this project
                         {
-                            PublishedAssignment ass = asscoll[startIndex];
-                            string SubtitleVal = ""; 
-                            context.Load(ass.Task);
-                            context.Load(ass.Resource);
-                            context.ExecuteQuery();
-
-                            string TaskName = ass.Task.Name;
-                            SubtitleVal += "**Resource Name :**\n" + ass.Resource.Name + "\n\r";
-                            SubtitleVal += "**Start Date**\n" + ass.Start + "\n\r";
-                            SubtitleVal += "**Finish Date**\n" + ass.Finish + "\n\r";
-
-
-                            HeroCard plCard = new HeroCard()
-                            {
-                                Title = TaskName,
-                                Subtitle = SubtitleVal,
-                            };
-                            reply.Attachments.Add(plCard.ToAttachment());
+                            reply = GetAllAssignments(dialogContext , context, itemsAssignments, itemStartIndex, out TaskCounter);
                         }
+                        else
+                        {
+                              reply = GetResourceLoggedInAssignments(dialogContext , context, itemsAssignments,itemStartIndex, _userName, out TaskCounter);
+
+                        }
+                    }
+                    else
+                    {
+                        reply = GetAllAssignments(dialogContext , context, itemsAssignments, itemStartIndex, out TaskCounter);
                     }
                 }
             }
+            Counter = TaskCounter;
             return reply;
         }
 
@@ -636,7 +799,795 @@ namespace Common
             return reply;
         }
 
-        public IMessageActivity TotalCountGeneralMessage(IDialogContext dialogContext, int SIndex, int Counter , string ListName)
+      
+        public IMessageActivity GetProjectSubItems(IDialogContext dialogContext ,  string pName, string ListName)
+        {
+            var markdownContent = "";
+            string SubtitleVal = "";
+            IMessageActivity reply = null;
+            reply = dialogContext.MakeMessage();
+
+            string projectsite = string.Empty;
+            Web projectweb;
+            using (ProjectContext context = new ProjectContext(_siteUri))
+            {
+                SecureString passWord = new SecureString();
+                foreach (char c in _userPassword.ToCharArray()) passWord.AppendChar(c);
+                context.Credentials = new SharePointOnlineCredentials(_userName, passWord);
+                PublishedProject project = GetProjectByName(pName, context);                
+                if (project != null)
+                {
+                    context.Load(project, p => p.ProjectSiteUrl);
+                    context.ExecuteQuery();
+
+                    if (ListName == Enums.ListName.Tasks.ToString())
+                    {
+                       // reply = GetProjectTasks(dialogContext , context, project);
+                    }
+                    else if (ListName == Enums.ListName.Assignments.ToString())
+                    {
+                      //  markdownContent = GetProjectTAssignments(context, project);
+                    }
+                    else
+                    {
+                        projectsite = project.ProjectSiteUrl;
+                        projectweb = GetProjectWEB(projectsite, context);
+
+                        if (projectsite != null)
+                        {
+                           // if (ListName == Common.Enums.ListName.Issues.ToString())
+                             //   markdownContent = GetProjectIssues( dialogContext, projectweb, context);
+                          //  if (ListName == Common.Enums.ListName.Risks.ToString())
+                             //   markdownContent = GetProjectRisks(projectweb, context);
+                           // if (ListName == Common.Enums.ListName.Deliverables.ToString())
+                              //  markdownContent = GetProjectDeliverables(projectweb, context);
+                        }
+                        else
+                        {
+                            markdownContent = "Site Project Not Created";
+                        }
+                    }
+
+                }
+                else
+                {
+                    markdownContent = "Project Name Not Exist or you don't have permission to this project";
+                }
+
+            }
+            return reply;
+        }
+
+        private IMessageActivity GetAllTasks(IDialogContext dialogContext, int SIndex, PublishedTaskCollection tskcoll, PublishedProject project, out int Counter)
+        {
+            IMessageActivity reply = null;
+            reply = dialogContext.MakeMessage();
+            reply.AttachmentLayout = AttachmentLayoutTypes.Carousel;
+
+
+            int inDexToVal = SIndex + 10;
+            Counter = project.Tasks.Count;
+            if (inDexToVal >= project.Tasks.Count)
+                inDexToVal = project.Tasks.Count;
+
+            tskcoll = project.Tasks;
+
+            if (tskcoll.Count > 0)
+            {
+                for (int startIndex = SIndex; startIndex < inDexToVal; startIndex++)
+                {
+                    var SubtitleVal = "";
+                    PublishedTask tsk = tskcoll[startIndex];
+                    string TaskName = tsk.Name;
+                    string TaskDuration = tsk.Duration;
+                    string TaskPercentCompleted = tsk.PercentComplete.ToString();
+                    string TaskStartDate = tsk.Start.ToString();
+                    string TaskFinishDate = tsk.Finish.ToString();
+
+                    SubtitleVal += "**Task Duration**\n" + TaskDuration + "\n\r";
+                    SubtitleVal += "**Task Percent Completed**\n" + TaskPercentCompleted + "\n\r";
+                    SubtitleVal += "**Task Start Date**\n" + TaskStartDate + "\n\r";
+                    SubtitleVal += "**Task Finish Date**\n" + TaskFinishDate + "\n\r";
+
+                    HeroCard plCard = new HeroCard()
+                    {
+                        Title = TaskName,
+                        Subtitle = SubtitleVal
+                    };
+
+                    reply.Attachments.Add(plCard.ToAttachment());
+                }
+               
+            }
+           
+            return reply;
+        }
+
+        private IMessageActivity GetResourceLoggedInTasks(IDialogContext dialogContext , int SIndex, ProjectContext context, PublishedProject proj, out int Counter)
+        {
+            var SubtitleVal = "";
+            IMessageActivity reply = null;
+            reply = dialogContext.MakeMessage();
+            context.Load(proj.Assignments, da => da.Where(a => a.Resource.Email != string.Empty && a.Resource.Email == _userName));
+            context.ExecuteQuery();
+            Counter = 0;
+
+          
+
+            if (proj.Assignments != null)
+            {
+                PublishedAssignmentCollection proAssignment = proj.Assignments;
+
+                int inDexToVal = SIndex + 10;
+                Counter = proAssignment.Count;
+                if (inDexToVal >= proAssignment.Count)
+                    inDexToVal = proAssignment.Count;
+
+                for (int startIndex = SIndex; startIndex < inDexToVal; startIndex++)
+                {
+                    PublishedAssignment ass = proAssignment[startIndex];
+                    context.Load(ass.Task);
+                    context.Load(ass.Resource);
+
+                    context.ExecuteQuery();
+                    var tsk = ass.Task;
+                    string TaskName = tsk.Name;
+                    string TaskDuration = tsk.Duration;
+                    string TaskPercentCompleted = tsk.PercentComplete.ToString();
+                    string TaskStartDate = tsk.Start.ToString();
+                    string TaskFinishDate = tsk.Finish.ToString();
+
+                    SubtitleVal += "**Task Duration**\n" + TaskDuration + "\n\r";
+                    SubtitleVal += "**Task Percent Completed**\n" + TaskPercentCompleted + "\n\r";
+                    SubtitleVal += "**Task Start Date**\n" + TaskStartDate + "\n\r";
+                    SubtitleVal += "**Task Finish Date**\n" + TaskFinishDate + "\n\r";
+
+                    HeroCard plCard = new HeroCard()
+                    {
+                        Title = TaskName,
+                        Subtitle = SubtitleVal,
+
+                    };
+                    reply.Attachments.Add(plCard.ToAttachment());
+                }
+            }
+            return reply;
+        }
+
+        private IMessageActivity GetAllIssues(IDialogContext dialogContext , ListItemCollection itemsIssue , int SIndex,  out int Counter)
+        {
+            IMessageActivity reply = null;
+            reply = dialogContext.MakeMessage();
+            reply.AttachmentLayout = AttachmentLayoutTypes.Carousel;
+            string IssueName = string.Empty;
+            string IssueStatus = string.Empty;
+            string IssuePriority = string.Empty;
+
+            Counter = itemsIssue.Count;
+
+            int inDexToVal = SIndex + 10;
+            if (inDexToVal >= itemsIssue.Count)
+                inDexToVal = itemsIssue.Count;
+
+            if (itemsIssue.Count > 0)
+            {
+                for (int startIndex = SIndex; startIndex < inDexToVal; startIndex++)
+                {
+                    var SubtitleVal = "";
+                    ListItem item = itemsIssue[startIndex];
+                    if (item["Title"] != null)
+                        IssueName = (string)item["Title"];
+                    if (item["Status"] != null)
+                        IssueStatus = (string)item["Status"];
+                    if (item["Priority"] != null)
+                        IssuePriority = (string)item["Priority"];
+                    SubtitleVal += "**Status**\n" + IssueStatus + "\n\r";
+                    SubtitleVal += "**Priority**\n" + IssuePriority + "\n\r";
+
+                    HeroCard plCard = new HeroCard()
+                    {
+                        Title = IssueName,
+                        Subtitle = SubtitleVal,
+                    };
+                    reply.Attachments.Add(plCard.ToAttachment());
+                }
+            }
+            return reply;
+        }
+
+        private IMessageActivity GetResourceLoggedInIssues(IDialogContext dialogContext, ListItemCollection itemsIssue, int SIndex, out int Counter)
+        {
+            IMessageActivity reply = null;
+            reply = dialogContext.MakeMessage();
+            Counter = 0;
+
+
+
+            int inDexToVal = SIndex + 10;
+            if (inDexToVal >= itemsIssue.Count)
+                inDexToVal = itemsIssue.Count;
+
+
+            if (itemsIssue.Count > 0)
+            {
+                int count = 0;
+                for (int startIndex = SIndex; startIndex < inDexToVal; startIndex++)
+                {
+                    ListItem item = itemsIssue[startIndex];
+
+                    if (item["AssignedTo"] != null)
+                    {
+                        count++;
+                        FieldUserValue fuv = (FieldUserValue)item["AssignedTo"];
+                        if (fuv.Email == _userName)
+                        {
+                            string SubtitleVal = "";
+                            string IssueName = string.Empty;
+                            string IssueStatus = string.Empty;
+                            string IssuePriority = string.Empty;
+
+                            if (item["Title"] != null)
+                                IssueName = (string)item["Title"];
+                            if (item["Status"] != null)
+                                IssueStatus = (string)item["Status"];
+                            if (item["Priority"] != null)
+                                IssuePriority = (string)item["Priority"];
+                            SubtitleVal += "**Status**\n" + IssueStatus + "\n\r";
+                            SubtitleVal += "**Priority**\n" + IssuePriority + "\n\r";
+                            HeroCard plCard = new HeroCard()
+                            {
+                                Title = IssueName,
+                                Subtitle = SubtitleVal,
+                            };
+                            reply.Attachments.Add(plCard.ToAttachment());
+                        }
+                    }
+                }
+                Counter = count ;
+            }
+            return reply;
+        }
+
+        private IMessageActivity GetAllRisks(IDialogContext dialogContext, ListItemCollection itemsRisk, int SIndex, out int Counter)
+        {
+            IMessageActivity reply = null;
+            reply = dialogContext.MakeMessage();
+            reply.AttachmentLayout = AttachmentLayoutTypes.Carousel;
+            string RiskName = string.Empty;
+            string ResourceName = string.Empty;
+            string riskStatus = string.Empty;
+            string riskImpact = string.Empty;
+            string riskProbability = string.Empty;
+            string riskCostExposure = string.Empty;
+
+
+            Counter = itemsRisk.Count;
+
+            int inDexToVal = SIndex + 10;
+            if (inDexToVal >= itemsRisk.Count)
+                inDexToVal = itemsRisk.Count;
+
+            if (itemsRisk.Count > 0)
+            {
+                for (int startIndex = SIndex; startIndex < inDexToVal; startIndex++)
+                {
+                    var SubtitleVal = "";
+                    ListItem item = itemsRisk[startIndex];
+
+
+                    if (item["Title"] != null)
+                        RiskName = (string)item["Title"];
+                    if (item["AssignedTo"] != null)
+                    {
+                        FieldUserValue fuv = (FieldUserValue)item["AssignedTo"];
+                        SubtitleVal += "**Assigned To Resource**\n" + fuv.LookupValue + "\n\r";
+
+                    }
+                    else
+                        SubtitleVal += "**Assigned To Resource :**\n" + "Not assigned" + "\n\r";
+
+                    if (item["Status"] != null)
+                        riskStatus = (string)item["Status"];
+                    SubtitleVal += "**Risk Status**\n" + riskStatus + "\n\r";
+
+                    if (item["Impact"] != null)
+                        riskImpact = item["Impact"].ToString();
+                    SubtitleVal += "**Risk Impact**\n" + riskImpact + "\n\r";
+
+                    if (item["Probability"] != null)
+                        riskProbability = item["Probability"].ToString();
+                    SubtitleVal += "**Risk Probability**\n" + riskProbability + "\n\r";
+
+                    if (item["Exposure"] != null)
+                        riskCostExposure = item["Exposure"].ToString();
+                    SubtitleVal += "**Risk CostExposure**\n" + riskCostExposure + "\n\r";
+
+
+                    HeroCard plCard = new HeroCard()
+                    {
+                        Title = RiskName,
+                        Subtitle = SubtitleVal,
+                    };
+                    reply.Attachments.Add(plCard.ToAttachment());
+
+                }
+
+            }
+
+            return reply;
+        }
+        private IMessageActivity GetResourceLoggedInRisks(IDialogContext dialogContext, ListItemCollection itemsRisk , int SIndex, out int Counter)
+        {
+            IMessageActivity reply = null;
+            reply = dialogContext.MakeMessage();
+            reply.AttachmentLayout = AttachmentLayoutTypes.Carousel;
+            Counter = 0;
+            string RiskName = string.Empty;
+            string ResourceName = string.Empty;
+            string riskStatus = string.Empty;
+            string riskImpact = string.Empty;
+            string riskProbability = string.Empty;
+            string riskCostExposure = string.Empty;
+            if (itemsRisk.Count > 0)
+            {
+                int count = 0;
+
+                int inDexToVal = SIndex + 10;
+                if (inDexToVal >= itemsRisk.Count)
+                    inDexToVal = itemsRisk.Count;
+                for (int startIndex = SIndex; startIndex < inDexToVal; startIndex++)
+                {
+                    var SubtitleVal = "";
+                    ListItem item = itemsRisk[startIndex];
+
+
+                    if (item["AssignedTo"] != null)
+                    {
+                        count++;
+                        FieldUserValue fuv = (FieldUserValue)item["AssignedTo"];
+                        if (fuv.Email == _userName)
+                        {
+                            if (item["Title"] != null)
+                                RiskName = (string)item["Title"];
+                            SubtitleVal += "**Risk Title**\n" + RiskName + "\n\r";
+
+                            SubtitleVal += "**Assigned To Resource**\n" + fuv.LookupValue + "\n\r";
+                            if (item["Status"] != null)
+                                riskStatus = (string)item["Status"];
+                            SubtitleVal += "**Risk Status**\n" + riskStatus + "\n\r";
+
+                            if (item["Impact"] != null)
+                                riskImpact = item["Impact"].ToString();
+                            SubtitleVal += "**Risk Impact**\n" + riskImpact + "\n\r";
+
+                            if (item["Probability"] != null)
+                                riskProbability = item["Probability"].ToString();
+                            SubtitleVal += "**Risk Probability**\n" + riskProbability + "\n\r";
+
+                            if (item["Exposure"] != null)
+                                riskCostExposure = item["Exposure"].ToString();
+                            SubtitleVal += "**Risk CostExposure**\n" + riskCostExposure + "\n\r";
+
+                            HeroCard plCard = new HeroCard()
+                            {
+                                Title = RiskName,
+                                Subtitle = SubtitleVal,
+                            };
+                            reply.Attachments.Add(plCard.ToAttachment());
+
+                        }
+
+                    }
+                    Counter = count;
+
+
+                }
+
+            }
+
+            return reply;
+        }
+
+        private IMessageActivity GetAllDeliverabels(IDialogContext dialogContext, ListItemCollection itemsDeliverabels, int SIndex, out int Counter)
+        {
+            IMessageActivity reply = null;
+            reply = dialogContext.MakeMessage();
+            reply.AttachmentLayout = AttachmentLayoutTypes.Carousel;
+            string DeliverableName = string.Empty;
+            string DeliverableStart = string.Empty;
+            string DeliverableFinish = string.Empty;
+
+
+            Counter = itemsDeliverabels.Count;
+
+            int inDexToVal = SIndex + 10;
+            if (inDexToVal >= itemsDeliverabels.Count)
+                inDexToVal = itemsDeliverabels.Count;
+
+            if (itemsDeliverabels.Count > 0)
+            {
+                for (int startIndex = SIndex; startIndex < inDexToVal; startIndex++)
+                {
+                    var SubtitleVal = "";
+                    ListItem item = itemsDeliverabels[startIndex];
+
+
+                    if (item["Title"] != null)
+                        DeliverableName = (string)item["Title"];
+                    SubtitleVal += "**Deliverable Name**\n" + DeliverableName + "\n\r";
+
+                    if (item["Author"] != null)
+                    {
+                        FieldUserValue fuv = (FieldUserValue)item["Author"];
+                        SubtitleVal += "**Create By Resource :**\n" + fuv.LookupValue + "\n\r";
+
+                    }
+
+                    if (item["CommitmentStart"] != null)
+                        DeliverableStart = item["CommitmentStart"].ToString();
+                    SubtitleVal += "**Start Date :**\n" + DeliverableStart + "\n\r";
+
+                    if (item["CommitmentFinish"] != null)
+                        DeliverableFinish = item["CommitmentFinish"].ToString();
+                    SubtitleVal += "**Finish Date :**\n" + DeliverableFinish + "\n\r";
+
+
+                    HeroCard plCard = new HeroCard()
+                    {
+                        Title = DeliverableName,
+                        Subtitle = SubtitleVal,
+                    };
+                    reply.Attachments.Add(plCard.ToAttachment());
+
+                }
+
+            }
+
+            return reply;
+        }
+
+        //private IMessageActivity GetResourceLoggedInDeliverabels(IDialogContext dialogContext, ListItemCollection itemsDeliverabels, int SIndex, out int Counter)
+        //{
+        //    IMessageActivity reply = null;
+        //    reply = dialogContext.MakeMessage();
+        //    reply.AttachmentLayout = AttachmentLayoutTypes.Carousel;
+        //    string DeliverableName = string.Empty;
+        //    string DeliverableStart = string.Empty;
+        //    string DeliverableFinish = string.Empty;
+
+
+        //    Counter = itemsDeliverabels.Count;
+
+        //    int inDexToVal = SIndex + 10;
+        //    if (inDexToVal >= itemsDeliverabels.Count)
+        //        inDexToVal = itemsDeliverabels.Count;
+
+        //    if (itemsDeliverabels.Count > 0)
+        //    {
+        //        for (int startIndex = SIndex; startIndex < inDexToVal; startIndex++)
+        //        {
+        //            var SubtitleVal = "";
+        //            ListItem item = itemsDeliverabels[startIndex];
+
+
+        //            if (item["Title"] != null)
+        //                DeliverableName = (string)item["Title"];
+        //            SubtitleVal += "**Deliverable Name**\n" + DeliverableName + "\n\r";
+
+        //            if (item["Author"] != null)
+        //            {
+        //                FieldUserValue fuv = (FieldUserValue)item["Author"];
+        //                SubtitleVal += "**Create By Resource :**\n" + fuv.LookupValue + "\n\r";
+
+        //            }
+
+        //            if (item["CommitmentStart"] != null)
+        //                DeliverableStart = item["CommitmentStart"].ToString();
+        //            SubtitleVal += "**Start Date :**\n" + DeliverableStart + "\n\r";
+
+        //            if (item["CommitmentFinish"] != null)
+        //                DeliverableFinish = item["CommitmentFinish"].ToString();
+        //            SubtitleVal += "**Finish Date :**\n" + DeliverableFinish + "\n\r";
+
+
+        //            HeroCard plCard = new HeroCard()
+        //            {
+        //                Title = DeliverableName,
+        //                Subtitle = SubtitleVal,
+        //            };
+        //            reply.Attachments.Add(plCard.ToAttachment());
+
+        //        }
+
+        //    }
+
+        //    return reply;
+        //}
+
+        private IMessageActivity GetAllAssignments(IDialogContext dialogContext , ProjectContext context, PublishedAssignmentCollection itemsAssignments, int SIndex, out int Counter)
+        {
+            IMessageActivity reply = null;
+            reply = dialogContext.MakeMessage();
+            reply.AttachmentLayout = AttachmentLayoutTypes.Carousel;
+            Counter = itemsAssignments.Count;
+            if (itemsAssignments.Count > 0)
+            {
+
+
+
+                int inDexToVal = SIndex + 10;
+                if (inDexToVal >= itemsAssignments.Count)
+                    inDexToVal = itemsAssignments.Count;
+
+                for (int startIndex = SIndex; startIndex < inDexToVal; startIndex++)
+                {
+                    PublishedAssignment ass = itemsAssignments[startIndex];
+                    string SubtitleVal = "";
+                    context.Load(ass.Task);
+                    context.Load(ass.Resource);
+                    context.ExecuteQuery();
+
+                    string TaskName = ass.Task.Name;
+                    SubtitleVal += "**Resource Name :**\n" + ass.Resource.Name + "\n\r";
+                    SubtitleVal += "**Start Date**\n" + ass.Start + "\n\r";
+                    SubtitleVal += "**Finish Date**\n" + ass.Finish + "\n\r";
+
+
+                    HeroCard plCard = new HeroCard()
+                    {
+                        Title = TaskName,
+                        Subtitle = SubtitleVal,
+                    };
+                    reply.Attachments.Add(plCard.ToAttachment());
+                }
+            }
+            return reply;
+        }
+
+
+        public IMessageActivity GetResourceAssignments(IDialogContext dialogContext, int SIndex, string ResourceName , out int Counter)
+        {
+            IMessageActivity reply = null;
+            reply = dialogContext.MakeMessage();
+            reply.AttachmentLayout = AttachmentLayoutTypes.Carousel;
+            int counttotalAss = 0;
+            Counter = 0;
+            using (ProjectContext context = new ProjectContext(_siteUri))
+            {
+
+
+                SecureString passWord = new SecureString();
+                foreach (char c in _userPassword.ToCharArray()) passWord.AppendChar(c);
+                context.Credentials = new SharePointOnlineCredentials(_userName, passWord);
+
+
+                context.Load(context.Projects);
+                context.ExecuteQuery();
+                ProjectCollection projcoll = context.Projects;
+
+
+                context.Load(context.EnterpriseResources);
+                var resources = context.EnterpriseResources;
+
+                context.ExecuteQuery();
+
+
+                ResourceName = ResourceName.Replace(" ", String.Empty);
+
+                string fullEmail = string.Concat(ResourceName, ConfigurationManager.AppSettings["DomainEmail"]);
+
+                var user = context.Web.EnsureUser(ResourceName);
+                context.Load(user);
+                context.ExecuteQuery();
+
+                if (user != null)
+                {
+                    var resource = resources.FirstOrDefault(i => i.Email == user.Email);
+                    if (resource != null)
+                    {
+
+                        foreach (PublishedProject proj in projcoll)
+                        {
+                            context.Load(proj.Assignments, da => da.Where(a => a.Resource.Email == user.Email));
+
+                            context.ExecuteQuery();
+                            PublishedAssignmentCollection itemsAssignments = proj.Assignments;
+
+                            if (proj.Assignments != null)
+                            {
+                                int inDexToVal = SIndex + 10;
+                                if (inDexToVal >= itemsAssignments.Count)
+                                    inDexToVal = itemsAssignments.Count;
+
+                                PublishedAssignmentCollection proAssignment = proj.Assignments;
+                                for (int startIndex = SIndex; startIndex < inDexToVal; startIndex++)
+                                {
+                                    PublishedAssignment ass = itemsAssignments[startIndex];
+                                    string SubtitleVal = "";
+                                    context.Load(ass.Task);
+                                    context.ExecuteQuery();
+                                    var tsk = ass.Task;
+                                    SubtitleVal += "**Assignment Start Date :**\n" + ass.Start + "\n\r";
+                                    SubtitleVal += "**Task Name :**\n" + tsk.Name + "\n\r";
+                                    counttotalAss++;
+
+
+                                    HeroCard plCard = new HeroCard()
+                                    {
+                                        Title = proj.Name,
+                                        Subtitle = SubtitleVal,
+                                    };
+                                    reply.Attachments.Add(plCard.ToAttachment());
+                                }
+                                Counter = counttotalAss;
+
+                            }
+                        }
+
+                       
+                    }
+                   
+                }
+               
+
+
+
+                return reply;
+            }
+
+        }
+
+
+        public IMessageActivity GetResourceLoggedInAssignments(IDialogContext dialogContext, ProjectContext context, PublishedAssignmentCollection itemsAssignments, int SIndex, string ResourceName, out int Counter)
+        {
+            IMessageActivity reply = null;
+            reply = dialogContext.MakeMessage();
+            reply.AttachmentLayout = AttachmentLayoutTypes.Carousel;
+            Counter =0;
+            int count = 0;
+            if (itemsAssignments.Count > 0)
+            {
+                int inDexToVal = SIndex + 10;
+                if (inDexToVal >= itemsAssignments.Count)
+                    inDexToVal = itemsAssignments.Count;
+
+                for (int startIndex = SIndex; startIndex < inDexToVal; startIndex++)
+                {
+                    PublishedAssignment ass = itemsAssignments[startIndex];
+                    
+                    context.Load(ass.Task);
+                    context.Load(ass.Resource);
+                    context.ExecuteQuery();
+                   
+                    if (ass.Resource.Email == ResourceName)
+                    {
+                        count++;
+                        string SubtitleVal = "";
+                        string TaskName = ass.Task.Name;
+                        SubtitleVal += "**Resource Name :**\n" + ass.Resource.Name + "\n\r";
+                        SubtitleVal += "**Start Date**\n" + ass.Start + "\n\r";
+                        SubtitleVal += "**Finish Date**\n" + ass.Finish + "\n\r";
+
+
+                        HeroCard plCard = new HeroCard()
+                        {
+                            Title = TaskName,
+                            Subtitle = SubtitleVal,
+                        };
+                        reply.Attachments.Add(plCard.ToAttachment());
+                    }
+                }
+                Counter = count;
+            }
+            return reply;
+
+        }
+        public bool UserHavePermissionOnaProjects(string siteUrl, string subSiteTitle, ProjectContext context)
+        {
+
+            var web = context.Web;
+            bool exist = false;
+            context.Load(web, w => w.Webs);
+            context.ExecuteQuery();
+            foreach (Web subWeb in web.Webs)
+            {
+                if (subWeb.Title.ToLower() == subSiteTitle.ToLower())
+                {
+                    var user = subWeb.EnsureUser(_userName);
+                    context.Load(user);
+                    context.ExecuteQuery();
+
+                    if (null != user)
+                    {
+                        ClientResult<BasePermissions> permissions = subWeb.GetUserEffectivePermissions(user.LoginName);
+                        context.ExecuteQuery();
+
+
+                        if (permissions.Value.Has(PermissionKind.ViewListItems))
+                        {
+                            exist = true;
+                            break;
+                        }
+                        else
+                            exist = false;
+
+
+                    }
+                    else
+                        exist = false;
+
+
+
+
+                }
+            }
+
+            return exist;
+        }
+
+        public bool GetUserGroup(ProjectContext context, string groupName)
+        {
+            bool exist = false;
+
+            context.Load(context.Web);
+
+            //  context.Load(web.SiteUsers);
+            context.ExecuteQuery();
+
+            Web web = context.Web;
+
+            IEnumerable<User> user = context.LoadQuery(web.SiteUsers.Where(p => p.Email == _userName));
+            context.ExecuteQuery();
+
+            if (user.Any())
+            {
+                User userLogged = user.FirstOrDefault();
+
+                context.Load(userLogged.Groups);
+                context.ExecuteQuery();
+
+                GroupCollection group = userLogged.Groups;
+
+                IEnumerable<Group> usergroup = context.LoadQuery(userLogged.Groups.Where(p => p.Title == groupName));
+                context.ExecuteQuery();
+                if (!usergroup.Any())
+                {
+                    exist = false;
+                }
+                else
+                    exist = true;
+            }
+
+            return exist;
+        }
+
+        private static PublishedProject GetProjectByName(string name, ProjectContext context)
+        {
+            if (name.Contains(" - "))
+                name = name.Replace(" - ", "-");
+            IEnumerable<PublishedProject> projs = context.LoadQuery(context.Projects.Where(p => p.Name == name));
+            context.ExecuteQuery();
+            if (!projs.Any())       // no project found
+            {
+                return null;
+            }
+            return projs.FirstOrDefault();
+
+        }
+
+        private static Web GetProjectWEB(string siteurl, ProjectContext context)
+        {
+            IEnumerable<Web> webs = context.LoadQuery(context.Web.Webs.Where(p => p.Url == siteurl));
+            context.ExecuteQuery();
+            if (!webs.Any())       // no project found
+            {
+                return null;
+            }
+            return webs.FirstOrDefault();
+
+        }
+
+        public IMessageActivity TotalCountGeneralMessage(IDialogContext dialogContext, int SIndex, int Counter, string ListName)
         {
             IMessageActivity reply = null;
             reply = dialogContext.MakeMessage();
@@ -913,12 +1864,50 @@ namespace Common
                     reply.Attachments.Add(plCardNoData.ToAttachment());
                 }
             }
-
+            else if (ListName == "UserAssignments")
+            {
+                if (Counter > 0)
+                {
+                    if (Counter >= 10)
+                    {
+                        string subTitle = string.Empty;
+                        if (SIndex == 0)
+                            subTitle = "You are viwing the first page , each page view 10 assignments";
+                        else if (SIndex > 0)
+                        {
+                            int pagenumber = SIndex / 10 + 1;
+                            subTitle = "You are viwing the page number " + pagenumber + " , each page view 10 assignments";
+                        }
+                        HeroCard plCardCounter = new HeroCard()
+                        {
+                            Title = "**Total Number Of user assignments :**\n" + Counter,
+                            Subtitle = subTitle,
+                            //  Buttons = cardButtons,
+                        };
+                        reply.AttachmentLayout = AttachmentLayoutTypes.Carousel;
+                        reply.Attachments.Add(plCardCounter.ToAttachment());
+                    }
+                    else
+                    {
+                        HeroCard plCardCounter = new HeroCard()
+                        {
+                            Title = "**Total Number Of user assignments :**\n" + Counter,
+                        };
+                        reply.Attachments.Add(plCardCounter.ToAttachment());
+                    }
+                }
+                else
+                {
+                    HeroCard plCardNoData = new HeroCard()
+                    { Title = "**No availabel assignments**\n\n" };
+                    reply.Attachments.Add(plCardNoData.ToAttachment());
+                }
+            }
             
             return reply;
         }
 
-        public IMessageActivity CreateButtonsPager(IDialogContext dialogContext, int totalCount , string ListName , string projectName , string query)
+        public IMessageActivity CreateButtonsPager(IDialogContext dialogContext, int totalCount, string ListName, string projectName, string query)
         {
             IMessageActivity reply = null;
             reply = dialogContext.MakeMessage();
@@ -947,10 +1936,10 @@ namespace Common
                     {
                         if (i == 0)
                         {
-                            valuebutton = "show a list of "+projectName+" tasks at index 0";
+                            valuebutton = "show a list of " + projectName + " tasks at index 0";
                         }
                         else
-                            valuebutton = "show a list of "+ projectName + " tasks at index " + i * 10;
+                            valuebutton = "show a list of " + projectName + " tasks at index " + i * 10;
 
                     }
                     else if (ListName == Enums.ListName.Issues.ToString())
@@ -993,7 +1982,18 @@ namespace Common
                             valuebutton = "get " + projectName + " assignments at index " + i * 10;
 
                     }
-                    else if (ListName == "FilterByDate" && query !="")
+                    else if (ListName == "FilterByDate" && query != "")
+                    {
+                        if (i == 0)
+                        {
+                            valuebutton = query + " at index 0";
+                        }
+                        else
+                            valuebutton = query + " at index " + i * 10;
+
+                    }
+
+                    else if (ListName == "UserAssignments" && query != "")
                     {
                         if (i == 0)
                         {
@@ -1021,8 +2021,8 @@ namespace Common
 
                     ThumbnailCard plCardCounter = new ThumbnailCard()
                     {
-                         Title = "Page" + CurrentNumber,
-                     //   Images = cardImages,
+                        Title = "Page" + CurrentNumber,
+                        //   Images = cardImages,
                         Tap = CardButton,
 
                     };
@@ -1037,753 +2037,5 @@ namespace Common
             return reply;
         }
 
-        public IMessageActivity GetProjectSubItems(IDialogContext dialogContext ,  string pName, string ListName)
-        {
-            var markdownContent = "";
-            string SubtitleVal = "";
-            IMessageActivity reply = null;
-            reply = dialogContext.MakeMessage();
-
-            string projectsite = string.Empty;
-            Web projectweb;
-            using (ProjectContext context = new ProjectContext(_siteUri))
-            {
-                SecureString passWord = new SecureString();
-                foreach (char c in _userPassword.ToCharArray()) passWord.AppendChar(c);
-                context.Credentials = new SharePointOnlineCredentials(_userName, passWord);
-                PublishedProject project = GetProjectByName(pName, context);                
-                if (project != null)
-                {
-                    context.Load(project, p => p.ProjectSiteUrl);
-                    context.ExecuteQuery();
-
-                    if (ListName == Enums.ListName.Tasks.ToString())
-                    {
-                       // reply = GetProjectTasks(dialogContext , context, project);
-                    }
-                    else if (ListName == Enums.ListName.Assignments.ToString())
-                    {
-                      //  markdownContent = GetProjectTAssignments(context, project);
-                    }
-                    else
-                    {
-                        projectsite = project.ProjectSiteUrl;
-                        projectweb = GetProjectWEB(projectsite, context);
-
-                        if (projectsite != null)
-                        {
-                           // if (ListName == Common.Enums.ListName.Issues.ToString())
-                             //   markdownContent = GetProjectIssues( dialogContext, projectweb, context);
-                          //  if (ListName == Common.Enums.ListName.Risks.ToString())
-                             //   markdownContent = GetProjectRisks(projectweb, context);
-                           // if (ListName == Common.Enums.ListName.Deliverables.ToString())
-                              //  markdownContent = GetProjectDeliverables(projectweb, context);
-                        }
-                        else
-                        {
-                            markdownContent = "Site Project Not Created";
-                        }
-                    }
-
-                }
-                else
-                {
-                    markdownContent = "Project Name Not Exist or you don't have permission to this project";
-                }
-
-            }
-            return reply;
-        }
-
-
-
-
-
-        public IMessageActivity GetAllTasks(IDialogContext dialogContext, int SIndex, PublishedTaskCollection tskcoll, PublishedProject project, out int Counter)
-        {
-            IMessageActivity reply = null;
-            reply = dialogContext.MakeMessage();
-            reply.AttachmentLayout = AttachmentLayoutTypes.Carousel;
-
-
-            int inDexToVal = SIndex + 10;
-            Counter = project.Tasks.Count;
-            if (inDexToVal >= project.Tasks.Count)
-                inDexToVal = project.Tasks.Count;
-
-            tskcoll = project.Tasks;
-
-            if (tskcoll.Count > 0)
-            {
-                for (int startIndex = SIndex; startIndex < inDexToVal; startIndex++)
-                {
-                    var SubtitleVal = "";
-                    PublishedTask tsk = tskcoll[startIndex];
-                    string TaskName = tsk.Name;
-                    string TaskDuration = tsk.Duration;
-                    string TaskPercentCompleted = tsk.PercentComplete.ToString();
-                    string TaskStartDate = tsk.Start.ToString();
-                    string TaskFinishDate = tsk.Finish.ToString();
-
-                    SubtitleVal += "**Task Duration**\n" + TaskDuration + "\n\r";
-                    SubtitleVal += "**Task Percent Completed**\n" + TaskPercentCompleted + "\n\r";
-                    SubtitleVal += "**Task Start Date**\n" + TaskStartDate + "\n\r";
-                    SubtitleVal += "**Task Finish Date**\n" + TaskFinishDate + "\n\r";
-
-                    HeroCard plCard = new HeroCard()
-                    {
-                        Title = TaskName,
-                        Subtitle = SubtitleVal
-                    };
-
-                    reply.Attachments.Add(plCard.ToAttachment());
-                }
-               
-            }
-           
-            return reply;
-        }
-
-        public IMessageActivity GetAllIssues(IDialogContext dialogContext , ListItemCollection itemsIssue , int SIndex,  out int Counter)
-        {
-            IMessageActivity reply = null;
-            reply = dialogContext.MakeMessage();
-            reply.AttachmentLayout = AttachmentLayoutTypes.Carousel;
-            string IssueName = string.Empty;
-            string IssueStatus = string.Empty;
-            string IssuePriority = string.Empty;
-
-            Counter = itemsIssue.Count;
-
-            int inDexToVal = SIndex + 10;
-            if (inDexToVal >= itemsIssue.Count)
-                inDexToVal = itemsIssue.Count;
-
-            if (itemsIssue.Count > 0)
-            {
-                for (int startIndex = SIndex; startIndex < inDexToVal; startIndex++)
-                {
-                    var SubtitleVal = "";
-                    ListItem item = itemsIssue[startIndex];
-                    if (item["Title"] != null)
-                        IssueName = (string)item["Title"];
-                    if (item["Status"] != null)
-                        IssueStatus = (string)item["Status"];
-                    if (item["Priority"] != null)
-                        IssuePriority = (string)item["Priority"];
-                    SubtitleVal += "**Status**\n" + IssueStatus + "\n\r";
-                    SubtitleVal += "**Priority**\n" + IssuePriority + "\n\r";
-
-                    HeroCard plCard = new HeroCard()
-                    {
-                        Title = IssueName,
-                        Subtitle = SubtitleVal,
-                    };
-                    reply.Attachments.Add(plCard.ToAttachment());
-                }
-            }
-            return reply;
-        }
-
-        public IMessageActivity GetAllRisks(IDialogContext dialogContext, ListItemCollection itemsRisk, int SIndex, out int Counter)
-        {
-            IMessageActivity reply = null;
-            reply = dialogContext.MakeMessage();
-            reply.AttachmentLayout = AttachmentLayoutTypes.Carousel;
-            string RiskName = string.Empty;
-            string ResourceName = string.Empty;
-            string riskStatus = string.Empty;
-            string riskImpact = string.Empty;
-            string riskProbability = string.Empty;
-            string riskCostExposure = string.Empty;
-
-
-            Counter = itemsRisk.Count;
-
-            int inDexToVal = SIndex + 10;
-            if (inDexToVal >= itemsRisk.Count)
-                inDexToVal = itemsRisk.Count;
-
-            if (itemsRisk.Count > 0)
-            {
-                for (int startIndex = SIndex; startIndex < inDexToVal; startIndex++)
-                {
-                    var SubtitleVal = "";
-                    ListItem item = itemsRisk[startIndex];
-
-
-                    if (item["Title"] != null)
-                        RiskName = (string)item["Title"];
-                    if (item["AssignedTo"] != null)
-                    {
-                        FieldUserValue fuv = (FieldUserValue)item["AssignedTo"];
-                        SubtitleVal += "**Assigned To Resource**\n" + fuv.LookupValue + "\n\r";
-
-                    }
-                    else
-                        SubtitleVal += "**Assigned To Resource :**\n" + "Not assigned" + "\n\r";
-
-                    if (item["Status"] != null)
-                        riskStatus = (string)item["Status"];
-                    SubtitleVal += "**Risk Status**\n" + riskStatus + "\n\r";
-
-                    if (item["Impact"] != null)
-                        riskImpact = item["Impact"].ToString();
-                    SubtitleVal += "**Risk Impact**\n" + riskImpact + "\n\r";
-
-                    if (item["Probability"] != null)
-                        riskProbability = item["Probability"].ToString();
-                    SubtitleVal += "**Risk Probability**\n" + riskProbability + "\n\r";
-
-                    if (item["Exposure"] != null)
-                        riskCostExposure = item["Exposure"].ToString();
-                    SubtitleVal += "**Risk CostExposure**\n" + riskCostExposure + "\n\r";
-
-
-                    HeroCard plCard = new HeroCard()
-                    {
-                        Title = RiskName,
-                        Subtitle = SubtitleVal,
-                    };
-                    reply.Attachments.Add(plCard.ToAttachment());
-
-                }
-
-            }
-
-            return reply;
-        }
-
-
-        public IMessageActivity GetAllDeliverabels(IDialogContext dialogContext, ListItemCollection itemsDeliverabels, int SIndex, out int Counter)
-        {
-            IMessageActivity reply = null;
-            reply = dialogContext.MakeMessage();
-            reply.AttachmentLayout = AttachmentLayoutTypes.Carousel;
-            string DeliverableName = string.Empty;
-            string DeliverableStart = string.Empty;
-            string DeliverableFinish = string.Empty;
-
-
-            Counter = itemsDeliverabels.Count;
-
-            int inDexToVal = SIndex + 10;
-            if (inDexToVal >= itemsDeliverabels.Count)
-                inDexToVal = itemsDeliverabels.Count;
-
-            if (itemsDeliverabels.Count > 0)
-            {
-                for (int startIndex = SIndex; startIndex < inDexToVal; startIndex++)
-                {
-                    var SubtitleVal = "";
-                    ListItem item = itemsDeliverabels[startIndex];
-
-
-                    if (item["Title"] != null)
-                        DeliverableName = (string)item["Title"];
-                    SubtitleVal += "**Deliverable Name**\n" + DeliverableName + "\n\r";
-
-                    if (item["Author"] != null)
-                    {
-                        FieldUserValue fuv = (FieldUserValue)item["Author"];
-                        SubtitleVal += "**Create By Resource :**\n" + fuv.LookupValue + "\n\r";
-
-                    }
-
-                    if (item["CommitmentStart"] != null)
-                        DeliverableStart = item["CommitmentStart"].ToString();
-                    SubtitleVal += "**Start Date :**\n" + DeliverableStart + "\n\r";
-
-                    if (item["CommitmentFinish"] != null)
-                        DeliverableFinish = item["CommitmentFinish"].ToString();
-                    SubtitleVal += "**Finish Date :**\n" + DeliverableFinish + "\n\r";
-
-
-                    HeroCard plCard = new HeroCard()
-                    {
-                        Title = DeliverableName,
-                        Subtitle = SubtitleVal,
-                    };
-                    reply.Attachments.Add(plCard.ToAttachment());
-
-                }
-
-            }
-
-            return reply;
-        }
-        public string getresourceassignedrisks(ListItemCollection itemsRisk)
-        {
-            var markdownContent = "";
-            string RiskName = string.Empty;
-            string ResourceName = string.Empty;
-            string riskStatus = string.Empty;
-            string riskImpact = string.Empty;
-            string riskProbability = string.Empty;
-            string riskCostExposure = string.Empty;
-            if (itemsRisk.Count > 0)
-            {
-                int count = 0;
-                foreach (ListItem item in itemsRisk)
-                {
-
-
-                    if (item["AssignedTo"] != null)
-                    {
-                        count++;
-                        FieldUserValue fuv = (FieldUserValue)item["AssignedTo"];
-                        if (fuv.Email == _userName)
-                        {
-                            if (item["Title"] != null)
-                                RiskName = (string)item["Title"];
-                            markdownContent += "**Risk Title**\n" + RiskName + "<br>";
-
-                            markdownContent += "**Assigned To Resource**\n" + fuv.LookupValue + "<br/>";
-                            if (item["Status"] != null)
-                                riskStatus = (string)item["Status"];
-                            markdownContent += "**Risk Status**\n" + riskStatus + "<br>";
-
-                            if (item["Impact"] != null)
-                                riskImpact = item["Impact"].ToString();
-                            markdownContent += "**Risk Impact**\n" + riskImpact + "<br>";
-
-                            if (item["Probability"] != null)
-                                riskProbability = item["Probability"].ToString();
-                            markdownContent += "**Risk Probability**\n" + riskProbability + "<br>";
-
-                            if (item["Exposure"] != null)
-                                riskCostExposure = item["Exposure"].ToString();
-                            markdownContent += "**Risk CostExposure**\n" + riskCostExposure + "<br>";
-
-
-                            markdownContent += "----\n\n";
-                        }
-
-                    }
-
-
-                }
-
-                markdownContent += "**Total Risks :**\n" + count + "<br>";
-            }
-            else
-                markdownContent = "No Risks assigned for you on this project";
-
-            return markdownContent;
-        }
-        
-
-
-        //public string GetProjectIssues( IDialogContext dialogContext, Web projectweb, ProjectContext context)
-        //{
-        //    IMessageActivity reply = null;
-        //    reply = dialogContext.MakeMessage();
-        //    string markdownContent = string.Empty;
-        //    string IssueName = string.Empty;
-        //    string IssueStatus = string.Empty;
-        //    string IssuePriority = string.Empty;
-
-        //    var issues = projectweb.Lists.GetByTitle(Enums.ListName.Issues.ToString());
-        //    CamlQuery query = CamlQuery.CreateAllItemsQuery();
-        //    ListItemCollection itemsIssue = issues.GetItems(query);
-
-        //    context.Load(issues);
-        //    context.Load(itemsIssue);
-        //    context.ExecuteQuery();
-
-        //    if (GetUserGroup(context, "Team Members (Project Web App Synchronized)"))
-        //    {
-        //        markdownContent = getresourceassignedrisksIssues(dialogContext, itemsIssue);
-        //    }
-        //    else
-        //    {
-        //        markdownContent = GetAllProjectIssues(dialogContext, itemsIssue);
-        //    }
-
-
-
-        //    return markdownContent;
-        //}
-
-        //public IMessageActivity GetProjectTasks(IDialogContext dialogContext ,  ProjectContext context, PublishedProject project)
-        //{
-        //    IMessageActivity reply = null;
-        //    reply = dialogContext.MakeMessage();
-        //    if (GetUserGroup(context, "Team Members (Project Web App Synchronized)"))
-        //    {
-        //        reply = GetResourceLoggedInTasks(dialogContext, context, project);
-        //    }
-        //    else if (GetUserGroup(context, "Project Managers (Project Web App Synchronized)"))
-        //    {
-        //        context.Load(project.Owner);
-        //        context.ExecuteQuery();
-        //        if (project.Owner.Email == _userName) // if the logged in user is a project manager on this project
-        //        {
-        //            reply = GetAllTasks(dialogContext , 0, context, project);
-        //        }
-        //        else
-        //        {
-        //            reply = GetResourceLoggedInTasks(dialogContext, context, project);
-
-        //        }
-        //    }
-        //    else
-        //    {
-        //        reply = GetAllTasks(dialogContext, 0, context, project);
-        //    }
-
-
-
-        //    return reply;
-        //}
-
-       
-        
-        public bool UserHavePermissionOnaProjects(string siteUrl, string subSiteTitle, ProjectContext context)
-        {
-
-            var web = context.Web;
-            bool exist = false;
-            context.Load(web, w => w.Webs);
-            context.ExecuteQuery();
-            foreach (Web subWeb in web.Webs)
-            {
-                if (subWeb.Title.ToLower() == subSiteTitle.ToLower())
-                {
-                    var user = subWeb.EnsureUser(_userName);
-                    context.Load(user);
-                    context.ExecuteQuery();
-
-                    if (null != user)
-                    {
-                        ClientResult<BasePermissions> permissions = subWeb.GetUserEffectivePermissions(user.LoginName);
-                        context.ExecuteQuery();
-
-
-                        if (permissions.Value.Has(PermissionKind.ViewListItems))
-                        {
-                            exist = true;
-                            break;
-                        }
-                        else
-                            exist = false;
-
-
-                    }
-                    else
-                        exist = false;
-
-
-
-
-                }
-            }
-
-            return exist;
-        }
-
-        public bool GetUserGroup(ProjectContext context, string groupName)
-        {
-            bool exist = false;
-
-            context.Load(context.Web);
-
-            //  context.Load(web.SiteUsers);
-            context.ExecuteQuery();
-
-            Web web = context.Web;
-
-            IEnumerable<User> user = context.LoadQuery(web.SiteUsers.Where(p => p.Email == _userName));
-            context.ExecuteQuery();
-
-            if (user.Any())
-            {
-                User userLogged = user.FirstOrDefault();
-
-                context.Load(userLogged.Groups);
-                context.ExecuteQuery();
-
-                GroupCollection group = userLogged.Groups;
-
-                IEnumerable<Group> usergroup = context.LoadQuery(userLogged.Groups.Where(p => p.Title == groupName));
-                context.ExecuteQuery();
-                if (!usergroup.Any())
-                {
-                    exist = false;
-                }
-                else
-                    exist = true;
-            }
-
-            return exist;
-        }
-
-        private static PublishedProject GetProjectByName(string name, ProjectContext context)
-        {
-            if (name.Contains(" - "))
-                name = name.Replace(" - ", "-");
-            IEnumerable<PublishedProject> projs = context.LoadQuery(context.Projects.Where(p => p.Name == name));
-            context.ExecuteQuery();
-            if (!projs.Any())       // no project found
-            {
-                return null;
-            }
-            return projs.FirstOrDefault();
-
-        }
-
-        private static Web GetProjectWEB(string siteurl, ProjectContext context)
-        {
-            IEnumerable<Web> webs = context.LoadQuery(context.Web.Webs.Where(p => p.Url == siteurl));
-            context.ExecuteQuery();
-            if (!webs.Any())       // no project found
-            {
-                return null;
-            }
-            return webs.FirstOrDefault();
-
-        }
-
-      
-      
-
-        public string GetResourceAssignments(string ResourceName)
-        {
-            var markdownContent = "";
-            int counttotalAss = 0;
-            using (ProjectContext context = new ProjectContext(_siteUri))
-            {
-
-
-                SecureString passWord = new SecureString();
-                foreach (char c in _userPassword.ToCharArray()) passWord.AppendChar(c);
-                context.Credentials = new SharePointOnlineCredentials(_userName, passWord);
-
-
-                context.Load(context.Projects);
-                context.ExecuteQuery();
-                ProjectCollection projcoll = context.Projects;
-
-
-                context.Load(context.EnterpriseResources);
-                var resources = context.EnterpriseResources;
-
-                context.ExecuteQuery();
-
-
-                ResourceName = ResourceName.Replace(" ", String.Empty);
-
-                string fullEmail = string.Concat(ResourceName, ConfigurationManager.AppSettings["DomainEmail"]);
-
-                var user = context.Web.EnsureUser(ResourceName);
-                context.Load(user);
-                context.ExecuteQuery();
-
-                if (user != null)
-                {
-                    var resource = resources.FirstOrDefault(i => i.Email == user.Email);
-                    if (resource != null)
-                    {
-
-                        foreach (PublishedProject proj in projcoll)
-                        {
-                            context.Load(proj.Assignments, da => da.Where(a => a.Resource.Email == user.Email));
-
-                            context.ExecuteQuery();
-
-                            if (proj.Assignments != null)
-                            {
-                                PublishedAssignmentCollection proAssignment = proj.Assignments;
-                                foreach (PublishedAssignment ass in proAssignment)
-                                {
-                                    context.Load(ass.Task);
-                                    context.ExecuteQuery();
-                                    var tsk = ass.Task;
-                                    markdownContent += "**Project Name :**\n" + proj.Name + "<br>";
-                                    markdownContent += "**Assignment Start Date :**\n" + ass.Start + "<br>";
-                                    markdownContent += "**Task Name :**\n" + tsk.Name + "<br>";
-                                    markdownContent += "----\n\n";
-                                    counttotalAss++;
-                                }
-
-                            }
-                        }
-
-                        if (counttotalAss > 0)
-                        {
-                            markdownContent += "**Total Assignes :**\n" + counttotalAss + "<br>";
-                        }
-                        else
-                        {
-                            markdownContent = "No assigned task for this resource";
-                        }
-                    }
-                    else
-                    {
-                        markdownContent = "Resource not found.";
-                    }
-                }
-                else
-                {
-                    markdownContent = "Resource not found.";
-                }
-
-
-
-                return markdownContent;
-            }
-
-        }
-
-        public IMessageActivity GetResourceLoggedInTasks(IDialogContext dialogContext, ProjectContext context, PublishedProject proj)
-        {
-            var SubtitleVal = "";
-            IMessageActivity reply = null;
-            reply = dialogContext.MakeMessage();
-            context.Load(proj.Assignments, da => da.Where(a => a.Resource.Email != string.Empty && a.Resource.Email == _userName));
-            context.ExecuteQuery();
-            if (proj.Assignments != null)
-            {
-                PublishedAssignmentCollection proAssignment = proj.Assignments;
-                foreach (PublishedAssignment ass in proAssignment)
-                {
-                    context.Load(ass.Task);
-                    context.Load(ass.Resource);
-
-                    context.ExecuteQuery();
-                    var tsk = ass.Task;
-                    string TaskName = tsk.Name;
-                    string TaskDuration = tsk.Duration;
-                    string TaskPercentCompleted = tsk.PercentComplete.ToString();
-                    string TaskStartDate = tsk.Start.ToString();
-                    string TaskFinishDate = tsk.Finish.ToString();
-
-
-
-
-                    SubtitleVal += "**Task Name**\n" + TaskName + "\n\r";
-                    SubtitleVal += "**Task Duration**\n" + TaskDuration + "\n\r";
-                    SubtitleVal += "**Task Percent Completed**\n" + TaskPercentCompleted + "\n\r";
-                    SubtitleVal += "**Task Start Date**\n" + TaskStartDate + "\n\r";
-                    SubtitleVal += "**Task Finish Date**\n" + TaskFinishDate + "\n\r";
-
-                    HeroCard plCard = new HeroCard()
-                    {
-                        Title = TaskName,
-                        Subtitle = SubtitleVal,
-
-                    };
-
-                    Microsoft.Bot.Connector.Attachment attachment = new Microsoft.Bot.Connector.Attachment()
-                    {
-                        ContentType = HeroCard.ContentType,
-                        Content = plCard
-                    };
-
-
-                    reply.Attachments.Add(attachment);
-
-                }
-                HeroCard plCardCounter = new HeroCard()
-                { Title = "**Total Tasks :**\n" + proAssignment.Count, };
-                reply.Attachments.Add(plCardCounter.ToAttachment());
-
-
-            }
-            else
-            {
-                HeroCard plCardNoData = new HeroCard()
-                { Title = "**No assigned task for you on this project**\n" };
-                reply.Attachments.Add(plCardNoData.ToAttachment());
-
-            }
-
-            return reply;
-
-
-        }
-
-        public string getresourceassignedrisksIssues(IDialogContext dialogContext, ListItemCollection itemsIssue)
-        {
-            IMessageActivity reply = null;
-            reply = dialogContext.MakeMessage();
-            string SubtitleVal = "";
-            string markdownContent = string.Empty;
-            string IssueName = string.Empty;
-            string IssueStatus = string.Empty;
-            string IssuePriority = string.Empty;
-
-
-            if (itemsIssue.Count > 0)
-            {
-                int count = 0;
-                foreach (ListItem item in itemsIssue)
-                {
-                    if (item["AssignedTo"] != null)
-                    {
-                        count++;
-                        FieldUserValue fuv = (FieldUserValue)item["AssignedTo"];
-                        if (fuv.Email == _userName)
-                        {
-
-                            if (item["Title"] != null)
-                                IssueName = (string)item["Title"];
-                            if (item["Status"] != null)
-                                IssueStatus = (string)item["Status"];
-                            if (item["Priority"] != null)
-                                IssuePriority = (string)item["Priority"];
-                            markdownContent += "**Title**\n" + IssueName + "<br>";
-                            markdownContent += "**Status**\n" + IssueStatus + "\n\r";
-                            markdownContent += "**Priority**\n" + IssuePriority + "\n\r";
-                            markdownContent += "----\n\n";
-                            //  if (item["Title"] != null)
-                            //      IssueName = (string)item["Title"];
-                            //  if (item["Status"] != null)
-                            //      IssueStatus = (string)item["Status"];
-                            //  if (item["Priority"] != null)
-                            //      IssuePriority = (string)item["Priority"];
-                            ////  SubtitleVal += "**Title**\n" + IssueName + "<br>";
-                            //  SubtitleVal += "**Status**\n" + IssueStatus + "\n\r";
-                            //  SubtitleVal += "**Priority**\n" + IssuePriority + "\n\r";
-
-
-
-
-                            //HeroCard plCard = new HeroCard()
-                            //{
-                            //    Title = IssueName,
-                            //    Subtitle = SubtitleVal,
-                            //};
-
-                            //Microsoft.Bot.Connector.Attachment attachment = new Microsoft.Bot.Connector.Attachment()
-                            //{
-                            //    ContentType = HeroCard.ContentType,
-                            //    Content = plCard
-                            //};
-
-                            //reply.Attachments.Add(attachment);
-                        }
-
-
-                    }
-                }
-                //HeroCard plCardCounter = new HeroCard()
-                //{ Title = "**Total Issues :**\n" + count, };
-                //reply.Attachments.Add(plCardCounter.ToAttachment());
-                markdownContent += "**Total Issues :**\n" + count + "\n\r";
-
-
-            }
-            else
-            {
-                //HeroCard plCardNoData = new HeroCard()
-                //{ Title = "**No Issues assigned to you on this project**\n\n" };
-                //reply.Attachments.Add(plCardNoData.ToAttachment());
-                markdownContent += "**No Issues assigned to you on this project**\n\n";
-
-            }
-
-            return markdownContent;
-        }
     }
 }
