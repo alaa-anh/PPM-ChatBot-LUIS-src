@@ -33,8 +33,8 @@ namespace Microsoft.Bot.Sample.LuisBot
             {
                 if (activity.ChannelId == "webchat")
                     await Conversation.SendAsync(activity, () => new PPMDialog(activity));
-                else if (activity.ChannelId == "telegram")
-                    await Conversation.SendAsync(activity, () => new PPMDialogTelegram(activity));
+                //else if (activity.ChannelId == "telegram")
+                //    await Conversation.SendAsync(activity, () => new PPMDialogTelegram(activity));
                 else if (activity.ChannelId == "emulator")
                     await Conversation.SendAsync(activity, () => new PPMDialog(activity));
                 else
