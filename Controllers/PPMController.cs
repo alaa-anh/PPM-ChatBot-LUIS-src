@@ -45,10 +45,6 @@ namespace Microsoft.Bot.Sample.LuisBot
             {
                 HandleSystemMessage(activity);
             }
-
-
-          
-
             var response = Request.CreateResponse(System.Net.HttpStatusCode.OK);
             return response;
         }
