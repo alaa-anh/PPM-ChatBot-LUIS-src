@@ -17,7 +17,7 @@ namespace Common
 {
     public class ProjectServer
     {
-        private string _userName;
+        private string _userName; 
         private string _userPassword;
         private string _userNameAdmin = ConfigurationManager.AppSettings["DomainAdmin"];
         private string _userPasswordAdmin = ConfigurationManager.AppSettings["DomainAdminPassword"];
