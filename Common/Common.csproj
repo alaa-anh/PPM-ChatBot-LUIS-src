@@ -184,6 +184,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Enums.cs" />
+    <Compile Include="ProjectServerTeam.cs" />
     <Compile Include="ProjectServerTelegram.cs" />
     <Compile Include="ProjectServerCore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

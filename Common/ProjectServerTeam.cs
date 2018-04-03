@@ -15,7 +15,7 @@ using Microsoft.Bot.Builder.Dialogs;
 
 namespace Common
 {
-    public class ProjectServer
+    public class ProjectServerTeam
     {
         private string _userName; 
         private string _userPassword;
@@ -23,7 +23,7 @@ namespace Common
         private string _userPasswordAdmin = ConfigurationManager.AppSettings["DomainAdminPassword"];
 
         private string _siteUri;
-        public ProjectServer(string userName, string password)
+        public ProjectServerTeam(string userName, string password)
         {
             _userName = userName;
             _userPassword = password;
