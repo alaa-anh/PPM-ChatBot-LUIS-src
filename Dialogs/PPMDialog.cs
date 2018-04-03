@@ -443,9 +443,12 @@ namespace Microsoft.Bot.Sample.LuisBot
             string response = await pass;
             password = response;
 
-           
-            string UserLoggedInName = TokenHelper.checkAuthorizedUser(userName, password);
-            if (UserLoggedInName != string.Empty)
+
+            //   string UserLoggedInName = TokenHelper.checkAuthorizedUser(userName, password);
+               bool UserLoggedInName = TokenHelper.checkAuthorizedUser(userName, password);
+
+            // if (UserLoggedInName != string.Empty)
+            if (UserLoggedInName == true)
             {
                 context.UserData.SetValue("UserName", userName);
                 context.UserData.SetValue("Password", password);
@@ -457,7 +460,7 @@ namespace Microsoft.Bot.Sample.LuisBot
             }
             else
             {
-                PromptDialog.Confirm(context, ResumeAfterConfirmation, userName + "--" + password + " --" + UserLoggedInName + "--" + "The User from team Don't have permission , do you want to try another cridentials?");
+                PromptDialog.Confirm(context, ResumeAfterConfirmation, userName + "--" + password + " --" + UserLoggedInName + "--" + "The User Don't have permission , do you want to try another cridentials?");
 
             }
         }

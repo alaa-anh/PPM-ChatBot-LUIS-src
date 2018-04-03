@@ -1,6 +1,7 @@
 ﻿using Microsoft.IdentityModel;
 using Microsoft.IdentityModel.S2S.Protocols.OAuth2;
 using Microsoft.IdentityModel.S2S.Tokens;
+using Microsoft.ProjectServer.Client;
 using Microsoft.SharePoint.Client;
 using Microsoft.SharePoint.Client.EventReceivers;
 using System;
@@ -81,14 +82,14 @@ namespace Common
             return null;
         }
 
-        public static string checkAuthorizedUser(string name , string upassword)
+        public static bool checkAuthorizedUser(string name , string upassword)
         {
             bool Authorized = false;
-            string UserLoggedInName = string.Empty ;
+           // string UserLoggedInName = string.Empty ;
 
             try
             {
-                using (ClientContext ctx = new ClientContext(ConfigurationManager.AppSettings["PPMServerURL"]))
+                using (ProjectContext ctx = new ProjectContext(ConfigurationManager.AppSettings["PPMServerURL"]))
                 {
 
                     SecureString passWord = new SecureString();
@@ -104,7 +105,7 @@ namespace Common
                     {
                        
                         Authorized = true;
-                        UserLoggedInName = user.Title;
+                      //  UserLoggedInName = user.Title;
 
                     }
                     else
@@ -116,8 +117,8 @@ namespace Common
                 Authorized = false;
             }
 
-            //return Authorized;
-            return UserLoggedInName;
+            return Authorized;
+            //return UserLoggedInName;
         }
 
 
