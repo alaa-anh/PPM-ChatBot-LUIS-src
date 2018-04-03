@@ -311,4 +311,3 @@ C:\Projects\chatbot\PPM-ChatBot-LUIS-src\bin\zh-Hans\Microsoft.Data.Services.Cli
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\bin\zh-Hant\Microsoft.Data.Services.Client.resources.dll
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\obj\Debug\LuisBot.dll
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\obj\Debug\LuisBot.pdb
-C:\Projects\chatbot\PPM-ChatBot-LUIS-src\bin\Common.dll.config
