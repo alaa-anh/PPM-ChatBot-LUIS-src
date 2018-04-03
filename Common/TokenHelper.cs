@@ -97,9 +97,9 @@ namespace Common
                     ctx.Credentials = new SharePointOnlineCredentials(name, passWord);
 
 
-                    //var user = ctx.Web.EnsureUser(name);
-                    //ctx.Load(user);
-                    //ctx.ExecuteQuery();
+                    var user = ctx.Web.EnsureUser(name);
+                    ctx.Load(user);
+                    ctx.ExecuteQuery();
 
                     //if (null != user)
                     //{
