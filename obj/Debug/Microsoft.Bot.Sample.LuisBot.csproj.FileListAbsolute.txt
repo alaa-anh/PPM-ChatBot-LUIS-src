@@ -344,3 +344,4 @@ C:\Projects\chatbot\PPM-ChatBot-LUIS-src\obj\Debug\LuisBot.pdb
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\bin\Microsoft.Bot.Builder.pdb
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\bin\Microsoft.Bot.Builder.Autofac.pdb
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\bin\Microsoft.Bot.Builder.Autofac.xml
+C:\Projects\chatbot\PPM-ChatBot-LUIS-src\bin\Common.dll.config

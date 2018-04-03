@@ -112,3 +112,10 @@ C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\Microsoft.Bot.Builder.
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\Microsoft.Bot.Builder.Autofac.xml
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\Newtonsoft.Json.dll
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\Newtonsoft.Json.xml
+C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\Common.dll.config
+C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\System.Net.Http.Formatting.dll
+C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\System.Web.Http.dll
+C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\System.Web.Http.WebHost.dll
+C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\System.Net.Http.Formatting.xml
+C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\System.Web.Http.xml
+C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\System.Web.Http.WebHost.xml
