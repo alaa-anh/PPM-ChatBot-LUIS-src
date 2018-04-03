@@ -40,7 +40,7 @@ namespace Microsoft.Bot.Sample.LuisBot
                 else if (activity.ChannelId == "team")
                     await Conversation.SendAsync(activity, () => new PPMDialogMSTeam(activity));
                 else
-                    await Conversation.SendAsync(activity, () => new PPMDialog(activity));
+                    await Conversation.SendAsync(activity, () => new PPMDialog(activity)); 
 
             }
             else
