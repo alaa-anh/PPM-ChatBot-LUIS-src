@@ -74,7 +74,6 @@ C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\MongoDB.Bson.dll
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\MongoDB.Driver.Core.dll
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\MongoDB.Driver.dll
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\MongoDB.Driver.GridFS.dll
-C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\Newtonsoft.Json.dll
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\System.Buffers.dll
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\System.IdentityModel.Tokens.Jwt.dll
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\System.Net.Http.Formatting.dll
@@ -90,7 +89,6 @@ C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\MongoDB.Bson.xml
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\MongoDB.Driver.xml
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\MongoDB.Driver.Core.xml
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\MongoDB.Driver.GridFS.xml
-C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\Newtonsoft.Json.xml
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\System.Buffers.xml
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\System.IdentityModel.Tokens.Jwt.xml
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\System.Net.Http.Formatting.xml
@@ -112,3 +110,8 @@ C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\obj\Debug\Common.csprojResolveAs
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\obj\Debug\Common.csproj.CoreCompileInputs.cache
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\obj\Debug\Common.dll
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\obj\Debug\Common.pdb
+C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\Common.dll.config
+C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\Microsoft.IdentityModel.Tokens.dll
+C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\Microsoft.Bot.Builder.pdb
+C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\Microsoft.Bot.Builder.Autofac.pdb
+C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\Microsoft.Bot.Builder.Autofac.xml
