@@ -38,49 +38,38 @@ namespace Common
             reply = dialogContext.MakeMessage();
             reply.AttachmentLayout = AttachmentLayoutTypes.Carousel;
             Counter = 0;
-            try
+            using (ProjectContext context = new ProjectContext(_siteUri))
             {
-               
-                using (ProjectContext context = new ProjectContext(_siteUri))
+                SecureString passWord = new SecureString();
+                foreach (char c in _userPassword.ToCharArray()) passWord.AppendChar(c);
+                SharePointOnlineCredentials credentials = new SharePointOnlineCredentials(_userName, passWord);
+                context.Credentials = new SharePointOnlineCredentials(_userName, passWord);
+                context.Load(context.Projects);
+                context.ExecuteQuery();
+
+
+                ProjectCollection projectDetails = context.Projects;
+                int ProjectCounter = 0;
+
+
+
+                if (context.Projects.Count > 0)
                 {
-                    SecureString passWord = new SecureString();
-                    foreach (char c in _userPassword.ToCharArray()) passWord.AppendChar(c);
-                    SharePointOnlineCredentials credentials = new SharePointOnlineCredentials(_userName, passWord);
-                    context.Credentials = new SharePointOnlineCredentials(_userName, passWord);
 
-                    context.Load(context.Projects);
-                    context.ExecuteQuery();
+                    //if (GetUserGroup(context, "Team Members (Project Web App Synchronized)"))
+                    //{
+                    //    reply = GetResourceLoggedInProjects(dialogContext, context, projectDetails, SIndex, showCompletion, ProjectDates, PDuration, projectManager, out ProjectCounter);
+                    //}
+                    //else
+                    //{
+                    //    reply = GetAllProjects(dialogContext, context, projectDetails, SIndex, showCompletion, ProjectDates, PDuration, projectManager, out ProjectCounter);
+                    //}
 
-                   
-                    ProjectCollection projectDetails = context.Projects;
-                    int ProjectCounter = 0;
-
-
-
-                    if (context.Projects.Count > 0)
-                    {
-
-                        if (GetUserGroup(context, "Team Members (Project Web App Synchronized)"))
-                        {
-                            reply = GetResourceLoggedInProjects(dialogContext, context, projectDetails, SIndex, showCompletion, ProjectDates, PDuration, projectManager, out ProjectCounter);
-                        }
-                        else
-                        {
-                            reply = GetAllProjects(dialogContext, context, projectDetails, SIndex, showCompletion, ProjectDates, PDuration, projectManager, out ProjectCounter);
-                        }
-
-                        Counter = ProjectCounter;
-                    }
-
+                    Counter = ProjectCounter;
                 }
 
             }
-            catch(Exception ex)
-            {
-                reply =(IMessageActivity)ex.Data;
-               // throw ex;
-            }
-           
+
             return reply;
         }
 
