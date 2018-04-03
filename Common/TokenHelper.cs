@@ -84,7 +84,10 @@ namespace Common
 
         public static bool checkAuthorizedUser(string name , string upassword)
         {
-            bool Authorized = false;
+              string _userNameAdmin = ConfigurationManager.AppSettings["DomainAdmin"];
+         string _userPasswordAdmin = ConfigurationManager.AppSettings["DomainAdminPassword"];
+
+        bool Authorized = false;
            // string UserLoggedInName = string.Empty ;
 
             try
@@ -93,8 +96,8 @@ namespace Common
                 {
 
                     SecureString passWord = new SecureString();
-                    foreach (char c in upassword) passWord.AppendChar(c);
-                    ctx.Credentials = new SharePointOnlineCredentials(name, passWord);
+                    foreach (char c in _userPasswordAdmin) passWord.AppendChar(c);
+                    ctx.Credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
 
 
                     var user = ctx.Web.EnsureUser(name);
