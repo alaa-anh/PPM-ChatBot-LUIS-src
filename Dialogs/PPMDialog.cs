@@ -444,11 +444,11 @@ namespace Microsoft.Bot.Sample.LuisBot
             password = response;
 
 
-            //   string UserLoggedInName = TokenHelper.checkAuthorizedUser(userName, password);
-               bool UserLoggedInName = TokenHelper.checkAuthorizedUser(userName, password);
+               string UserLoggedInName = TokenHelper.checkAuthorizedUser(userName, password);
+              // bool UserLoggedInName = TokenHelper.checkAuthorizedUser(userName, password);
 
-            // if (UserLoggedInName != string.Empty)
-            if (UserLoggedInName == true)
+             if (UserLoggedInName != string.Empty)
+            //if (UserLoggedInName == true)
             {
                 context.UserData.SetValue("UserName", userName);
                 context.UserData.SetValue("Password", password);

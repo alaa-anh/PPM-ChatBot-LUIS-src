@@ -82,14 +82,12 @@ namespace Common
             return null;
         }
 
-        public static bool checkAuthorizedUser(string name , string upassword)
+        public static string checkAuthorizedUser(string name , string upassword)
         {
-              string _userNameAdmin = ConfigurationManager.AppSettings["DomainAdmin"];
-         string _userPasswordAdmin = ConfigurationManager.AppSettings["DomainAdminPassword"];
-
-        bool Authorized = false;
-           // string UserLoggedInName = string.Empty ;
-
+            string _userNameAdmin = ConfigurationManager.AppSettings["DomainAdmin"];
+            string _userPasswordAdmin = ConfigurationManager.AppSettings["DomainAdminPassword"];
+            // bool Authorized = false;
+            string UserLoggedInName = string.Empty ;
             try
             {
                 using (ProjectContext ctx = new ProjectContext(ConfigurationManager.AppSettings["PPMServerURL"]))
@@ -107,21 +105,22 @@ namespace Common
                     if (user !=null)
                     {
 
-                        Authorized = true;
-                        //  UserLoggedInName = user.Title;
+                       // Authorized = true;
+                          UserLoggedInName = user.Title;
 
                     }
-                    else
-                        Authorized = false;
+                    //else
+                    //    Authorized = false;
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                Authorized = false;
+                UserLoggedInName = ex.Message;
+                //Authorized = false;
             }
 
-            return Authorized;
-            //return UserLoggedInName;
+            //return Authorized;
+            return UserLoggedInName;
         }
 
 
