@@ -104,15 +104,15 @@ namespace Common
                     ctx.Load(user);
                     ctx.ExecuteQuery();
 
-                    //if (null != user)
-                    //{
+                    if (user !=null)
+                    {
 
-                    Authorized = true;
-                    //  //  UserLoggedInName = user.Title;
+                        Authorized = true;
+                        //  UserLoggedInName = user.Title;
 
-                    //}
-                    //else
-                    //    Authorized = false;
+                    }
+                    else
+                        Authorized = false;
                 }
             }
             catch (Exception)
