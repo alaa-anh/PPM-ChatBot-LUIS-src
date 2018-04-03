@@ -460,7 +460,7 @@ namespace Microsoft.Bot.Sample.LuisBot
             }
             else
             {
-                PromptDialog.Confirm(context, ResumeAfterConfirmation, userName + "--" + password + " --" + UserLoggedInName + "--" + "The User Don't have permission , do you want to try another cridentials?");
+                PromptDialog.Confirm(context, ResumeAfterConfirmation, "The User Don't have permission , do you want to try another cridentials?");
 
             }
         }
