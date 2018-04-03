@@ -802,8 +802,6 @@ namespace Common
       
         public IMessageActivity GetProjectSubItems(IDialogContext dialogContext ,  string pName, string ListName)
         {
-            var markdownContent = "";
-            string SubtitleVal = "";
             IMessageActivity reply = null;
             reply = dialogContext.MakeMessage();
 
@@ -844,14 +842,14 @@ namespace Common
                         }
                         else
                         {
-                            markdownContent = "Site Project Not Created";
+                            //markdownContent = "Site Project Not Created";
                         }
                     }
 
                 }
                 else
                 {
-                    markdownContent = "Project Name Not Exist or you don't have permission to this project";
+                    //markdownContent = "Project Name Not Exist or you don't have permission to this project";
                 }
 
             }
