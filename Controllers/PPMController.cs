@@ -37,8 +37,8 @@ namespace Microsoft.Bot.Sample.LuisBot
                 //    await Conversation.SendAsync(activity, () => new PPMDialogTelegram(activity));
                 else if (activity.ChannelId == "emulator")
                     await Conversation.SendAsync(activity, () => new PPMDialog(activity));
-                else if (activity.ChannelId == "team")
-                    await Conversation.SendAsync(activity, () => new PPMDialogMSTeam(activity));
+                //else if (activity.ChannelId == "team")
+                //    await Conversation.SendAsync(activity, () => new PPMDialogMSTeam(activity));
                 else
                     await Conversation.SendAsync(activity, () => new PPMDialog(activity)); 
 
