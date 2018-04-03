@@ -443,23 +443,26 @@ namespace Microsoft.Bot.Sample.LuisBot
             string response = await pass;
             password = response;
 
-           
-            //string UserLoggedInName = TokenHelper.checkAuthorizedUser(userName, password);
-            //if (UserLoggedInName != string.Empty)
-            //{
-            //    context.UserData.SetValue("UserName", userName);
-            //    context.UserData.SetValue("Password", password);
-            //    context.UserData.SetValue("UserLoggedInName", UserLoggedInName);
+
+            //   string UserLoggedInName = TokenHelper.checkAuthorizedUser(userName, password);
+            bool UserLoggedInName = TokenHelper.checkAuthorizedUser(userName, password);
+
+            // if (UserLoggedInName != string.Empty)
+            if (UserLoggedInName == true)
+            {
+                context.UserData.SetValue("UserName", userName);
+                context.UserData.SetValue("Password", password);
+                context.UserData.SetValue("UserLoggedInName", UserLoggedInName);
 
 
-            //    var message = $"You are currently Logged In. Please Enjoy Using our App. **{UserLoggedInName}**.";
-            //    await context.PostAsync(message);
-            //}
-            //else
-            //{
-            //    PromptDialog.Confirm(context, ResumeAfterConfirmation, userName + "--" + password + " --" + UserLoggedInName + "--" +   "The User from team Don't have permission , do you want to try another cridentials?");
+                var message = $"You are currently Logged In. Please Enjoy Using our App. **{UserLoggedInName}**.";
+                await context.PostAsync(message);
+            }
+            else
+            {
+                PromptDialog.Confirm(context, ResumeAfterConfirmation, userName + "--" + password + " --" + UserLoggedInName + "--" + "The User Don't have permission , do you want to try another cridentials?");
 
-            //}
+            }
         }
 
         private async Task ResumeAfterConfirmation(IDialogContext context, IAwaitable<bool> result)

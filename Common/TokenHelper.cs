@@ -92,24 +92,24 @@ namespace Common
                 using (ProjectContext ctx = new ProjectContext(ConfigurationManager.AppSettings["PPMServerURL"]))
                 {
 
-                    SecureString passWord = new SecureString();
-                    foreach (char c in upassword) passWord.AppendChar(c);
-                    ctx.Credentials = new SharePointOnlineCredentials(name, passWord);
+                    //SecureString passWord = new SecureString();
+                    //foreach (char c in upassword) passWord.AppendChar(c);
+                    //ctx.Credentials = new SharePointOnlineCredentials(name, passWord);
 
                  
-                    var user = ctx.Web.EnsureUser(name);
-                    ctx.Load(user);
-                    ctx.ExecuteQuery();
+                    //var user = ctx.Web.EnsureUser(name);
+                    //ctx.Load(user);
+                    //ctx.ExecuteQuery();
 
-                    if (null != user)
-                    {
+                    //if (null != user)
+                    //{
                        
                         Authorized = true;
-                      //  UserLoggedInName = user.Title;
+                    //  //  UserLoggedInName = user.Title;
 
-                    }
-                    else
-                        Authorized = false;
+                    //}
+                    //else
+                    //    Authorized = false;
                 }
             }
             catch (Exception)
