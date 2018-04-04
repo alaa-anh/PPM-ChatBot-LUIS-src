@@ -17,7 +17,7 @@ namespace Common
 {
     public class ProjectServerTeam
     {
-        private string _userName; 
+        private string _userName;
         private string _userPassword;
         private string _userNameAdmin = ConfigurationManager.AppSettings["DomainAdmin"];
         private string _userPasswordAdmin = ConfigurationManager.AppSettings["DomainAdminPassword"];
@@ -32,7 +32,7 @@ namespace Common
         }
 
 
-        public IMessageActivity GetMSProjects(IDialogContext dialogContext,int SIndex, bool showCompletion, bool ProjectDates, bool PDuration, bool projectManager , out int Counter)
+        public IMessageActivity GetMSProjects(IDialogContext dialogContext, int SIndex, bool showCompletion, bool ProjectDates, bool PDuration, bool projectManager, out int Counter)
         {
             IMessageActivity reply = null;
             reply = dialogContext.MakeMessage();
@@ -42,8 +42,9 @@ namespace Common
             {
                 SecureString passWord = new SecureString();
                 foreach (char c in _userPasswordAdmin.ToCharArray()) passWord.AppendChar(c);
-                SharePointOnlineCredentials credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
+                //SharePointOnlineCredentials credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
                 context.Credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
+
                 context.Load(context.Projects);
                 context.ExecuteQuery();
 
@@ -73,7 +74,7 @@ namespace Common
             return reply;
         }
 
-        public IMessageActivity GetAllProjects(IDialogContext dialogContext , ProjectContext context, ProjectCollection projectDetails, int SIndex, bool showCompletion, bool ProjectDates, bool PDuration, bool projectManager, out int Counter)
+        public IMessageActivity GetAllProjects(IDialogContext dialogContext, ProjectContext context, ProjectCollection projectDetails, int SIndex, bool showCompletion, bool ProjectDates, bool PDuration, bool projectManager, out int Counter)
         {
             IMessageActivity reply = null;
             reply = dialogContext.MakeMessage();
@@ -138,8 +139,8 @@ namespace Common
                     Type = ActionTypes.PostBack,
                     Title = "Tasks",
                     Value = "show a list of " + ProjectName + " tasks",
-                    DisplayText = "show a list of " + ProjectName + " tasks",
-                    Text = "Text",
+                  //  DisplayText = "show a list of " + ProjectName + " tasks",
+                  Text = "show a list of " + ProjectName + " tasks",
                 };
                 cardactions.Add(btnTasks);
 
@@ -148,6 +149,7 @@ namespace Common
                     Type = ActionTypes.PostBack,
                     Title = "Issues",
                     Value = "show a list of " + ProjectName + " issues",
+                    Text = "show a list of " + ProjectName + " issues"
                 };
                 cardactions.Add(btnIssues);
 
@@ -156,6 +158,8 @@ namespace Common
                     Type = ActionTypes.PostBack,
                     Title = "Risks",
                     Value = "Show risks and the assigned resources of " + ProjectName,
+                    Text = "Show risks and the assigned resources of " + ProjectName,
+
                 };
                 cardactions.Add(btnRisks);
 
@@ -164,6 +168,7 @@ namespace Common
                     Type = ActionTypes.PostBack,
                     Title = "Deliverables",
                     Value = "Show " + ProjectName + " deliverables",
+                    Text = "Show " + ProjectName + " deliverables",
                 };
                 cardactions.Add(btnDeliverables);
 
@@ -172,7 +177,8 @@ namespace Common
                     Type = ActionTypes.PostBack,
                     Title = "Assignments",
                     Value = "get " + ProjectName + " assignments",
-                    
+                    Text = "get " + ProjectName + " assignments",
+
                 };
                 cardactions.Add(btnDAssignments);
 
@@ -205,17 +211,17 @@ namespace Common
             {
                 PublishedProject pro = context.Projects[startIndex];
                 context.Load(pro.Owner);
-              //  context.Load(pro, p => p.ProjectSiteUrl);
+                //  context.Load(pro, p => p.ProjectSiteUrl);
                 context.ExecuteQuery();
 
                 string ProjectName = pro.Name;
-           //     string ProjectWorkspaceInternalUrl = pro.ProjectSiteUrl;
+                //     string ProjectWorkspaceInternalUrl = pro.ProjectSiteUrl;
                 string ProjectPercentCompleted = pro.PercentComplete.ToString();
                 string ProjectFinishDate = pro.FinishDate.ToString();
                 string ProjectStartDate = pro.StartDate.ToString();
                 TimeSpan duration = pro.FinishDate - pro.StartDate;
                 string ProjectDuration = duration.Days.ToString();
-               // string ProjectOwnerName = pro.Owner.Title;
+                // string ProjectOwnerName = pro.Owner.Title;
                 string SubtitleVal = "";
                 if (showCompletion == false && ProjectDates == false && PDuration == false && projectManager == false)
                 {
@@ -223,7 +229,7 @@ namespace Common
                     SubtitleVal += "Start Date :\n" + ProjectStartDate + "</br>";
                     SubtitleVal += "Finish Date :\n" + ProjectFinishDate + "</br>";
                     SubtitleVal += "Project Duration :\n" + ProjectDuration + "</br>";
-                 //   SubtitleVal += "Project Manager :\n" + ProjectOwnerName + "</br>";
+                    //   SubtitleVal += "Project Manager :\n" + ProjectOwnerName + "</br>";
                 }
                 else if (showCompletion == true)
                     SubtitleVal += "Completed Percentage :\n" + ProjectPercentCompleted + "%</br>";
@@ -304,23 +310,20 @@ namespace Common
             return reply;
         }
 
-        public IMessageActivity GetProjectTasks(IDialogContext dialogContext , int itemStartIndex, string pName ,  out int Counter)
+        public IMessageActivity GetProjectTasks(IDialogContext dialogContext, int itemStartIndex, string pName, out int Counter)
         {
             IMessageActivity reply = null;
             reply = dialogContext.MakeMessage();
             reply.AttachmentLayout = AttachmentLayoutTypes.Carousel;
-            
+
             int TaskCounter = 0;
             using (ProjectContext context = new ProjectContext(_siteUri))
             {
                 SecureString passWord = new SecureString();
                 foreach (char c in _userPasswordAdmin.ToCharArray()) passWord.AppendChar(c);
+                // SharePointOnlineCredentials credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
                 context.Credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
                 PublishedProject project = GetProjectByName(pName, context);
-
-
-
-
 
 
                 if (project != null)
@@ -345,7 +348,6 @@ namespace Common
                             else
                             {
                                 reply = GetResourceLoggedInTasks(dialogContext, itemStartIndex, context, project, out TaskCounter);
-
                             }
                         }
                         else
@@ -371,7 +373,7 @@ namespace Common
             {
                 SecureString passWord = new SecureString();
                 foreach (char c in _userPasswordAdmin.ToCharArray()) passWord.AppendChar(c);
-               // SharePointOnlineCredentials credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
+                // SharePointOnlineCredentials credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
                 context.Credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
                 PublishedProject project = GetProjectByName(pName, context);
                 if (project != null)
@@ -392,7 +394,7 @@ namespace Common
                     {
                         if (GetUserGroup(context, "Team Members (Project Web App Synchronized)"))
                         {
-                             reply = GetResourceLoggedInIssues(dialogContext, itemsIssue , itemStartIndex, out TaskCounter);
+                            reply = GetResourceLoggedInIssues(dialogContext, itemsIssue, itemStartIndex, out TaskCounter);
                         }
                         if (GetUserGroup(context, "Project Managers (Project Web App Synchronized)"))
                         {
@@ -402,7 +404,7 @@ namespace Common
                             }
                             else
                             {
-                                reply = GetResourceLoggedInIssues(dialogContext, itemsIssue , itemStartIndex, out TaskCounter);
+                                reply = GetResourceLoggedInIssues(dialogContext, itemsIssue, itemStartIndex, out TaskCounter);
 
                             }
 
@@ -430,7 +432,7 @@ namespace Common
             {
                 SecureString passWord = new SecureString();
                 foreach (char c in _userPasswordAdmin.ToCharArray()) passWord.AppendChar(c);
-              //  SharePointOnlineCredentials credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
+                //  SharePointOnlineCredentials credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
                 context.Credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
                 PublishedProject project = GetProjectByName(pName, context);
 
@@ -473,7 +475,7 @@ namespace Common
                         reply = GetAllRisks(dialogContext, itemsRisk, itemStartIndex, out TaskCounter);
                     }
 
-                    
+
 
 
                 }
@@ -491,18 +493,18 @@ namespace Common
             string projectsite = string.Empty;
             Web projectweb;
             int TaskCounter = 0;
-          
+
             using (ProjectContext context = new ProjectContext(_siteUri))
             {
                 SecureString passWord = new SecureString();
                 foreach (char c in _userPasswordAdmin.ToCharArray()) passWord.AppendChar(c);
-          //      SharePointOnlineCredentials credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
+                //      SharePointOnlineCredentials credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
                 context.Credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
                 PublishedProject project = GetProjectByName(pName, context);
 
                 if (project != null)
                 {
-                    
+
 
                     if (GetUserGroup(context, "Team Members (Project Web App Synchronized)"))
                     {
@@ -560,7 +562,7 @@ namespace Common
                         projectweb.Context.ExecuteQuery();
                         reply = GetAllDeliverabels(dialogContext, itemsdelive, itemStartIndex, out TaskCounter);
                     }
-                  
+
                 }
             }
             Counter = TaskCounter;
@@ -580,7 +582,7 @@ namespace Common
             {
                 SecureString passWord = new SecureString();
                 foreach (char c in _userPasswordAdmin.ToCharArray()) passWord.AppendChar(c);
-         //       SharePointOnlineCredentials credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
+                //       SharePointOnlineCredentials credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
                 context.Credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
                 PublishedProject project = GetProjectByName(pName, context);
                 Counter = 0;
@@ -591,7 +593,7 @@ namespace Common
                     PublishedAssignmentCollection itemsAssignments = project.Assignments;
                     if (GetUserGroup(context, "Team Members (Project Web App Synchronized)"))
                     {
-                        reply = GetResourceLoggedInAssignments(dialogContext,context, itemsAssignments, itemStartIndex, _userName, out TaskCounter);
+                        reply = GetResourceLoggedInAssignments(dialogContext, context, itemsAssignments, itemStartIndex, _userName, out TaskCounter);
                     }
                     else if (GetUserGroup(context, "Project Managers (Project Web App Synchronized)"))
                     {
@@ -599,17 +601,17 @@ namespace Common
                         context.ExecuteQuery();
                         if (project.Owner.Email == _userName) // if the logged in user is a project manager on this project
                         {
-                            reply = GetAllAssignments(dialogContext , context, itemsAssignments, itemStartIndex, out TaskCounter);
+                            reply = GetAllAssignments(dialogContext, context, itemsAssignments, itemStartIndex, out TaskCounter);
                         }
                         else
                         {
-                              reply = GetResourceLoggedInAssignments(dialogContext , context, itemsAssignments,itemStartIndex, _userName, out TaskCounter);
+                            reply = GetResourceLoggedInAssignments(dialogContext, context, itemsAssignments, itemStartIndex, _userName, out TaskCounter);
 
                         }
                     }
                     else
                     {
-                        reply = GetAllAssignments(dialogContext , context, itemsAssignments, itemStartIndex, out TaskCounter);
+                        reply = GetAllAssignments(dialogContext, context, itemsAssignments, itemStartIndex, out TaskCounter);
                     }
                 }
             }
@@ -617,7 +619,7 @@ namespace Common
             return reply;
         }
 
-        public IMessageActivity FilterProjectsByDate(IDialogContext dialogContext, string FilterType, string pStartDate, string PEndDate, string ProjectSEdateFlag , out int Counter)
+        public IMessageActivity FilterProjectsByDate(IDialogContext dialogContext, string FilterType, string pStartDate, string PEndDate, string ProjectSEdateFlag, out int Counter)
         {
             IMessageActivity reply = null;
             reply = dialogContext.MakeMessage();
@@ -628,7 +630,7 @@ namespace Common
             {
                 SecureString passWord = new SecureString();
                 foreach (char c in _userPasswordAdmin.ToCharArray()) passWord.AppendChar(c);
-          //      SharePointOnlineCredentials credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
+                //      SharePointOnlineCredentials credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
                 context.Credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
                 DateTime startdate = new DateTime();
                 DateTime endate = new DateTime();
@@ -744,7 +746,7 @@ namespace Common
             {
                 SecureString passWord = new SecureString();
                 foreach (char c in _userPasswordAdmin.ToCharArray()) passWord.AppendChar(c);
-          //      SharePointOnlineCredentials credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
+                //      SharePointOnlineCredentials credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
                 context.Credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
 
                 PublishedProject project = GetProjectByName(pName, context);
@@ -782,7 +784,7 @@ namespace Common
                         Subtitle = SubtitleVal,
                     };
                     reply.Attachments.Add(plCard.ToAttachment());
-                    
+
                 }
                 else
                 {
@@ -795,15 +797,15 @@ namespace Common
                 }
 
 
-              
+
 
 
             }
             return reply;
         }
 
-      
-        public IMessageActivity GetProjectSubItems(IDialogContext dialogContext ,  string pName, string ListName)
+
+        public IMessageActivity GetProjectSubItems(IDialogContext dialogContext, string pName, string ListName)
         {
             IMessageActivity reply = null;
             reply = dialogContext.MakeMessage();
@@ -814,9 +816,9 @@ namespace Common
             {
                 SecureString passWord = new SecureString();
                 foreach (char c in _userPasswordAdmin.ToCharArray()) passWord.AppendChar(c);
-          //      SharePointOnlineCredentials credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
+                //      SharePointOnlineCredentials credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
                 context.Credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
-                PublishedProject project = GetProjectByName(pName, context);                
+                PublishedProject project = GetProjectByName(pName, context);
                 if (project != null)
                 {
                     context.Load(project, p => p.ProjectSiteUrl);
@@ -824,11 +826,11 @@ namespace Common
 
                     if (ListName == Enums.ListName.Tasks.ToString())
                     {
-                       // reply = GetProjectTasks(dialogContext , context, project);
+                        // reply = GetProjectTasks(dialogContext , context, project);
                     }
                     else if (ListName == Enums.ListName.Assignments.ToString())
                     {
-                      //  markdownContent = GetProjectTAssignments(context, project);
+                        //  markdownContent = GetProjectTAssignments(context, project);
                     }
                     else
                     {
@@ -837,12 +839,12 @@ namespace Common
 
                         if (projectsite != null)
                         {
-                           // if (ListName == Common.Enums.ListName.Issues.ToString())
-                             //   markdownContent = GetProjectIssues( dialogContext, projectweb, context);
-                          //  if (ListName == Common.Enums.ListName.Risks.ToString())
-                             //   markdownContent = GetProjectRisks(projectweb, context);
-                           // if (ListName == Common.Enums.ListName.Deliverables.ToString())
-                              //  markdownContent = GetProjectDeliverables(projectweb, context);
+                            // if (ListName == Common.Enums.ListName.Issues.ToString())
+                            //   markdownContent = GetProjectIssues( dialogContext, projectweb, context);
+                            //  if (ListName == Common.Enums.ListName.Risks.ToString())
+                            //   markdownContent = GetProjectRisks(projectweb, context);
+                            // if (ListName == Common.Enums.ListName.Deliverables.ToString())
+                            //  markdownContent = GetProjectDeliverables(projectweb, context);
                         }
                         else
                         {
@@ -899,13 +901,13 @@ namespace Common
 
                     reply.Attachments.Add(plCard.ToAttachment());
                 }
-               
+
             }
-           
+
             return reply;
         }
 
-        private IMessageActivity GetResourceLoggedInTasks(IDialogContext dialogContext , int SIndex, ProjectContext context, PublishedProject proj, out int Counter)
+        private IMessageActivity GetResourceLoggedInTasks(IDialogContext dialogContext, int SIndex, ProjectContext context, PublishedProject proj, out int Counter)
         {
             var SubtitleVal = "";
             IMessageActivity reply = null;
@@ -914,7 +916,7 @@ namespace Common
             context.ExecuteQuery();
             Counter = 0;
 
-          
+
 
             if (proj.Assignments != null)
             {
@@ -956,7 +958,7 @@ namespace Common
             return reply;
         }
 
-        private IMessageActivity GetAllIssues(IDialogContext dialogContext , ListItemCollection itemsIssue , int SIndex,  out int Counter)
+        private IMessageActivity GetAllIssues(IDialogContext dialogContext, ListItemCollection itemsIssue, int SIndex, out int Counter)
         {
             IMessageActivity reply = null;
             reply = dialogContext.MakeMessage();
@@ -1045,7 +1047,7 @@ namespace Common
                         }
                     }
                 }
-                Counter = count ;
+                Counter = count;
             }
             return reply;
         }
@@ -1118,7 +1120,7 @@ namespace Common
 
             return reply;
         }
-        private IMessageActivity GetResourceLoggedInRisks(IDialogContext dialogContext, ListItemCollection itemsRisk , int SIndex, out int Counter)
+        private IMessageActivity GetResourceLoggedInRisks(IDialogContext dialogContext, ListItemCollection itemsRisk, int SIndex, out int Counter)
         {
             IMessageActivity reply = null;
             reply = dialogContext.MakeMessage();
@@ -1248,9 +1250,9 @@ namespace Common
             return reply;
         }
 
-        
 
-        private IMessageActivity GetAllAssignments(IDialogContext dialogContext , ProjectContext context, PublishedAssignmentCollection itemsAssignments, int SIndex, out int Counter)
+
+        private IMessageActivity GetAllAssignments(IDialogContext dialogContext, ProjectContext context, PublishedAssignmentCollection itemsAssignments, int SIndex, out int Counter)
         {
             IMessageActivity reply = null;
             reply = dialogContext.MakeMessage();
@@ -1291,7 +1293,7 @@ namespace Common
         }
 
 
-        public IMessageActivity GetResourceAssignments(IDialogContext dialogContext, int SIndex, string ResourceName , out int Counter)
+        public IMessageActivity GetResourceAssignments(IDialogContext dialogContext, int SIndex, string ResourceName, out int Counter)
         {
             IMessageActivity reply = null;
             reply = dialogContext.MakeMessage();
@@ -1370,11 +1372,11 @@ namespace Common
                             }
                         }
 
-                       
+
                     }
-                   
+
                 }
-               
+
 
 
 
@@ -1389,7 +1391,7 @@ namespace Common
             IMessageActivity reply = null;
             reply = dialogContext.MakeMessage();
             reply.AttachmentLayout = AttachmentLayoutTypes.Carousel;
-            Counter =0;
+            Counter = 0;
             int count = 0;
             if (itemsAssignments.Count > 0)
             {
@@ -1400,11 +1402,11 @@ namespace Common
                 for (int startIndex = SIndex; startIndex < inDexToVal; startIndex++)
                 {
                     PublishedAssignment ass = itemsAssignments[startIndex];
-                    
+
                     context.Load(ass.Task);
                     context.Load(ass.Resource);
                     context.ExecuteQuery();
-                   
+
                     if (ass.Resource.Email == ResourceName)
                     {
                         count++;
@@ -1849,7 +1851,7 @@ namespace Common
                     reply.Attachments.Add(plCardNoData.ToAttachment());
                 }
             }
-            
+
             return reply;
         }
 
@@ -1938,7 +1940,6 @@ namespace Common
                             valuebutton = query + " at index " + i * 10;
 
                     }
-
                     else if (ListName == "UserAssignments" && query != "")
                     {
                         if (i == 0)
@@ -1956,14 +1957,8 @@ namespace Common
                         Type = ActionTypes.PostBack,
                         Title = CurrentNumber,
                         Value = valuebutton,
+                        Text = valuebutton,
                     };
-                    // cardButtons.Add(CardButton);
-
-
-                    //List<CardImage> cardImages = new List<CardImage>();
-
-                    //cardImages.Add(new CardImage(url: "http://www.kidsmathgamesonline.com/images/pictures/numbers600/number" + i + ".jpg"));
-
 
                     ThumbnailCard plCardCounter = new ThumbnailCard()
                     {
