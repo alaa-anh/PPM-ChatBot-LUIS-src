@@ -257,6 +257,7 @@ C:\Projects\chatbot\PPM-ChatBot-LUIS-src\bin\System.Spatial.dll
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\bin\System.Web.Http.dll
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\bin\System.Web.Http.WebHost.dll
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\bin\Common.pdb
+C:\Projects\chatbot\PPM-ChatBot-LUIS-src\bin\Common.dll.config
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\bin\Autofac.xml
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\bin\DnsClient.xml
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\bin\EntityFramework.xml
