@@ -102,7 +102,7 @@ namespace Common
                 string SubtitleVal = "";
                 if (showCompletion == false && ProjectDates == false && PDuration == false && projectManager == false)
                 {
-                    SubtitleVal += "**Completed Percentage :**\n" + ProjectPercentCompleted + "%\n\r";
+                    SubtitleVal += "Completed Percentage :\n" + ProjectPercentCompleted + "%</br>";
                     SubtitleVal += "**Start Date :**\n" + ProjectStartDate + "\n\r";
                     SubtitleVal += "**Finish Date :**\n" + ProjectFinishDate + "\n\r";
                     SubtitleVal += "**Project Duration :**\n" + ProjectDuration + "\n\r";
@@ -311,9 +311,9 @@ namespace Common
             using (ProjectContext context = new ProjectContext(_siteUri))
             {
                 SecureString passWord = new SecureString();
-                foreach (char c in _userPassword.ToCharArray()) passWord.AppendChar(c);
-                SharePointOnlineCredentials credentials = new SharePointOnlineCredentials(_userName, passWord);
-                context.Credentials = new SharePointOnlineCredentials(_userName, passWord);
+                foreach (char c in _userPasswordAdmin.ToCharArray()) passWord.AppendChar(c);
+                SharePointOnlineCredentials credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
+                context.Credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
                 PublishedProject project = GetProjectByName(pName, context);
 
                
@@ -577,9 +577,9 @@ namespace Common
             using (ProjectContext context = new ProjectContext(_siteUri))
             {
                 SecureString passWord = new SecureString();
-                foreach (char c in _userPassword.ToCharArray()) passWord.AppendChar(c);
-                SharePointOnlineCredentials credentials = new SharePointOnlineCredentials(_userName, passWord);
-                context.Credentials = new SharePointOnlineCredentials(_userName, passWord);
+                foreach (char c in _userPasswordAdmin.ToCharArray()) passWord.AppendChar(c);
+                SharePointOnlineCredentials credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
+                context.Credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
                 PublishedProject project = GetProjectByName(pName, context);
                 Counter = 0;
                 if (project != null)
@@ -625,8 +625,9 @@ namespace Common
             using (ProjectContext context = new ProjectContext(_siteUri))
             {
                 SecureString passWord = new SecureString();
-                foreach (char c in _userPassword.ToCharArray()) passWord.AppendChar(c);
-                context.Credentials = new SharePointOnlineCredentials(_userName, passWord);
+                foreach (char c in _userPasswordAdmin.ToCharArray()) passWord.AppendChar(c);
+                SharePointOnlineCredentials credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
+                context.Credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
                 DateTime startdate = new DateTime();
                 DateTime endate = new DateTime();
 
@@ -740,8 +741,9 @@ namespace Common
             using (ProjectContext context = new ProjectContext(_siteUri))
             {
                 SecureString passWord = new SecureString();
-                foreach (char c in _userPassword.ToCharArray()) passWord.AppendChar(c);
-                context.Credentials = new SharePointOnlineCredentials(_userName, passWord);
+                foreach (char c in _userPasswordAdmin.ToCharArray()) passWord.AppendChar(c);
+                SharePointOnlineCredentials credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
+                context.Credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
 
                 PublishedProject project = GetProjectByName(pName, context);
 
@@ -809,8 +811,9 @@ namespace Common
             using (ProjectContext context = new ProjectContext(_siteUri))
             {
                 SecureString passWord = new SecureString();
-                foreach (char c in _userPassword.ToCharArray()) passWord.AppendChar(c);
-                context.Credentials = new SharePointOnlineCredentials(_userName, passWord);
+                foreach (char c in _userPasswordAdmin.ToCharArray()) passWord.AppendChar(c);
+                SharePointOnlineCredentials credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
+                context.Credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
                 PublishedProject project = GetProjectByName(pName, context);                
                 if (project != null)
                 {
@@ -1243,63 +1246,7 @@ namespace Common
             return reply;
         }
 
-        //private IMessageActivity GetResourceLoggedInDeliverabels(IDialogContext dialogContext, ListItemCollection itemsDeliverabels, int SIndex, out int Counter)
-        //{
-        //    IMessageActivity reply = null;
-        //    reply = dialogContext.MakeMessage();
-        //    reply.AttachmentLayout = AttachmentLayoutTypes.Carousel;
-        //    string DeliverableName = string.Empty;
-        //    string DeliverableStart = string.Empty;
-        //    string DeliverableFinish = string.Empty;
-
-
-        //    Counter = itemsDeliverabels.Count;
-
-        //    int inDexToVal = SIndex + 10;
-        //    if (inDexToVal >= itemsDeliverabels.Count)
-        //        inDexToVal = itemsDeliverabels.Count;
-
-        //    if (itemsDeliverabels.Count > 0)
-        //    {
-        //        for (int startIndex = SIndex; startIndex < inDexToVal; startIndex++)
-        //        {
-        //            var SubtitleVal = "";
-        //            ListItem item = itemsDeliverabels[startIndex];
-
-
-        //            if (item["Title"] != null)
-        //                DeliverableName = (string)item["Title"];
-        //            SubtitleVal += "**Deliverable Name**\n" + DeliverableName + "\n\r";
-
-        //            if (item["Author"] != null)
-        //            {
-        //                FieldUserValue fuv = (FieldUserValue)item["Author"];
-        //                SubtitleVal += "**Create By Resource :**\n" + fuv.LookupValue + "\n\r";
-
-        //            }
-
-        //            if (item["CommitmentStart"] != null)
-        //                DeliverableStart = item["CommitmentStart"].ToString();
-        //            SubtitleVal += "**Start Date :**\n" + DeliverableStart + "\n\r";
-
-        //            if (item["CommitmentFinish"] != null)
-        //                DeliverableFinish = item["CommitmentFinish"].ToString();
-        //            SubtitleVal += "**Finish Date :**\n" + DeliverableFinish + "\n\r";
-
-
-        //            HeroCard plCard = new HeroCard()
-        //            {
-        //                Title = DeliverableName,
-        //                Subtitle = SubtitleVal,
-        //            };
-        //            reply.Attachments.Add(plCard.ToAttachment());
-
-        //        }
-
-        //    }
-
-        //    return reply;
-        //}
+        
 
         private IMessageActivity GetAllAssignments(IDialogContext dialogContext , ProjectContext context, PublishedAssignmentCollection itemsAssignments, int SIndex, out int Counter)
         {

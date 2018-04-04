@@ -158,9 +158,9 @@ namespace Microsoft.Bot.Sample.LuisBot
 
 
                 await context.PostAsync(new Common.ProjectServerTeam(userName, password).GetMSProjects(context, itemStartIndex, showCompletion, Pdate, pDuration, pPM, out Counter));
-                //await context.PostAsync(new Common.ProjectServerTeam(userName, password).TotalCountGeneralMessage(context, itemStartIndex, Counter, Enums.ListName.Projects.ToString()));
-                //if (Counter > 10)
-                //    await context.PostAsync(new Common.ProjectServerTeam(userName, password).CreateButtonsPager(context, Counter, Enums.ListName.Projects.ToString(), "", ""));
+                await context.PostAsync(new Common.ProjectServerTeam(userName, password).TotalCountGeneralMessage(context, itemStartIndex, Counter, Enums.ListName.Projects.ToString()));
+                if (Counter > 10)
+                    await context.PostAsync(new Common.ProjectServerTeam(userName, password).CreateButtonsPager(context, Counter, Enums.ListName.Projects.ToString(), "", ""));
 
             }
             else
