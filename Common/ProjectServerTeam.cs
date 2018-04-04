@@ -103,25 +103,25 @@ namespace Common
                 if (showCompletion == false && ProjectDates == false && PDuration == false && projectManager == false)
                 {
                     SubtitleVal += "Completed Percentage :\n" + ProjectPercentCompleted + "%</br>";
-                    SubtitleVal += "**Start Date :**\n" + ProjectStartDate + "\n\r";
-                    SubtitleVal += "**Finish Date :**\n" + ProjectFinishDate + "\n\r";
-                    SubtitleVal += "**Project Duration :**\n" + ProjectDuration + "\n\r";
-                    SubtitleVal += "**Project Manager :**\n" + ProjectOwnerName + "\n\r";
+                    SubtitleVal += "Start Date :\n" + ProjectStartDate + "</br>";
+                    SubtitleVal += "Finish Date :\n" + ProjectFinishDate + "</br>";
+                    SubtitleVal += "Project Duration :\n" + ProjectDuration + "</br>";
+                    SubtitleVal += "Project Manager :\n" + ProjectOwnerName + "</br>";
                 }
                 else if (showCompletion == true)
-                    SubtitleVal += "**Completed Percentage :**\n" + ProjectPercentCompleted + "%\n\r";
+                    SubtitleVal += "Completed Percentage :\n" + ProjectPercentCompleted + "%</br>";
                 else if (ProjectDates == true)
                 {
-                    SubtitleVal += "**Start Date :**\n" + ProjectStartDate + "\n\r";
-                    SubtitleVal += "**Finish Date :**\n" + ProjectFinishDate + "\n\r";
+                    SubtitleVal += "Start Date :\n" + ProjectStartDate + "</br>";
+                    SubtitleVal += "Finish Date :\n" + ProjectFinishDate + "</br>";
                 }
                 else if (PDuration == true)
                 {
-                    SubtitleVal += "**Project Duration :**\n" + ProjectDuration + "\n\r";
+                    SubtitleVal += "Project Duration :\n" + ProjectDuration + "</br>";
                 }
                 else if (projectManager == true)
                 {
-                    SubtitleVal += "**Project Manager :**\n" + ProjectOwnerName + "\n\r";
+                    SubtitleVal += "Project Manager :\n" + ProjectOwnerName + "</br>";
                 }
                 string ImageURL = "http://02-code.com/images/logo.jpg";
                 List<CardImage> cardImages = new List<CardImage>();
@@ -216,26 +216,26 @@ namespace Common
                 string SubtitleVal = "";
                 if (showCompletion == false && ProjectDates == false && PDuration == false && projectManager == false)
                 {
-                    SubtitleVal += "**Completed Percentage :**\n" + ProjectPercentCompleted + "%\n\r";
-                    SubtitleVal += "**Start Date :**\n" + ProjectStartDate + "\n\r";
-                    SubtitleVal += "**Finish Date :**\n" + ProjectFinishDate + "\n\r";
-                    SubtitleVal += "**Project Duration :**\n" + ProjectDuration + "\n\r";
-                 //   SubtitleVal += "**Project Manager :**\n" + ProjectOwnerName + "\n\r";
+                    SubtitleVal += "Completed Percentage :\n" + ProjectPercentCompleted + "%</br>";
+                    SubtitleVal += "Start Date :\n" + ProjectStartDate + "</br>";
+                    SubtitleVal += "Finish Date :\n" + ProjectFinishDate + "</br>";
+                    SubtitleVal += "Project Duration :\n" + ProjectDuration + "</br>";
+                 //   SubtitleVal += "Project Manager :\n" + ProjectOwnerName + "</br>";
                 }
                 else if (showCompletion == true)
-                    SubtitleVal += "**Completed Percentage :**\n" + ProjectPercentCompleted + "%\n\r";
+                    SubtitleVal += "Completed Percentage :\n" + ProjectPercentCompleted + "%</br>";
                 else if (ProjectDates == true)
                 {
-                    SubtitleVal += "**Start Date :**\n" + ProjectStartDate + "\n\r";
-                    SubtitleVal += "**Finish Date :**\n" + ProjectFinishDate + "\n\r";
+                    SubtitleVal += "Start Date :\n" + ProjectStartDate + "</br>";
+                    SubtitleVal += "Finish Date :\n" + ProjectFinishDate + "</br>";
                 }
                 else if (PDuration == true)
                 {
-                    SubtitleVal += "**Project Duration :**\n" + ProjectDuration + "\n\r";
+                    SubtitleVal += "Project Duration :\n" + ProjectDuration + "</br>";
                 }
                 //else if (projectManager == true)
                 //{
-                //    SubtitleVal += "**Project Manager :**\n" + ProjectOwnerName + "\n\r";
+                //    SubtitleVal += "Project Manager :\n" + ProjectOwnerName + "</br>";
                 //}
                 string ImageURL = "http://02-code.com/images/logo.jpg";
                 List<CardImage> cardImages = new List<CardImage>();
@@ -708,9 +708,9 @@ namespace Common
 
 
                         string ProjectName = item.Name;
-                        SubtitleVal += "**Start Date**\n" + item.StartDate + "\n\r";
-                        SubtitleVal += "**Finish Date**\n" + item.FinishDate + "\n\r";
-                        SubtitleVal += "**Actual Cost**\n" + item.DefaultFixedCostAccrual.ToString() + "\n\r";
+                        SubtitleVal += "Start Date\n" + item.StartDate + "</br>";
+                        SubtitleVal += "Finish Date\n" + item.FinishDate + "</br>";
+                        SubtitleVal += "Actual Cost\n" + item.DefaultFixedCostAccrual.ToString() + "</br>";
 
                         HeroCard plCard = new HeroCard()
                         {
@@ -751,18 +751,18 @@ namespace Common
                 {
                     if (optionalDate == true)
                     {
-                        SubtitleVal += "**Start Date :**\n" + project.StartDate + "\n\r";
-                        SubtitleVal += "**Finish Date :**\n" + project.FinishDate + "\n\r";
+                        SubtitleVal += "Start Date :\n" + project.StartDate + "</br>";
+                        SubtitleVal += "Finish Date :\n" + project.FinishDate + "</br>";
                     }
 
                     if (optionalDuration == true)
                     {
                         TimeSpan duration = project.FinishDate - project.StartDate;
-                        SubtitleVal += "**Project Duration :**\n" + duration.Days + "\n\r";
+                        SubtitleVal += "Project Duration :\n" + duration.Days + "</br>";
                     }
 
                     if (optionalCompletion == true)
-                        SubtitleVal += "**Project Completed Percentage :**\n" + project.PercentComplete + "%\n\r";
+                        SubtitleVal += "Project Completed Percentage :\n" + project.PercentComplete + "%</br>";
 
                     if (optionalPM == true)
                     {
@@ -770,7 +770,7 @@ namespace Common
                         {
                             context.Load(project.Owner);
                             context.ExecuteQuery();
-                            SubtitleVal += "**Project Manager Name :**\n" + project.Owner.Title + "\n\r";
+                            SubtitleVal += "Project Manager Name :\n" + project.Owner.Title + "</br>";
                         }
                     }
 
@@ -884,10 +884,10 @@ namespace Common
                     string TaskStartDate = tsk.Start.ToString();
                     string TaskFinishDate = tsk.Finish.ToString();
 
-                    SubtitleVal += "**Task Duration**\n" + TaskDuration + "\n\r";
-                    SubtitleVal += "**Task Percent Completed**\n" + TaskPercentCompleted + "\n\r";
-                    SubtitleVal += "**Task Start Date**\n" + TaskStartDate + "\n\r";
-                    SubtitleVal += "**Task Finish Date**\n" + TaskFinishDate + "\n\r";
+                    SubtitleVal += "Task Duration\n" + TaskDuration + "</br>";
+                    SubtitleVal += "Task Percent Completed\n" + TaskPercentCompleted + "</br>";
+                    SubtitleVal += "Task Start Date\n" + TaskStartDate + "</br>";
+                    SubtitleVal += "Task Finish Date\n" + TaskFinishDate + "</br>";
 
                     HeroCard plCard = new HeroCard()
                     {
@@ -937,10 +937,10 @@ namespace Common
                     string TaskStartDate = tsk.Start.ToString();
                     string TaskFinishDate = tsk.Finish.ToString();
 
-                    SubtitleVal += "**Task Duration**\n" + TaskDuration + "\n\r";
-                    SubtitleVal += "**Task Percent Completed**\n" + TaskPercentCompleted + "\n\r";
-                    SubtitleVal += "**Task Start Date**\n" + TaskStartDate + "\n\r";
-                    SubtitleVal += "**Task Finish Date**\n" + TaskFinishDate + "\n\r";
+                    SubtitleVal += "Task Duration\n" + TaskDuration + "</br>";
+                    SubtitleVal += "Task Percent Completed\n" + TaskPercentCompleted + "</br>";
+                    SubtitleVal += "Task Start Date\n" + TaskStartDate + "</br>";
+                    SubtitleVal += "Task Finish Date\n" + TaskFinishDate + "</br>";
 
                     HeroCard plCard = new HeroCard()
                     {
@@ -981,8 +981,8 @@ namespace Common
                         IssueStatus = (string)item["Status"];
                     if (item["Priority"] != null)
                         IssuePriority = (string)item["Priority"];
-                    SubtitleVal += "**Status**\n" + IssueStatus + "\n\r";
-                    SubtitleVal += "**Priority**\n" + IssuePriority + "\n\r";
+                    SubtitleVal += "Status\n" + IssueStatus + "</br>";
+                    SubtitleVal += "Priority\n" + IssuePriority + "</br>";
 
                     HeroCard plCard = new HeroCard()
                     {
@@ -1032,8 +1032,8 @@ namespace Common
                                 IssueStatus = (string)item["Status"];
                             if (item["Priority"] != null)
                                 IssuePriority = (string)item["Priority"];
-                            SubtitleVal += "**Status**\n" + IssueStatus + "\n\r";
-                            SubtitleVal += "**Priority**\n" + IssuePriority + "\n\r";
+                            SubtitleVal += "Status\n" + IssueStatus + "</br>";
+                            SubtitleVal += "Priority\n" + IssuePriority + "</br>";
                             HeroCard plCard = new HeroCard()
                             {
                                 Title = IssueName,
@@ -1080,27 +1080,27 @@ namespace Common
                     if (item["AssignedTo"] != null)
                     {
                         FieldUserValue fuv = (FieldUserValue)item["AssignedTo"];
-                        SubtitleVal += "**Assigned To Resource**\n" + fuv.LookupValue + "\n\r";
+                        SubtitleVal += "Assigned To Resource\n" + fuv.LookupValue + "</br>";
 
                     }
                     else
-                        SubtitleVal += "**Assigned To Resource :**\n" + "Not assigned" + "\n\r";
+                        SubtitleVal += "Assigned To Resource :\n" + "Not assigned" + "</br>";
 
                     if (item["Status"] != null)
                         riskStatus = (string)item["Status"];
-                    SubtitleVal += "**Risk Status**\n" + riskStatus + "\n\r";
+                    SubtitleVal += "Risk Status\n" + riskStatus + "</br>";
 
                     if (item["Impact"] != null)
                         riskImpact = item["Impact"].ToString();
-                    SubtitleVal += "**Risk Impact**\n" + riskImpact + "\n\r";
+                    SubtitleVal += "Risk Impact\n" + riskImpact + "</br>";
 
                     if (item["Probability"] != null)
                         riskProbability = item["Probability"].ToString();
-                    SubtitleVal += "**Risk Probability**\n" + riskProbability + "\n\r";
+                    SubtitleVal += "Risk Probability\n" + riskProbability + "</br>";
 
                     if (item["Exposure"] != null)
                         riskCostExposure = item["Exposure"].ToString();
-                    SubtitleVal += "**Risk CostExposure**\n" + riskCostExposure + "\n\r";
+                    SubtitleVal += "Risk CostExposure\n" + riskCostExposure + "</br>";
 
 
                     HeroCard plCard = new HeroCard()
@@ -1149,24 +1149,24 @@ namespace Common
                         {
                             if (item["Title"] != null)
                                 RiskName = (string)item["Title"];
-                            SubtitleVal += "**Risk Title**\n" + RiskName + "\n\r";
+                            SubtitleVal += "Risk Title\n" + RiskName + "</br>";
 
-                            SubtitleVal += "**Assigned To Resource**\n" + fuv.LookupValue + "\n\r";
+                            SubtitleVal += "Assigned To Resource\n" + fuv.LookupValue + "</br>";
                             if (item["Status"] != null)
                                 riskStatus = (string)item["Status"];
-                            SubtitleVal += "**Risk Status**\n" + riskStatus + "\n\r";
+                            SubtitleVal += "Risk Status\n" + riskStatus + "</br>";
 
                             if (item["Impact"] != null)
                                 riskImpact = item["Impact"].ToString();
-                            SubtitleVal += "**Risk Impact**\n" + riskImpact + "\n\r";
+                            SubtitleVal += "Risk Impact\n" + riskImpact + "</br>";
 
                             if (item["Probability"] != null)
                                 riskProbability = item["Probability"].ToString();
-                            SubtitleVal += "**Risk Probability**\n" + riskProbability + "\n\r";
+                            SubtitleVal += "Risk Probability\n" + riskProbability + "</br>";
 
                             if (item["Exposure"] != null)
                                 riskCostExposure = item["Exposure"].ToString();
-                            SubtitleVal += "**Risk CostExposure**\n" + riskCostExposure + "\n\r";
+                            SubtitleVal += "Risk CostExposure\n" + riskCostExposure + "</br>";
 
                             HeroCard plCard = new HeroCard()
                             {
@@ -1214,22 +1214,22 @@ namespace Common
 
                     if (item["Title"] != null)
                         DeliverableName = (string)item["Title"];
-                    SubtitleVal += "**Deliverable Name**\n" + DeliverableName + "\n\r";
+                    SubtitleVal += "Deliverable Name\n" + DeliverableName + "</br>";
 
                     if (item["Author"] != null)
                     {
                         FieldUserValue fuv = (FieldUserValue)item["Author"];
-                        SubtitleVal += "**Create By Resource :**\n" + fuv.LookupValue + "\n\r";
+                        SubtitleVal += "Create By Resource :\n" + fuv.LookupValue + "</br>";
 
                     }
 
                     if (item["CommitmentStart"] != null)
                         DeliverableStart = item["CommitmentStart"].ToString();
-                    SubtitleVal += "**Start Date :**\n" + DeliverableStart + "\n\r";
+                    SubtitleVal += "Start Date :\n" + DeliverableStart + "</br>";
 
                     if (item["CommitmentFinish"] != null)
                         DeliverableFinish = item["CommitmentFinish"].ToString();
-                    SubtitleVal += "**Finish Date :**\n" + DeliverableFinish + "\n\r";
+                    SubtitleVal += "Finish Date :\n" + DeliverableFinish + "</br>";
 
 
                     HeroCard plCard = new HeroCard()
@@ -1272,9 +1272,9 @@ namespace Common
                     context.ExecuteQuery();
 
                     string TaskName = ass.Task.Name;
-                    SubtitleVal += "**Resource Name :**\n" + ass.Resource.Name + "\n\r";
-                    SubtitleVal += "**Start Date**\n" + ass.Start + "\n\r";
-                    SubtitleVal += "**Finish Date**\n" + ass.Finish + "\n\r";
+                    SubtitleVal += "Resource Name :\n" + ass.Resource.Name + "</br>";
+                    SubtitleVal += "Start Date\n" + ass.Start + "</br>";
+                    SubtitleVal += "Finish Date\n" + ass.Finish + "</br>";
 
 
                     HeroCard plCard = new HeroCard()
@@ -1351,8 +1351,8 @@ namespace Common
                                     context.Load(ass.Task);
                                     context.ExecuteQuery();
                                     var tsk = ass.Task;
-                                    SubtitleVal += "**Assignment Start Date :**\n" + ass.Start + "\n\r";
-                                    SubtitleVal += "**Task Name :**\n" + tsk.Name + "\n\r";
+                                    SubtitleVal += "Assignment Start Date :\n" + ass.Start + "</br>";
+                                    SubtitleVal += "Task Name :\n" + tsk.Name + "</br>";
                                     counttotalAss++;
 
 
@@ -1408,9 +1408,9 @@ namespace Common
                         count++;
                         string SubtitleVal = "";
                         string TaskName = ass.Task.Name;
-                        SubtitleVal += "**Resource Name :**\n" + ass.Resource.Name + "\n\r";
-                        SubtitleVal += "**Start Date**\n" + ass.Start + "\n\r";
-                        SubtitleVal += "**Finish Date**\n" + ass.Finish + "\n\r";
+                        SubtitleVal += "Resource Name :\n" + ass.Resource.Name + "</br>";
+                        SubtitleVal += "Start Date\n" + ass.Start + "</br>";
+                        SubtitleVal += "Finish Date\n" + ass.Finish + "</br>";
 
 
                         HeroCard plCard = new HeroCard()
@@ -1551,7 +1551,7 @@ namespace Common
                         }
                         HeroCard plCardCounter = new HeroCard()
                         {
-                            Title = "**Total Number Of availabel Projects :**\n" + Counter,
+                            Title = "Total Number Of availabel Projects :\n" + Counter,
                             Subtitle = subTitle,
                             //  Buttons = cardButtons,
                         };
@@ -1562,7 +1562,7 @@ namespace Common
                     {
                         HeroCard plCardCounter = new HeroCard()
                         {
-                            Title = "**Total Number Of availabel Projects :**\n" + Counter,
+                            Title = "Total Number Of availabel Projects :\n" + Counter,
                         };
                         reply.Attachments.Add(plCardCounter.ToAttachment());
                     }
@@ -1570,7 +1570,7 @@ namespace Common
                 else
                 {
                     HeroCard plCardNoData = new HeroCard()
-                    { Title = "**No Availabel Projects**\n\n" };
+                    { Title = "No Availabel Projects\n\n" };
                     reply.Attachments.Add(plCardNoData.ToAttachment());
                 }
             }
@@ -1590,7 +1590,7 @@ namespace Common
                         }
                         HeroCard plCardCounter = new HeroCard()
                         {
-                            Title = "**Total Number Of availabel Tasks :**\n" + Counter,
+                            Title = "Total Number Of availabel Tasks :\n" + Counter,
                             Subtitle = subTitle,
                             //  Buttons = cardButtons,
                         };
@@ -1601,7 +1601,7 @@ namespace Common
                     {
                         HeroCard plCardCounter = new HeroCard()
                         {
-                            Title = "**Total Number Of availabel Tasks :**\n" + Counter,
+                            Title = "Total Number Of availabel Tasks :\n" + Counter,
                         };
                         reply.Attachments.Add(plCardCounter.ToAttachment());
                     }
@@ -1609,7 +1609,7 @@ namespace Common
                 else
                 {
                     HeroCard plCardNoData = new HeroCard()
-                    { Title = "**No Availabel Tasks**\n\n" };
+                    { Title = "No Availabel Tasks\n\n" };
                     reply.Attachments.Add(plCardNoData.ToAttachment());
                 }
             }
@@ -1629,7 +1629,7 @@ namespace Common
                         }
                         HeroCard plCardCounter = new HeroCard()
                         {
-                            Title = "**Total Number Of availabel Issues :**\n" + Counter,
+                            Title = "Total Number Of availabel Issues :\n" + Counter,
                             Subtitle = subTitle,
                             //  Buttons = cardButtons,
                         };
@@ -1640,7 +1640,7 @@ namespace Common
                     {
                         HeroCard plCardCounter = new HeroCard()
                         {
-                            Title = "**Total Number Of availabel Issues :**\n" + Counter,
+                            Title = "Total Number Of availabel Issues :\n" + Counter,
                         };
                         reply.Attachments.Add(plCardCounter.ToAttachment());
                     }
@@ -1648,7 +1648,7 @@ namespace Common
                 else
                 {
                     HeroCard plCardNoData = new HeroCard()
-                    { Title = "**No Availabel Issues**\n\n" };
+                    { Title = "No Availabel Issues\n\n" };
                     reply.Attachments.Add(plCardNoData.ToAttachment());
                 }
             }
@@ -1668,7 +1668,7 @@ namespace Common
                         }
                         HeroCard plCardCounter = new HeroCard()
                         {
-                            Title = "**Total Number Of availabel Assignments :**\n" + Counter,
+                            Title = "Total Number Of availabel Assignments :\n" + Counter,
                             Subtitle = subTitle,
                             //  Buttons = cardButtons,
                         };
@@ -1679,7 +1679,7 @@ namespace Common
                     {
                         HeroCard plCardCounter = new HeroCard()
                         {
-                            Title = "**Total Number Of availabel Assignments :**\n" + Counter,
+                            Title = "Total Number Of availabel Assignments :\n" + Counter,
                         };
                         reply.Attachments.Add(plCardCounter.ToAttachment());
                     }
@@ -1687,7 +1687,7 @@ namespace Common
                 else
                 {
                     HeroCard plCardNoData = new HeroCard()
-                    { Title = "**No Availabel Assignments**\n\n" };
+                    { Title = "No Availabel Assignments\n\n" };
                     reply.Attachments.Add(plCardNoData.ToAttachment());
                 }
             }
@@ -1707,7 +1707,7 @@ namespace Common
                         }
                         HeroCard plCardCounter = new HeroCard()
                         {
-                            Title = "**Total Number Of availabel Risks :**\n" + Counter,
+                            Title = "Total Number Of availabel Risks :\n" + Counter,
                             Subtitle = subTitle,
                             //  Buttons = cardButtons,
                         };
@@ -1718,7 +1718,7 @@ namespace Common
                     {
                         HeroCard plCardCounter = new HeroCard()
                         {
-                            Title = "**Total Number Of availabel Risks :**\n" + Counter,
+                            Title = "Total Number Of availabel Risks :\n" + Counter,
                         };
                         reply.Attachments.Add(plCardCounter.ToAttachment());
                     }
@@ -1726,7 +1726,7 @@ namespace Common
                 else
                 {
                     HeroCard plCardNoData = new HeroCard()
-                    { Title = "**No Availabel Risks**\n\n" };
+                    { Title = "No Availabel Risks\n\n" };
                     reply.Attachments.Add(plCardNoData.ToAttachment());
                 }
             }
@@ -1746,7 +1746,7 @@ namespace Common
                         }
                         HeroCard plCardCounter = new HeroCard()
                         {
-                            Title = "**Total Number Of availabel Deliverables :**\n" + Counter,
+                            Title = "Total Number Of availabel Deliverables :\n" + Counter,
                             Subtitle = subTitle,
                             //  Buttons = cardButtons,
                         };
@@ -1757,7 +1757,7 @@ namespace Common
                     {
                         HeroCard plCardCounter = new HeroCard()
                         {
-                            Title = "**Total Number Of availabel Deliverables :**\n" + Counter,
+                            Title = "Total Number Of availabel Deliverables :\n" + Counter,
                         };
                         reply.Attachments.Add(plCardCounter.ToAttachment());
                     }
@@ -1765,7 +1765,7 @@ namespace Common
                 else
                 {
                     HeroCard plCardNoData = new HeroCard()
-                    { Title = "**No Availabel Deliverables**\n\n" };
+                    { Title = "No Availabel Deliverables\n\n" };
                     reply.Attachments.Add(plCardNoData.ToAttachment());
                 }
             }
@@ -1785,7 +1785,7 @@ namespace Common
                         }
                         HeroCard plCardCounter = new HeroCard()
                         {
-                            Title = "**Total Number Of availabel Projects :**\n" + Counter,
+                            Title = "Total Number Of availabel Projects :\n" + Counter,
                             Subtitle = subTitle,
                             //  Buttons = cardButtons,
                         };
@@ -1796,7 +1796,7 @@ namespace Common
                     {
                         HeroCard plCardCounter = new HeroCard()
                         {
-                            Title = "**Total Number Of availabel Projects :**\n" + Counter,
+                            Title = "Total Number Of availabel Projects :\n" + Counter,
                         };
                         reply.Attachments.Add(plCardCounter.ToAttachment());
                     }
@@ -1804,7 +1804,7 @@ namespace Common
                 else
                 {
                     HeroCard plCardNoData = new HeroCard()
-                    { Title = "**No Availabel Projects**\n\n" };
+                    { Title = "No Availabel Projects\n\n" };
                     reply.Attachments.Add(plCardNoData.ToAttachment());
                 }
             }
@@ -1824,7 +1824,7 @@ namespace Common
                         }
                         HeroCard plCardCounter = new HeroCard()
                         {
-                            Title = "**Total Number Of user assignments :**\n" + Counter,
+                            Title = "Total Number Of user assignments :\n" + Counter,
                             Subtitle = subTitle,
                             //  Buttons = cardButtons,
                         };
@@ -1835,7 +1835,7 @@ namespace Common
                     {
                         HeroCard plCardCounter = new HeroCard()
                         {
-                            Title = "**Total Number Of user assignments :**\n" + Counter,
+                            Title = "Total Number Of user assignments :\n" + Counter,
                         };
                         reply.Attachments.Add(plCardCounter.ToAttachment());
                     }
@@ -1843,7 +1843,7 @@ namespace Common
                 else
                 {
                     HeroCard plCardNoData = new HeroCard()
-                    { Title = "**No availabel assignments**\n\n" };
+                    { Title = "No availabel assignments\n\n" };
                     reply.Attachments.Add(plCardNoData.ToAttachment());
                 }
             }
