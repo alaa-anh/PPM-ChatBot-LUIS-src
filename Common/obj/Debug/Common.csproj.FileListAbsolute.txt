@@ -117,3 +117,4 @@ C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\Newtonsoft.Json.xml
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\System.Net.Http.Formatting.xml
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\System.Web.Http.xml
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\System.Web.Http.WebHost.xml
+C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\obj\Debug\Common.csprojResolveAssemblyReference.cache
