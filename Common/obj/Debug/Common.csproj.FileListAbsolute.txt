@@ -41,7 +41,6 @@ C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\Common\obj\Debug\Com
 C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\Common\obj\Debug\Common.pdb
 C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\Common.dll.config
 C:\Users\Ala'aAlHakeem\Desktop\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\AdaptiveCards.dll
-C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\Common.dll.config
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\Common.dll
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\Common.pdb
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\AdaptiveCards.dll
