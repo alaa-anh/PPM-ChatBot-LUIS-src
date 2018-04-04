@@ -138,7 +138,7 @@ namespace Common
                     Type = ActionTypes.PostBack,
                     Title = "Tasks",
                     Value = "show a list of " + ProjectName + " tasks",
-                    DisplayText = "DisplayText",
+                    DisplayText = "show a list of " + ProjectName + " tasks",
                     Text = "Text",
                 };
                 cardactions.Add(btnTasks);

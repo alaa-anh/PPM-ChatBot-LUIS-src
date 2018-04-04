@@ -344,4 +344,3 @@ C:\Projects\chatbot\PPM-ChatBot-LUIS-src\obj\Debug\Microsoft.Bot.Sample.LuisBot.
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\obj\Debug\Microsoft.Bot.Sample.LuisBot.csproj.CoreCompileInputs.cache
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\obj\Debug\LuisBot.dll
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\obj\Debug\LuisBot.pdb
-C:\Projects\chatbot\PPM-ChatBot-LUIS-src\bin\Common.dll.config
