@@ -312,7 +312,7 @@ namespace Common
             {
                 SecureString passWord = new SecureString();
                 foreach (char c in _userPassword.ToCharArray()) passWord.AppendChar(c);
-                SharePointOnlineCredentials credentials = new SharePointOnlineCredentials(_userName, passWord);
+               // SharePointOnlineCredentials credentials = new SharePointOnlineCredentials(_userName, passWord);
                 context.Credentials = new SharePointOnlineCredentials(_userName, passWord);
                 PublishedProject project = GetProjectByName(pName, context);
 

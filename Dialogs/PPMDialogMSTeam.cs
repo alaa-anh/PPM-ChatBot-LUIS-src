@@ -187,7 +187,7 @@ namespace Microsoft.Bot.Sample.LuisBot
                 EntityRecommendation projectAssignments;
                 EntityRecommendation ItemIndex;
 
-
+                await context.PostAsync(luisResult.Query);
 
                 string searchTerm_ProjectName = string.Empty;
                 string ListName = string.Empty;
@@ -233,9 +233,9 @@ namespace Microsoft.Bot.Sample.LuisBot
                         {
                             await context.PostAsync(messageActivity);
                         }
-                        await context.PostAsync(new Common.ProjectServer(userName, password).TotalCountGeneralMessage(context, itemStartIndex, Counter, ListName));
-                        if (Counter > 10)
-                            await context.PostAsync(new Common.ProjectServer(userName, password).CreateButtonsPager(context, Counter, ListName, searchTerm_ProjectName, ""));
+                        //await context.PostAsync(new Common.ProjectServer(userName, password).TotalCountGeneralMessage(context, itemStartIndex, Counter, ListName));
+                        //if (Counter > 10)
+                        //    await context.PostAsync(new Common.ProjectServer(userName, password).CreateButtonsPager(context, Counter, ListName, searchTerm_ProjectName, ""));
 
 
                     }
