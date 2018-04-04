@@ -138,6 +138,8 @@ namespace Common
                     Type = ActionTypes.PostBack,
                     Title = "Tasks",
                     Value = "show a list of " + ProjectName + " tasks",
+                    DisplayText = "DisplayText",
+                    Text = "Text",
                 };
                 cardactions.Add(btnTasks);
 
@@ -170,6 +172,7 @@ namespace Common
                     Type = ActionTypes.PostBack,
                     Title = "Assignments",
                     Value = "get " + ProjectName + " assignments",
+                    
                 };
                 cardactions.Add(btnDAssignments);
 
