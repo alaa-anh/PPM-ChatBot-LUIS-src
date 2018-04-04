@@ -115,7 +115,8 @@ namespace Common
             }
             catch (Exception ex)
             {
-                UserLoggedInName = ex.Message;
+                //UserLoggedInName = ex.Message;
+                UserLoggedInName = string.Empty;
                 //Authorized = false;
             }
 

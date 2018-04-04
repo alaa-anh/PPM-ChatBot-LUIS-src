@@ -57,7 +57,7 @@ namespace Microsoft.Bot.Sample.LuisBot
                 }
                 else
                 {
-                    response.Append($"Hey sfsdfsfddsfds {UserLoggedInName}.. :)");
+                    response.Append($"Hey {UserLoggedInName}.. :)");
                 }
                 await context.PostAsync(response.ToString());
                 context.Wait(this.MessageReceived);
@@ -458,7 +458,7 @@ namespace Microsoft.Bot.Sample.LuisBot
             }
             else
             {
-                PromptDialog.Confirm(context, ResumeAfterConfirmation, userName + "--" + password + " --" + UserLoggedInName + "--" + "The User Don't have permission , do you want to try another cridentials?");
+                PromptDialog.Confirm(context, ResumeAfterConfirmation, "The User Don't have permission , do you want to try another cridentials?");
 
             }
         }

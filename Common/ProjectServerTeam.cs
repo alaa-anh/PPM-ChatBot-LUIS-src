@@ -312,13 +312,12 @@ namespace Common
             {
                 SecureString passWord = new SecureString();
                 foreach (char c in _userPasswordAdmin.ToCharArray()) passWord.AppendChar(c);
-                SharePointOnlineCredentials credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
                 context.Credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
                 PublishedProject project = GetProjectByName(pName, context);
 
-               
 
-               
+
+
 
 
                 if (project != null)
@@ -330,7 +329,7 @@ namespace Common
                     {
                         if (GetUserGroup(context, "Team Members (Project Web App Synchronized)"))
                         {
-                            reply = GetResourceLoggedInTasks(dialogContext, itemStartIndex, context, project , out TaskCounter);
+                            reply = GetResourceLoggedInTasks(dialogContext, itemStartIndex, context, project, out TaskCounter);
                         }
                         else if (GetUserGroup(context, "Project Managers (Project Web App Synchronized)"))
                         {
@@ -342,7 +341,7 @@ namespace Common
                             }
                             else
                             {
-                                reply = GetResourceLoggedInTasks(dialogContext, itemStartIndex , context, project , out TaskCounter);
+                                reply = GetResourceLoggedInTasks(dialogContext, itemStartIndex, context, project, out TaskCounter);
 
                             }
                         }
@@ -369,7 +368,7 @@ namespace Common
             {
                 SecureString passWord = new SecureString();
                 foreach (char c in _userPasswordAdmin.ToCharArray()) passWord.AppendChar(c);
-                SharePointOnlineCredentials credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
+               // SharePointOnlineCredentials credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
                 context.Credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
                 PublishedProject project = GetProjectByName(pName, context);
                 if (project != null)
@@ -428,7 +427,7 @@ namespace Common
             {
                 SecureString passWord = new SecureString();
                 foreach (char c in _userPasswordAdmin.ToCharArray()) passWord.AppendChar(c);
-                SharePointOnlineCredentials credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
+              //  SharePointOnlineCredentials credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
                 context.Credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
                 PublishedProject project = GetProjectByName(pName, context);
 
@@ -494,7 +493,7 @@ namespace Common
             {
                 SecureString passWord = new SecureString();
                 foreach (char c in _userPasswordAdmin.ToCharArray()) passWord.AppendChar(c);
-                SharePointOnlineCredentials credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
+          //      SharePointOnlineCredentials credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
                 context.Credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
                 PublishedProject project = GetProjectByName(pName, context);
 
@@ -578,7 +577,7 @@ namespace Common
             {
                 SecureString passWord = new SecureString();
                 foreach (char c in _userPasswordAdmin.ToCharArray()) passWord.AppendChar(c);
-                SharePointOnlineCredentials credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
+         //       SharePointOnlineCredentials credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
                 context.Credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
                 PublishedProject project = GetProjectByName(pName, context);
                 Counter = 0;
@@ -626,7 +625,7 @@ namespace Common
             {
                 SecureString passWord = new SecureString();
                 foreach (char c in _userPasswordAdmin.ToCharArray()) passWord.AppendChar(c);
-                SharePointOnlineCredentials credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
+          //      SharePointOnlineCredentials credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
                 context.Credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
                 DateTime startdate = new DateTime();
                 DateTime endate = new DateTime();
@@ -742,7 +741,7 @@ namespace Common
             {
                 SecureString passWord = new SecureString();
                 foreach (char c in _userPasswordAdmin.ToCharArray()) passWord.AppendChar(c);
-                SharePointOnlineCredentials credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
+          //      SharePointOnlineCredentials credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
                 context.Credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
 
                 PublishedProject project = GetProjectByName(pName, context);
@@ -812,7 +811,7 @@ namespace Common
             {
                 SecureString passWord = new SecureString();
                 foreach (char c in _userPasswordAdmin.ToCharArray()) passWord.AppendChar(c);
-                SharePointOnlineCredentials credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
+          //      SharePointOnlineCredentials credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
                 context.Credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
                 PublishedProject project = GetProjectByName(pName, context);                
                 if (project != null)
