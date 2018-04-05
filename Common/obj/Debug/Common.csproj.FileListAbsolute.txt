@@ -193,3 +193,5 @@ C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\DnsClient.xml
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\Microsoft.IdentityModel.Protocol.Extensions.xml
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\System.Net.Http.Formatting.xml
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\System.Web.Http.xml
+C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\System.Web.Http.WebHost.dll
+C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\System.Web.Http.WebHost.xml
