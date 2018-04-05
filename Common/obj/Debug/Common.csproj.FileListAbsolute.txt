@@ -185,3 +185,11 @@ C:\Projects\chatbot\02msbot-src\Common\obj\Debug\Common.csprojResolveAssemblyRef
 C:\Projects\chatbot\02msbot-src\Common\obj\Debug\Common.csproj.CoreCompileInputs.cache
 C:\Projects\chatbot\02msbot-src\Common\obj\Debug\Common.dll
 C:\Projects\chatbot\02msbot-src\Common\obj\Debug\Common.pdb
+C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\DnsClient.dll
+C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\Microsoft.IdentityModel.Protocol.Extensions.dll
+C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\System.Net.Http.Formatting.dll
+C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\System.Web.Http.dll
+C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\DnsClient.xml
+C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\Microsoft.IdentityModel.Protocol.Extensions.xml
+C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\System.Net.Http.Formatting.xml
+C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\System.Web.Http.xml
