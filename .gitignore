@@ -1,2 +1,6 @@
-
-.vs/Microsoft.Bot.Sample.LuisBot/v15/.suo
+obj/
+bin/
+packages/
+*.pubxml.user
+*.csproj.user
+.vs/
