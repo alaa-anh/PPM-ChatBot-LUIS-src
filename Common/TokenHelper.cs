@@ -113,7 +113,7 @@ namespace Common
                     //    Authorized = false;
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 //UserLoggedInName = ex.Message;
                 UserLoggedInName = string.Empty;

@@ -39,7 +39,7 @@ namespace Common
             Counter = 0;
             try
             {
-
+              
                 using (ProjectContext context = new ProjectContext(_siteUri))
                 {
                     //SecureString passWord = new SecureString();
@@ -86,7 +86,7 @@ namespace Common
                 };
                 reply.Attachments.Add(plCard.ToAttachment());
             }
-            catch (Exception ex)
+            catch(Exception ex)
             {
                 throw ex;
             }
@@ -131,13 +131,13 @@ namespace Common
                             reply = GetFilteredProjects(dialogContext, context, projs, SIndex, completionpercentVal, out ProjectCounter);
                         }
 
-
+                        
 
                         Counter = ProjectCounter;
                     }
 
                 }
-
+                
             }
 
             return reply;
@@ -178,7 +178,7 @@ namespace Common
                     SubtitleVal += "Project Duration :\n" + ProjectDuration + "</br>";
                     SubtitleVal += "Project Manager :\n" + ProjectOwnerName + "</br>";
                 }
-
+             
                 else if (ProjectDates == true)
                 {
                     SubtitleVal += "Start Date :\n" + ProjectStartDate + "</br>";
@@ -207,8 +207,8 @@ namespace Common
                     Type = ActionTypes.PostBack,
                     Title = "Tasks",
                     Value = "show a list of " + ProjectName + " tasks",
-                    //  DisplayText = "show a list of " + ProjectName + " tasks",
-                    Text = "show a list of " + ProjectName + " tasks",
+                  //  DisplayText = "show a list of " + ProjectName + " tasks",
+                  Text = "show a list of " + ProjectName + " tasks",
                 };
                 cardactions.Add(btnTasks);
 
@@ -274,7 +274,7 @@ namespace Common
             return reply;
         }
 
-        public IMessageActivity GetFilteredProjects(IDialogContext dialogContext, ProjectContext context, IEnumerable<PublishedProject> publishedProject, int SIndex, int completionpercentVal, out int Counter)
+        public IMessageActivity GetFilteredProjects(IDialogContext dialogContext, ProjectContext context , IEnumerable<PublishedProject> publishedProject, int SIndex, int completionpercentVal, out int Counter)
         {
             IMessageActivity reply = null;
             reply = dialogContext.MakeMessage();
@@ -285,8 +285,8 @@ namespace Common
             if (inDexToVal >= publishedProject.Count())
                 inDexToVal = publishedProject.Count();
 
-
-            foreach (PublishedProject pro in publishedProject)
+           
+            foreach(PublishedProject pro in publishedProject)
             {
                 context.Load(pro.Owner);
                 context.Load(pro, p => p.ProjectSiteUrl);
@@ -305,8 +305,8 @@ namespace Common
                 SubtitleVal += "Start Date :\n" + ProjectStartDate + "</br>";
                 SubtitleVal += "Finish Date :\n" + ProjectFinishDate + "</br>";
                 SubtitleVal += "Project Duration :\n" + ProjectDuration + "</br>";
-                SubtitleVal += "Project Manager :\n" + ProjectOwnerName + "</br>";
-
+                SubtitleVal += "Project Manager :\n" + ProjectOwnerName + "</br>";          
+               
                 string ImageURL = "http://02-code.com/images/logo.jpg";
                 List<CardImage> cardImages = new List<CardImage>();
                 List<CardAction> cardactions = new List<CardAction>();
@@ -391,9 +391,9 @@ namespace Common
             //if (inDexToVal >= projectDetails.Count)
             //    inDexToVal = projectDetails.Count;
 
-            foreach (PublishedProject pro in projectDetails)
+            foreach(PublishedProject pro in  projectDetails)
             {
-                //  PublishedProject pro = context.Projects[startIndex];
+              //  PublishedProject pro = context.Projects[startIndex];
                 context.Load(pro.Owner);
                 context.Load(pro, p => p.ProjectSiteUrl);
                 context.ExecuteQuery();
@@ -631,7 +631,7 @@ namespace Common
             return reply;
         }
 
-        public IMessageActivity GetProjectTasks(IDialogContext dialogContext, int itemStartIndex, string pName, bool Completed, bool NotCompleted, bool delayed, out int Counter)
+        public IMessageActivity GetProjectTasks(IDialogContext dialogContext, int itemStartIndex, string pName , bool Completed , bool NotCompleted , bool delayed, out int Counter)
         {
             IMessageActivity reply = null;
             reply = dialogContext.MakeMessage();
@@ -673,7 +673,7 @@ namespace Common
                         else if (GetUserGroup(context, "Web Administrators (Project Web App Synchronized)") || GetUserGroup(context, "Administrators for Project Web App") || GetUserGroup(context, "Portfolio Managers for Project Web App") || GetUserGroup(context, "Portfolio Viewers for Project Web App") || GetUserGroup(context, "Portfolio Viewers for Project Web App") || GetUserGroup(context, "Resource Managers for Project Web App"))
                         {
                             reply = GetAllTasks(dialogContext, itemStartIndex, publishedTask, project, Completed, NotCompleted, delayed, out TaskCounter);
-                        }
+                        }                       
                     }
                 }
             }
@@ -879,7 +879,7 @@ namespace Common
                     }
 
 
-
+                 
 
                 }
             }
@@ -909,7 +909,7 @@ namespace Common
                     context.Load(project.Assignments);
                     context.ExecuteQuery();
 
-
+                  
                     PublishedAssignmentCollection itemsAssignments = project.Assignments;
 
                     if (GetUserGroup(context, "Team Members (Project Web App Synchronized)") || GetUserGroup(context, "Team Leads for Project Web App"))
@@ -936,7 +936,7 @@ namespace Common
                     }
 
 
-
+                   
                 }
             }
             Counter = TaskCounter;
@@ -1095,7 +1095,7 @@ namespace Common
                         List<CardImage> cardImages = new List<CardImage>();
                         List<CardAction> cardactions = new List<CardAction>();
                         cardImages.Add(new CardImage(url: ImageURL));
-
+                       
                         CardAction btnTasks = new CardAction()
                         {
                             Type = ActionTypes.PostBack,
@@ -1247,7 +1247,7 @@ namespace Common
 
             tskcoll = project.Tasks;
 
-
+            
 
             if (tskcoll.Count > 0)
             {
@@ -1331,7 +1331,7 @@ namespace Common
                 }
                 else if (delayed == true)
                 {
-                    IEnumerable<PublishedTask> completedlist = project.Tasks.Where(p => p.ActualDuration == p.ScheduledDuration).ToList();
+                    IEnumerable<PublishedTask> completedlist = project.Tasks.Where(p => p.ActualDuration  == p.ScheduledDuration).ToList();
                     if (completedlist.Count() > 0)
                     {
                         inDexToVal = SIndex + 10;
@@ -1418,49 +1418,49 @@ namespace Common
             tskcoll = project.Tasks;
             if (tskcoll.Count > 0)
             {
-                IEnumerable<PublishedTask> cmilestonelist = project.Tasks.Where(p => p.Duration == "0d").ToList();
-                if (cmilestonelist.Count() > 0)
-                {
-                    inDexToVal = SIndex + 10;
-                    Counter = cmilestonelist.Count();
-                    if (inDexToVal >= cmilestonelist.Count())
-                        inDexToVal = cmilestonelist.Count();
-
-                    int startIndex = SIndex;
-                    foreach (PublishedTask tsk in cmilestonelist)
+                    IEnumerable<PublishedTask> cmilestonelist = project.Tasks.Where(p => p.Duration == "0d").ToList();
+                    if (cmilestonelist.Count() > 0)
                     {
-                        if (startIndex >= inDexToVal)
-                            break;
-                        var SubtitleVal = "";
-                        string TaskName = tsk.Name;
-                        string TaskPercentCompleted = tsk.PercentComplete.ToString();
-                        string TaskStartDate = tsk.Start.ToString();
-                        string TaskFinishDate = tsk.Finish.ToString();
+                        inDexToVal = SIndex + 10;
+                        Counter = cmilestonelist.Count();
+                        if (inDexToVal >= cmilestonelist.Count())
+                            inDexToVal = cmilestonelist.Count();
 
-                        SubtitleVal += "Task Percent Completed\n" + TaskPercentCompleted + "</br>";
-                        SubtitleVal += "Task Start Date\n" + TaskStartDate + "</br>";
-                        SubtitleVal += "Task Finish Date\n" + TaskFinishDate + "</br>";
-
-                        HeroCard plCard = new HeroCard()
+                        int startIndex = SIndex;
+                        foreach (PublishedTask tsk in cmilestonelist)
                         {
-                            Title = TaskName,
-                            Subtitle = SubtitleVal
-                        };
+                            if (startIndex >= inDexToVal)
+                                break;
+                            var SubtitleVal = "";
+                            string TaskName = tsk.Name;
+                            string TaskPercentCompleted = tsk.PercentComplete.ToString();
+                            string TaskStartDate = tsk.Start.ToString();
+                            string TaskFinishDate = tsk.Finish.ToString();
 
-                        reply.Attachments.Add(plCard.ToAttachment());
-                        startIndex++;
+                            SubtitleVal += "Task Percent Completed\n" + TaskPercentCompleted + "</br>";
+                            SubtitleVal += "Task Start Date\n" + TaskStartDate + "</br>";
+                            SubtitleVal += "Task Finish Date\n" + TaskFinishDate + "</br>";
 
+                            HeroCard plCard = new HeroCard()
+                            {
+                                Title = TaskName,
+                                Subtitle = SubtitleVal
+                            };
+
+                            reply.Attachments.Add(plCard.ToAttachment());
+                            startIndex++;
+
+                        }
                     }
                 }
-            }
+             
 
-
-
+            
 
             return reply;
         }
 
-        private IMessageActivity GetResourceLoggedInTasks(IDialogContext dialogContext, int SIndex, ProjectContext context, PublishedProject proj, bool Completed, bool NotCompleted, bool delayed, out int Counter)
+        private IMessageActivity GetResourceLoggedInTasks(IDialogContext dialogContext, int SIndex, ProjectContext context, PublishedProject proj , bool Completed, bool NotCompleted, bool delayed, out int Counter)
         {
             var SubtitleVal = "";
             IMessageActivity reply = null;
@@ -2576,7 +2576,7 @@ namespace Common
             return reply;
         }
 
-        public IMessageActivity DataSuggestions(IDialogContext dialogContext, string ListName, string ProjectName)
+        public IMessageActivity DataSuggestions(IDialogContext dialogContext , string ListName, string ProjectName)
         {
             IMessageActivity reply = null;
             reply = dialogContext.MakeMessage();

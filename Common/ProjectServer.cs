@@ -1604,7 +1604,7 @@
 //                        }
 //                        HeroCard plCardCounter = new HeroCard()
 //                        {
-//                            Title = "**Total Number Of availabel Projects :**\n" + Counter,
+//                            Title = "**Total Number Of Available Projects :**\n" + Counter,
 //                            Subtitle = subTitle,
 //                            //  Buttons = cardButtons,
 //                        };
@@ -1615,7 +1615,7 @@
 //                    {
 //                        HeroCard plCardCounter = new HeroCard()
 //                        {
-//                            Title = "**Total Number Of availabel Projects :**\n" + Counter,
+//                            Title = "**Total Number Of Available Projects :**\n" + Counter,
 //                        };
 //                        reply.Attachments.Add(plCardCounter.ToAttachment());
 //                    }
@@ -1623,7 +1623,7 @@
 //                else
 //                {
 //                    HeroCard plCardNoData = new HeroCard()
-//                    { Title = "**No Availabel Projects**\n\n" };
+//                    { Title = "**No Available Projects**\n\n" };
 //                    reply.Attachments.Add(plCardNoData.ToAttachment());
 //                }
 //            }
@@ -1643,7 +1643,7 @@
 //                        }
 //                        HeroCard plCardCounter = new HeroCard()
 //                        {
-//                            Title = "**Total Number Of availabel Tasks :**\n" + Counter,
+//                            Title = "**Total Number Of Available Tasks :**\n" + Counter,
 //                            Subtitle = subTitle,
 //                            //  Buttons = cardButtons,
 //                        };
@@ -1654,7 +1654,7 @@
 //                    {
 //                        HeroCard plCardCounter = new HeroCard()
 //                        {
-//                            Title = "**Total Number Of availabel Tasks :**\n" + Counter,
+//                            Title = "**Total Number Of Available Tasks :**\n" + Counter,
 //                        };
 //                        reply.Attachments.Add(plCardCounter.ToAttachment());
 //                    }
@@ -1662,7 +1662,7 @@
 //                else
 //                {
 //                    HeroCard plCardNoData = new HeroCard()
-//                    { Title = "**No Availabel Tasks**\n\n" };
+//                    { Title = "**No Available Tasks**\n\n" };
 //                    reply.Attachments.Add(plCardNoData.ToAttachment());
 //                }
 //            }
@@ -1682,7 +1682,7 @@
 //                        }
 //                        HeroCard plCardCounter = new HeroCard()
 //                        {
-//                            Title = "**Total Number Of availabel Issues :**\n" + Counter,
+//                            Title = "**Total Number Of Available Issues :**\n" + Counter,
 //                            Subtitle = subTitle,
 //                            //  Buttons = cardButtons,
 //                        };
@@ -1693,7 +1693,7 @@
 //                    {
 //                        HeroCard plCardCounter = new HeroCard()
 //                        {
-//                            Title = "**Total Number Of availabel Issues :**\n" + Counter,
+//                            Title = "**Total Number Of Available Issues :**\n" + Counter,
 //                        };
 //                        reply.Attachments.Add(plCardCounter.ToAttachment());
 //                    }
@@ -1701,7 +1701,7 @@
 //                else
 //                {
 //                    HeroCard plCardNoData = new HeroCard()
-//                    { Title = "**No Availabel Issues**\n\n" };
+//                    { Title = "**No Available Issues**\n\n" };
 //                    reply.Attachments.Add(plCardNoData.ToAttachment());
 //                }
 //            }
@@ -1721,7 +1721,7 @@
 //                        }
 //                        HeroCard plCardCounter = new HeroCard()
 //                        {
-//                            Title = "**Total Number Of availabel Assignments :**\n" + Counter,
+//                            Title = "**Total Number Of Available Assignments :**\n" + Counter,
 //                            Subtitle = subTitle,
 //                            //  Buttons = cardButtons,
 //                        };
@@ -1732,7 +1732,7 @@
 //                    {
 //                        HeroCard plCardCounter = new HeroCard()
 //                        {
-//                            Title = "**Total Number Of availabel Assignments :**\n" + Counter,
+//                            Title = "**Total Number Of Available Assignments :**\n" + Counter,
 //                        };
 //                        reply.Attachments.Add(plCardCounter.ToAttachment());
 //                    }
@@ -1740,7 +1740,7 @@
 //                else
 //                {
 //                    HeroCard plCardNoData = new HeroCard()
-//                    { Title = "**No Availabel Assignments**\n\n" };
+//                    { Title = "**No Available Assignments**\n\n" };
 //                    reply.Attachments.Add(plCardNoData.ToAttachment());
 //                }
 //            }
@@ -1760,7 +1760,7 @@
 //                        }
 //                        HeroCard plCardCounter = new HeroCard()
 //                        {
-//                            Title = "**Total Number Of availabel Risks :**\n" + Counter,
+//                            Title = "**Total Number Of Available Risks :**\n" + Counter,
 //                            Subtitle = subTitle,
 //                            //  Buttons = cardButtons,
 //                        };
@@ -1771,7 +1771,7 @@
 //                    {
 //                        HeroCard plCardCounter = new HeroCard()
 //                        {
-//                            Title = "**Total Number Of availabel Risks :**\n" + Counter,
+//                            Title = "**Total Number Of Available Risks :**\n" + Counter,
 //                        };
 //                        reply.Attachments.Add(plCardCounter.ToAttachment());
 //                    }
@@ -1779,7 +1779,7 @@
 //                else
 //                {
 //                    HeroCard plCardNoData = new HeroCard()
-//                    { Title = "**No Availabel Risks**\n\n" };
+//                    { Title = "**No Available Risks**\n\n" };
 //                    reply.Attachments.Add(plCardNoData.ToAttachment());
 //                }
 //            }
@@ -1799,7 +1799,7 @@
 //                        }
 //                        HeroCard plCardCounter = new HeroCard()
 //                        {
-//                            Title = "**Total Number Of availabel Deliverables :**\n" + Counter,
+//                            Title = "**Total Number Of Available Deliverables :**\n" + Counter,
 //                            Subtitle = subTitle,
 //                            //  Buttons = cardButtons,
 //                        };
@@ -1810,7 +1810,7 @@
 //                    {
 //                        HeroCard plCardCounter = new HeroCard()
 //                        {
-//                            Title = "**Total Number Of availabel Deliverables :**\n" + Counter,
+//                            Title = "**Total Number Of Available Deliverables :**\n" + Counter,
 //                        };
 //                        reply.Attachments.Add(plCardCounter.ToAttachment());
 //                    }
@@ -1818,7 +1818,7 @@
 //                else
 //                {
 //                    HeroCard plCardNoData = new HeroCard()
-//                    { Title = "**No Availabel Deliverables**\n\n" };
+//                    { Title = "**No Available Deliverables**\n\n" };
 //                    reply.Attachments.Add(plCardNoData.ToAttachment());
 //                }
 //            }
@@ -1838,7 +1838,7 @@
 //                        }
 //                        HeroCard plCardCounter = new HeroCard()
 //                        {
-//                            Title = "**Total Number Of availabel Projects :**\n" + Counter,
+//                            Title = "**Total Number Of Available Projects :**\n" + Counter,
 //                            Subtitle = subTitle,
 //                            //  Buttons = cardButtons,
 //                        };
@@ -1849,7 +1849,7 @@
 //                    {
 //                        HeroCard plCardCounter = new HeroCard()
 //                        {
-//                            Title = "**Total Number Of availabel Projects :**\n" + Counter,
+//                            Title = "**Total Number Of Available Projects :**\n" + Counter,
 //                        };
 //                        reply.Attachments.Add(plCardCounter.ToAttachment());
 //                    }
@@ -1857,7 +1857,7 @@
 //                else
 //                {
 //                    HeroCard plCardNoData = new HeroCard()
-//                    { Title = "**No Availabel Projects**\n\n" };
+//                    { Title = "**No Available Projects**\n\n" };
 //                    reply.Attachments.Add(plCardNoData.ToAttachment());
 //                }
 //            }
@@ -1896,7 +1896,7 @@
 //                else
 //                {
 //                    HeroCard plCardNoData = new HeroCard()
-//                    { Title = "**No availabel assignments**\n\n" };
+//                    { Title = "**No Available assignments**\n\n" };
 //                    reply.Attachments.Add(plCardNoData.ToAttachment());
 //                }
 //            }
