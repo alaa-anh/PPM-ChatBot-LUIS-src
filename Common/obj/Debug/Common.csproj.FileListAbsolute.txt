@@ -127,3 +127,4 @@ C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\obj\Debug\Common.csprojResolveAs
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\obj\Debug\Common.csproj.CoreCompileInputs.cache
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\obj\Debug\Common.dll
 C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\obj\Debug\Common.pdb
+C:\Projects\chatbot\PPM-ChatBot-LUIS-src\Common\bin\Debug\Microsoft.IdentityModel.Tokens.xml
