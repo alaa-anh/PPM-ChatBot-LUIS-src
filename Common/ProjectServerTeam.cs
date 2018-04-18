@@ -31,8 +31,70 @@ namespace Common
             _siteUri = ConfigurationManager.AppSettings["PPMServerURL"];
         }
 
-
         public IMessageActivity GetMSProjects(IDialogContext dialogContext, int SIndex, bool showCompletion, bool ProjectDates, bool PDuration, bool projectManager, out int Counter)
+        {
+            IMessageActivity reply = null;
+            reply = dialogContext.MakeMessage();
+            reply.AttachmentLayout = AttachmentLayoutTypes.Carousel;
+            Counter = 0;
+            try
+            {
+
+                using (ProjectContext context = new ProjectContext(_siteUri))
+                {
+                    //SecureString passWord = new SecureString();
+                    //foreach (char c in _userPasswordAdmin.ToCharArray()) passWord.AppendChar(c);
+                    //context.Credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
+
+                    SecureString passWord = new SecureString();
+                    foreach (char c in _userPassword.ToCharArray()) passWord.AppendChar(c);
+                    context.Credentials = new SharePointOnlineCredentials(_userName, passWord);
+
+
+
+                    //int ProjectCounter = 0;
+
+
+
+                    ////if (context.Projects.Count > 0)
+                    ////{
+                    //if (GetUserGroup(context, "Team Members (Project Web App Synchronized)") || GetUserGroup(context, "Team Leads for Project Web App"))
+                    //{
+                    //    //   reply = GetResourceLoggedInProjects(dialogContext, context, projectDetails, SIndex, showCompletion, ProjectDates, PDuration, projectManager, out ProjectCounter);
+                    //}
+                    //else if (GetUserGroup(context, "Project Managers (Project Web App Synchronized)"))
+                    //{
+                    //context.Load(context.Projects);
+                    //context.ExecuteQuery();
+                    //    //     ProjectCollection projectDetails = context.Projects;
+                    //    //reply = GetAllProjects(dialogContext, context, projectDetails, SIndex, showCompletion, ProjectDates, PDuration, projectManager, out ProjectCounter);
+                    //}
+                    //else if (GetUserGroup(context, "Web Administrators (Project Web App Synchronized)") || GetUserGroup(context, "Administrators for Project Web App") || GetUserGroup(context, "Portfolio Managers for Project Web App") || GetUserGroup(context, "Portfolio Viewers for Project Web App") || GetUserGroup(context, "Portfolio Viewers for Project Web App") || GetUserGroup(context, "Resource Managers for Project Web App"))
+                    //{
+                    //   // reply = GetAllProjects(dialogContext, context, projectDetails, SIndex, showCompletion, ProjectDates, PDuration, projectManager, out ProjectCounter);
+                    //    //    }
+
+                    //    //    Counter = ProjectCounter;
+                    //    //}
+
+                    //}
+                }
+
+                HeroCard plCard = new HeroCard()
+                {
+                    Title = "Alaa",
+                };
+                reply.Attachments.Add(plCard.ToAttachment());
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return reply;
+        }
+
+        public IMessageActivity FilterMSProjects(IDialogContext dialogContext, int SIndex, int completionpercentVal, out int Counter)
         {
             IMessageActivity reply = null;
             reply = dialogContext.MakeMessage();
@@ -42,31 +104,38 @@ namespace Common
             {
                 SecureString passWord = new SecureString();
                 foreach (char c in _userPasswordAdmin.ToCharArray()) passWord.AppendChar(c);
-                //SharePointOnlineCredentials credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
                 context.Credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
 
                 context.Load(context.Projects);
                 context.ExecuteQuery();
 
-
-                ProjectCollection projectDetails = context.Projects;
                 int ProjectCounter = 0;
 
-
-
-                if (context.Projects.Count > 0)
+                if (completionpercentVal > 0)
                 {
+                    IEnumerable<PublishedProject> projs = context.LoadQuery(context.Projects.Where(p => p.PercentComplete == completionpercentVal));
+                    context.ExecuteQuery();
 
-                    if (GetUserGroup(context, "Team Members (Project Web App Synchronized)"))
+                    if (projs.Any())
                     {
-                        reply = GetResourceLoggedInProjects(dialogContext, context, projectDetails, SIndex, showCompletion, ProjectDates, PDuration, projectManager, out ProjectCounter);
-                    }
-                    else
-                    {
-                        reply = GetAllProjects(dialogContext, context, projectDetails, SIndex, showCompletion, ProjectDates, PDuration, projectManager, out ProjectCounter);
+                        if (GetUserGroup(context, "Team Members (Project Web App Synchronized)") || GetUserGroup(context, "Team Leads for Project Web App"))
+                        {
+                            //reply = GetResourceLoggedInFilProjects(dialogContext, context, projectDetails, SIndex, showCompletion, ProjectDates, PDuration, projectManager, out ProjectCounter);
+                        }
+                        else if (GetUserGroup(context, "Project Managers (Project Web App Synchronized)"))
+                        {
+                            reply = GetFilteredProjects(dialogContext, context, projs, SIndex, completionpercentVal, out ProjectCounter);
+                        }
+                        else if (GetUserGroup(context, "Web Administrators (Project Web App Synchronized)") || GetUserGroup(context, "Administrators for Project Web App") || GetUserGroup(context, "Portfolio Managers for Project Web App") || GetUserGroup(context, "Portfolio Viewers for Project Web App") || GetUserGroup(context, "Portfolio Viewers for Project Web App") || GetUserGroup(context, "Resource Managers for Project Web App"))
+                        {
+                            reply = GetFilteredProjects(dialogContext, context, projs, SIndex, completionpercentVal, out ProjectCounter);
+                        }
+
+
+
+                        Counter = ProjectCounter;
                     }
 
-                    Counter = ProjectCounter;
                 }
 
             }
@@ -109,8 +178,7 @@ namespace Common
                     SubtitleVal += "Project Duration :\n" + ProjectDuration + "</br>";
                     SubtitleVal += "Project Manager :\n" + ProjectOwnerName + "</br>";
                 }
-                else if (showCompletion == true)
-                    SubtitleVal += "Completed Percentage :\n" + ProjectPercentCompleted + "%</br>";
+
                 else if (ProjectDates == true)
                 {
                     SubtitleVal += "Start Date :\n" + ProjectStartDate + "</br>";
@@ -139,8 +207,123 @@ namespace Common
                     Type = ActionTypes.PostBack,
                     Title = "Tasks",
                     Value = "show a list of " + ProjectName + " tasks",
-                  //  DisplayText = "show a list of " + ProjectName + " tasks",
-                  Text = "show a list of " + ProjectName + " tasks",
+                    //  DisplayText = "show a list of " + ProjectName + " tasks",
+                    Text = "show a list of " + ProjectName + " tasks",
+                };
+                cardactions.Add(btnTasks);
+
+                CardAction btnIssues = new CardAction()
+                {
+                    Type = ActionTypes.PostBack,
+                    Title = "Issues",
+                    Value = "show a list of " + ProjectName + " issues",
+                    Text = "show a list of " + ProjectName + " issues"
+                };
+                cardactions.Add(btnIssues);
+
+                CardAction btnRisks = new CardAction()
+                {
+                    Type = ActionTypes.PostBack,
+                    Title = "Risks",
+                    Value = "Show risks and the assigned resources of " + ProjectName,
+                    Text = "Show risks and the assigned resources of " + ProjectName,
+
+                };
+                cardactions.Add(btnRisks);
+
+                CardAction btnDeliverables = new CardAction()
+                {
+                    Type = ActionTypes.PostBack,
+                    Title = "Deliverables",
+                    Value = "Show " + ProjectName + " deliverables",
+                    Text = "Show " + ProjectName + " deliverables",
+                };
+                cardactions.Add(btnDeliverables);
+
+                CardAction btnAssignments = new CardAction()
+                {
+                    Type = ActionTypes.PostBack,
+                    Title = "Assignments",
+                    Value = "get " + ProjectName + " assignments",
+                    Text = "get " + ProjectName + " assignments",
+
+                };
+                cardactions.Add(btnAssignments);
+
+                CardAction btnMilestones = new CardAction()
+                {
+                    Type = ActionTypes.PostBack,
+                    Title = "Milestones",
+                    Value = "get " + ProjectName + " milestones",
+                    Text = "get " + ProjectName + " milesones",
+
+                };
+                cardactions.Add(btnMilestones);
+
+                HeroCard plCard = new HeroCard()
+                {
+                    Title = ProjectName,
+                    Subtitle = SubtitleVal,
+                    Images = cardImages,
+                    Buttons = cardactions,
+                    Tap = btnTasks,
+                };
+                reply.Attachments.Add(plCard.ToAttachment());
+            }
+
+            return reply;
+        }
+
+        public IMessageActivity GetFilteredProjects(IDialogContext dialogContext, ProjectContext context, IEnumerable<PublishedProject> publishedProject, int SIndex, int completionpercentVal, out int Counter)
+        {
+            IMessageActivity reply = null;
+            reply = dialogContext.MakeMessage();
+            reply.AttachmentLayout = AttachmentLayoutTypes.Carousel;
+
+            int inDexToVal = SIndex + 10;
+            Counter = publishedProject.Count();
+            if (inDexToVal >= publishedProject.Count())
+                inDexToVal = publishedProject.Count();
+
+
+            foreach (PublishedProject pro in publishedProject)
+            {
+                context.Load(pro.Owner);
+                context.Load(pro, p => p.ProjectSiteUrl);
+                context.ExecuteQuery();
+
+                string ProjectName = pro.Name;
+                string ProjectWorkspaceInternalUrl = pro.ProjectSiteUrl;
+                string ProjectPercentCompleted = pro.PercentComplete.ToString();
+                string ProjectFinishDate = pro.FinishDate.ToString();
+                string ProjectStartDate = pro.StartDate.ToString();
+                TimeSpan duration = pro.FinishDate - pro.StartDate;
+                string ProjectDuration = duration.Days.ToString();
+                string ProjectOwnerName = pro.Owner.Title;
+                string SubtitleVal = "";
+                SubtitleVal += "Completed Percentage :\n" + ProjectPercentCompleted + "%</br>";
+                SubtitleVal += "Start Date :\n" + ProjectStartDate + "</br>";
+                SubtitleVal += "Finish Date :\n" + ProjectFinishDate + "</br>";
+                SubtitleVal += "Project Duration :\n" + ProjectDuration + "</br>";
+                SubtitleVal += "Project Manager :\n" + ProjectOwnerName + "</br>";
+
+                string ImageURL = "http://02-code.com/images/logo.jpg";
+                List<CardImage> cardImages = new List<CardImage>();
+                List<CardAction> cardactions = new List<CardAction>();
+                cardImages.Add(new CardImage(url: ImageURL));
+                CardAction btnWebsite = new CardAction()
+                {
+                    Type = ActionTypes.OpenUrl,
+                    Title = "Open",
+                    Value = ProjectWorkspaceInternalUrl + "?redirect_uri={" + ProjectWorkspaceInternalUrl + "}",
+                };
+                CardAction btnTasks = new CardAction()
+                {
+                    Type = ActionTypes.PostBack,
+                    Title = "Tasks",
+                    Value = "show a list of " + ProjectName + " tasks",
+                    //  DisplayText = "show a list of " + ProjectName + " tasks",
+                    Text = "show a list of " + ProjectName + " tasks",
                 };
                 cardactions.Add(btnTasks);
 
@@ -196,6 +379,144 @@ namespace Common
             return reply;
         }
 
+        public IMessageActivity GetLoggedInPMProjects(IDialogContext dialogContext, ProjectContext context, ProjectCollection projectDetails, int SIndex, bool showCompletion, bool ProjectDates, bool PDuration, bool projectManager, out int Counter)
+        {
+            IMessageActivity reply = null;
+            reply = dialogContext.MakeMessage();
+            reply.AttachmentLayout = AttachmentLayoutTypes.Carousel;
+
+            int inDexToVal = SIndex + 10;
+            Counter = 0;
+            //Counter = projectDetails.Count;
+            //if (inDexToVal >= projectDetails.Count)
+            //    inDexToVal = projectDetails.Count;
+
+            foreach (PublishedProject pro in projectDetails)
+            {
+                //  PublishedProject pro = context.Projects[startIndex];
+                context.Load(pro.Owner);
+                context.Load(pro, p => p.ProjectSiteUrl);
+                context.ExecuteQuery();
+
+
+                if (pro.Owner.Email == _userName)
+                {
+                    Counter++;
+                    string ProjectName = pro.Name;
+                    string ProjectWorkspaceInternalUrl = pro.ProjectSiteUrl;
+                    string ProjectPercentCompleted = pro.PercentComplete.ToString();
+                    string ProjectFinishDate = pro.FinishDate.ToString();
+                    string ProjectStartDate = pro.StartDate.ToString();
+                    TimeSpan duration = pro.FinishDate - pro.StartDate;
+                    string ProjectDuration = duration.Days.ToString();
+                    string ProjectOwnerName = pro.Owner.Title;
+                    string SubtitleVal = "";
+                    if (showCompletion == false && ProjectDates == false && PDuration == false && projectManager == false)
+                    {
+                        SubtitleVal += "Completed Percentage :\n" + ProjectPercentCompleted + "%</br>";
+                        SubtitleVal += "Start Date :\n" + ProjectStartDate + "</br>";
+                        SubtitleVal += "Finish Date :\n" + ProjectFinishDate + "</br>";
+                        SubtitleVal += "Project Duration :\n" + ProjectDuration + "</br>";
+                        SubtitleVal += "Project Manager :\n" + ProjectOwnerName + "</br>";
+                    }
+
+                    else if (ProjectDates == true)
+                    {
+                        SubtitleVal += "Start Date :\n" + ProjectStartDate + "</br>";
+                        SubtitleVal += "Finish Date :\n" + ProjectFinishDate + "</br>";
+                    }
+                    else if (PDuration == true)
+                    {
+                        SubtitleVal += "Project Duration :\n" + ProjectDuration + "</br>";
+                    }
+                    else if (projectManager == true)
+                    {
+                        SubtitleVal += "Project Manager :\n" + ProjectOwnerName + "</br>";
+                    }
+                    string ImageURL = "http://02-code.com/images/logo.jpg";
+                    List<CardImage> cardImages = new List<CardImage>();
+                    List<CardAction> cardactions = new List<CardAction>();
+                    cardImages.Add(new CardImage(url: ImageURL));
+                    CardAction btnWebsite = new CardAction()
+                    {
+                        Type = ActionTypes.OpenUrl,
+                        Title = "Open",
+                        Value = ProjectWorkspaceInternalUrl + "?redirect_uri={" + ProjectWorkspaceInternalUrl + "}",
+                    };
+                    CardAction btnTasks = new CardAction()
+                    {
+                        Type = ActionTypes.PostBack,
+                        Title = "Tasks",
+                        Value = "show a list of " + ProjectName + " tasks",
+                        //  DisplayText = "show a list of " + ProjectName + " tasks",
+                        Text = "show a list of " + ProjectName + " tasks",
+                    };
+                    cardactions.Add(btnTasks);
+
+                    CardAction btnIssues = new CardAction()
+                    {
+                        Type = ActionTypes.PostBack,
+                        Title = "Issues",
+                        Value = "show a list of " + ProjectName + " issues",
+                        Text = "show a list of " + ProjectName + " issues"
+                    };
+                    cardactions.Add(btnIssues);
+
+                    CardAction btnRisks = new CardAction()
+                    {
+                        Type = ActionTypes.PostBack,
+                        Title = "Risks",
+                        Value = "Show risks and the assigned resources of " + ProjectName,
+                        Text = "Show risks and the assigned resources of " + ProjectName,
+
+                    };
+                    cardactions.Add(btnRisks);
+
+                    CardAction btnDeliverables = new CardAction()
+                    {
+                        Type = ActionTypes.PostBack,
+                        Title = "Deliverables",
+                        Value = "Show " + ProjectName + " deliverables",
+                        Text = "Show " + ProjectName + " deliverables",
+                    };
+                    cardactions.Add(btnDeliverables);
+
+                    CardAction btnAssignments = new CardAction()
+                    {
+                        Type = ActionTypes.PostBack,
+                        Title = "Assignments",
+                        Value = "get " + ProjectName + " assignments",
+                        Text = "get " + ProjectName + " assignments",
+
+                    };
+                    cardactions.Add(btnAssignments);
+
+                    CardAction btnMilestones = new CardAction()
+                    {
+                        Type = ActionTypes.PostBack,
+                        Title = "Milestones",
+                        Value = "get " + ProjectName + " milestones",
+                        Text = "get " + ProjectName + " milesones",
+
+                    };
+                    cardactions.Add(btnMilestones);
+
+                    HeroCard plCard = new HeroCard()
+                    {
+                        Title = ProjectName,
+                        Subtitle = SubtitleVal,
+                        Images = cardImages,
+                        Buttons = cardactions,
+                        Tap = btnTasks,
+                    };
+                    reply.Attachments.Add(plCard.ToAttachment());
+                    if (Counter == 10)
+                        break;
+                }
+            }
+
+            return reply;
+        }
         public IMessageActivity GetResourceLoggedInProjects(IDialogContext dialogContext, ProjectContext context, ProjectCollection projectDetails, int SIndex, bool showCompletion, bool ProjectDates, bool PDuration, bool projectManager, out int Counter)
         {
             IMessageActivity reply = null;
@@ -310,7 +631,7 @@ namespace Common
             return reply;
         }
 
-        public IMessageActivity GetProjectTasks(IDialogContext dialogContext, int itemStartIndex, string pName, out int Counter)
+        public IMessageActivity GetProjectTasks(IDialogContext dialogContext, int itemStartIndex, string pName, bool Completed, bool NotCompleted, bool delayed, out int Counter)
         {
             IMessageActivity reply = null;
             reply = dialogContext.MakeMessage();
@@ -321,7 +642,6 @@ namespace Common
             {
                 SecureString passWord = new SecureString();
                 foreach (char c in _userPasswordAdmin.ToCharArray()) passWord.AppendChar(c);
-                // SharePointOnlineCredentials credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
                 context.Credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
                 PublishedProject project = GetProjectByName(pName, context);
 
@@ -333,9 +653,9 @@ namespace Common
                     PublishedTaskCollection publishedTask = project.Tasks;
                     if (project.Tasks.Count > 0)
                     {
-                        if (GetUserGroup(context, "Team Members (Project Web App Synchronized)"))
+                        if (GetUserGroup(context, "Team Members (Project Web App Synchronized)") || GetUserGroup(context, "Team Leads for Project Web App"))
                         {
-                            reply = GetResourceLoggedInTasks(dialogContext, itemStartIndex, context, project, out TaskCounter);
+                            reply = GetResourceLoggedInTasks(dialogContext, itemStartIndex, context, project, Completed, NotCompleted, delayed, out TaskCounter);
                         }
                         else if (GetUserGroup(context, "Project Managers (Project Web App Synchronized)"))
                         {
@@ -343,16 +663,16 @@ namespace Common
                             context.ExecuteQuery();
                             if (project.Owner.Email == _userName) // if the logged in user is a project manager on this project
                             {
-                                reply = GetAllTasks(dialogContext, itemStartIndex, publishedTask, project, out TaskCounter);
+                                reply = GetAllTasks(dialogContext, itemStartIndex, publishedTask, project, Completed, NotCompleted, delayed, out TaskCounter);
                             }
                             else
                             {
-                                reply = GetResourceLoggedInTasks(dialogContext, itemStartIndex, context, project, out TaskCounter);
+                                reply = GetResourceLoggedInTasks(dialogContext, itemStartIndex, context, project, Completed, NotCompleted, delayed, out TaskCounter);
                             }
                         }
-                        else
+                        else if (GetUserGroup(context, "Web Administrators (Project Web App Synchronized)") || GetUserGroup(context, "Administrators for Project Web App") || GetUserGroup(context, "Portfolio Managers for Project Web App") || GetUserGroup(context, "Portfolio Viewers for Project Web App") || GetUserGroup(context, "Portfolio Viewers for Project Web App") || GetUserGroup(context, "Resource Managers for Project Web App"))
                         {
-                            reply = GetAllTasks(dialogContext, itemStartIndex, publishedTask, project, out TaskCounter);
+                            reply = GetAllTasks(dialogContext, itemStartIndex, publishedTask, project, Completed, NotCompleted, delayed, out TaskCounter);
                         }
                     }
                 }
@@ -452,7 +772,7 @@ namespace Common
                     projectweb.Context.Load(itemsRisk);
                     projectweb.Context.ExecuteQuery();
 
-                    if (GetUserGroup(context, "Team Members (Project Web App Synchronized)"))
+                    if (GetUserGroup(context, "Team Members (Project Web App Synchronized)") || GetUserGroup(context, "Team Leads for Project Web App"))
                     {
                         reply = GetResourceLoggedInRisks(dialogContext, itemsRisk, itemStartIndex, out TaskCounter);
                     }
@@ -470,14 +790,10 @@ namespace Common
 
                         }
                     }
-                    else
+                    else if (GetUserGroup(context, "Web Administrators (Project Web App Synchronized)") || GetUserGroup(context, "Administrators for Project Web App") || GetUserGroup(context, "Portfolio Managers for Project Web App") || GetUserGroup(context, "Portfolio Viewers for Project Web App") || GetUserGroup(context, "Portfolio Viewers for Project Web App") || GetUserGroup(context, "Resource Managers for Project Web App"))
                     {
                         reply = GetAllRisks(dialogContext, itemsRisk, itemStartIndex, out TaskCounter);
                     }
-
-
-
-
                 }
             }
             Counter = TaskCounter;
@@ -505,8 +821,7 @@ namespace Common
                 if (project != null)
                 {
 
-
-                    if (GetUserGroup(context, "Team Members (Project Web App Synchronized)"))
+                    if (GetUserGroup(context, "Team Members (Project Web App Synchronized)") || GetUserGroup(context, "Team Leads for Project Web App"))
                     {
                         HeroCard plCard = new HeroCard()
                         {
@@ -545,7 +860,7 @@ namespace Common
 
                         }
                     }
-                    else
+                    else if (GetUserGroup(context, "Web Administrators (Project Web App Synchronized)") || GetUserGroup(context, "Administrators for Project Web App") || GetUserGroup(context, "Portfolio Managers for Project Web App") || GetUserGroup(context, "Portfolio Viewers for Project Web App") || GetUserGroup(context, "Portfolio Viewers for Project Web App") || GetUserGroup(context, "Resource Managers for Project Web App"))
                     {
                         context.Load(project, p => p.ProjectSiteUrl);
                         context.ExecuteQuery();
@@ -562,6 +877,9 @@ namespace Common
                         projectweb.Context.ExecuteQuery();
                         reply = GetAllDeliverabels(dialogContext, itemsdelive, itemStartIndex, out TaskCounter);
                     }
+
+
+
 
                 }
             }
@@ -590,8 +908,11 @@ namespace Common
                 {
                     context.Load(project.Assignments);
                     context.ExecuteQuery();
+
+
                     PublishedAssignmentCollection itemsAssignments = project.Assignments;
-                    if (GetUserGroup(context, "Team Members (Project Web App Synchronized)"))
+
+                    if (GetUserGroup(context, "Team Members (Project Web App Synchronized)") || GetUserGroup(context, "Team Leads for Project Web App"))
                     {
                         reply = GetResourceLoggedInAssignments(dialogContext, context, itemsAssignments, itemStartIndex, _userName, out TaskCounter);
                     }
@@ -609,9 +930,62 @@ namespace Common
 
                         }
                     }
-                    else
+                    else if (GetUserGroup(context, "Web Administrators (Project Web App Synchronized)") || GetUserGroup(context, "Portfolio Managers for Project Web App") || GetUserGroup(context, "Portfolio Viewers for Project Web App") || GetUserGroup(context, "Portfolio Viewers for Project Web App") || GetUserGroup(context, "Resource Managers for Project Web App"))
                     {
                         reply = GetAllAssignments(dialogContext, context, itemsAssignments, itemStartIndex, out TaskCounter);
+                    }
+
+
+
+                }
+            }
+            Counter = TaskCounter;
+            return reply;
+        }
+
+        public IMessageActivity GetProjectMilestones(IDialogContext dialogContext, int itemStartIndex, string pName, out int Counter)
+        {
+            IMessageActivity reply = null;
+            reply = dialogContext.MakeMessage();
+            reply.AttachmentLayout = AttachmentLayoutTypes.Carousel;
+
+            int TaskCounter = 0;
+            using (ProjectContext context = new ProjectContext(_siteUri))
+            {
+                SecureString passWord = new SecureString();
+                foreach (char c in _userPasswordAdmin.ToCharArray()) passWord.AppendChar(c);
+                context.Credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
+                PublishedProject project = GetProjectByName(pName, context);
+
+
+                if (project != null)
+                {
+                    context.Load(project.Tasks);
+                    context.ExecuteQuery();
+                    PublishedTaskCollection publishedTask = project.Tasks;
+                    if (project.Tasks.Count > 0)
+                    {
+                        if (GetUserGroup(context, "Team Members (Project Web App Synchronized)") || GetUserGroup(context, "Team Leads for Project Web App"))
+                        {
+                            // reply = GetResourceLoggedInMilestones(dialogContext, itemStartIndex, context, project, Completed, NotCompleted, delayed, out TaskCounter);
+                        }
+                        else if (GetUserGroup(context, "Project Managers (Project Web App Synchronized)"))
+                        {
+                            context.Load(project.Owner);
+                            context.ExecuteQuery();
+                            if (project.Owner.Email == _userName) // if the logged in user is a project manager on this project
+                            {
+                                reply = GetProjectMilestones(dialogContext, itemStartIndex, publishedTask, project, out TaskCounter);
+                            }
+                            else
+                            {
+                                //reply = GetResourceLoggedInTasks(dialogContext, itemStartIndex, context, project, Completed, NotCompleted, delayed, out TaskCounter);
+                            }
+                        }
+                        else if (GetUserGroup(context, "Web Administrators (Project Web App Synchronized)") || GetUserGroup(context, "Administrators for Project Web App") || GetUserGroup(context, "Portfolio Managers for Project Web App") || GetUserGroup(context, "Portfolio Viewers for Project Web App") || GetUserGroup(context, "Portfolio Viewers for Project Web App") || GetUserGroup(context, "Resource Managers for Project Web App"))
+                        {
+                            reply = GetProjectMilestones(dialogContext, itemStartIndex, publishedTask, project, out TaskCounter);
+                        }
                     }
                 }
             }
@@ -712,14 +1086,70 @@ namespace Common
 
 
                         string ProjectName = item.Name;
+
                         SubtitleVal += "Start Date\n" + item.StartDate + "</br>";
                         SubtitleVal += "Finish Date\n" + item.FinishDate + "</br>";
                         SubtitleVal += "Actual Cost\n" + item.DefaultFixedCostAccrual.ToString() + "</br>";
+
+                        string ImageURL = "http://02-code.com/images/logo.jpg";
+                        List<CardImage> cardImages = new List<CardImage>();
+                        List<CardAction> cardactions = new List<CardAction>();
+                        cardImages.Add(new CardImage(url: ImageURL));
+
+                        CardAction btnTasks = new CardAction()
+                        {
+                            Type = ActionTypes.PostBack,
+                            Title = "Tasks",
+                            Value = "show a list of " + ProjectName + " tasks",
+                            Text = "show a list of " + ProjectName + " tasks",
+                        };
+                        cardactions.Add(btnTasks);
+
+                        CardAction btnIssues = new CardAction()
+                        {
+                            Type = ActionTypes.PostBack,
+                            Title = "Issues",
+                            Value = "show a list of " + ProjectName + " issues",
+                            Text = "show a list of " + ProjectName + " issues"
+                        };
+                        cardactions.Add(btnIssues);
+
+                        CardAction btnRisks = new CardAction()
+                        {
+                            Type = ActionTypes.PostBack,
+                            Title = "Risks",
+                            Value = "Show risks and the assigned resources of " + ProjectName,
+                            Text = "Show risks and the assigned resources of " + ProjectName,
+
+                        };
+                        cardactions.Add(btnRisks);
+
+                        CardAction btnDeliverables = new CardAction()
+                        {
+                            Type = ActionTypes.PostBack,
+                            Title = "Deliverables",
+                            Value = "Show " + ProjectName + " deliverables",
+                            Text = "Show " + ProjectName + " deliverables",
+                        };
+                        cardactions.Add(btnDeliverables);
+
+                        CardAction btnDAssignments = new CardAction()
+                        {
+                            Type = ActionTypes.PostBack,
+                            Title = "Assignments",
+                            Value = "get " + ProjectName + " assignments",
+                            Text = "get " + ProjectName + " assignments",
+
+                        };
+                        cardactions.Add(btnDAssignments);
 
                         HeroCard plCard = new HeroCard()
                         {
                             Title = ProjectName,
                             Subtitle = SubtitleVal,
+                            Images = cardImages,
+                            Buttons = cardactions,
+                            Tap = btnTasks,
                         };
                         reply.Attachments.Add(plCard.ToAttachment());
 
@@ -746,7 +1176,6 @@ namespace Common
             {
                 SecureString passWord = new SecureString();
                 foreach (char c in _userPasswordAdmin.ToCharArray()) passWord.AppendChar(c);
-                //      SharePointOnlineCredentials credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
                 context.Credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
 
                 PublishedProject project = GetProjectByName(pName, context);
@@ -804,65 +1233,7 @@ namespace Common
             return reply;
         }
 
-
-        public IMessageActivity GetProjectSubItems(IDialogContext dialogContext, string pName, string ListName)
-        {
-            IMessageActivity reply = null;
-            reply = dialogContext.MakeMessage();
-
-            string projectsite = string.Empty;
-            Web projectweb;
-            using (ProjectContext context = new ProjectContext(_siteUri))
-            {
-                SecureString passWord = new SecureString();
-                foreach (char c in _userPasswordAdmin.ToCharArray()) passWord.AppendChar(c);
-                //      SharePointOnlineCredentials credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
-                context.Credentials = new SharePointOnlineCredentials(_userNameAdmin, passWord);
-                PublishedProject project = GetProjectByName(pName, context);
-                if (project != null)
-                {
-                    context.Load(project, p => p.ProjectSiteUrl);
-                    context.ExecuteQuery();
-
-                    if (ListName == Enums.ListName.Tasks.ToString())
-                    {
-                        // reply = GetProjectTasks(dialogContext , context, project);
-                    }
-                    else if (ListName == Enums.ListName.Assignments.ToString())
-                    {
-                        //  markdownContent = GetProjectTAssignments(context, project);
-                    }
-                    else
-                    {
-                        projectsite = project.ProjectSiteUrl;
-                        projectweb = GetProjectWEB(projectsite, context);
-
-                        if (projectsite != null)
-                        {
-                            // if (ListName == Common.Enums.ListName.Issues.ToString())
-                            //   markdownContent = GetProjectIssues( dialogContext, projectweb, context);
-                            //  if (ListName == Common.Enums.ListName.Risks.ToString())
-                            //   markdownContent = GetProjectRisks(projectweb, context);
-                            // if (ListName == Common.Enums.ListName.Deliverables.ToString())
-                            //  markdownContent = GetProjectDeliverables(projectweb, context);
-                        }
-                        else
-                        {
-                            //markdownContent = "Site Project Not Created";
-                        }
-                    }
-
-                }
-                else
-                {
-                    //markdownContent = "Project Name Not Exist or you don't have permission to this project";
-                }
-
-            }
-            return reply;
-        }
-
-        private IMessageActivity GetAllTasks(IDialogContext dialogContext, int SIndex, PublishedTaskCollection tskcoll, PublishedProject project, out int Counter)
+        private IMessageActivity GetAllTasks(IDialogContext dialogContext, int SIndex, PublishedTaskCollection tskcoll, PublishedProject project, bool Completed, bool NotCompleted, bool delayed, out int Counter)
         {
             IMessageActivity reply = null;
             reply = dialogContext.MakeMessage();
@@ -876,30 +1247,155 @@ namespace Common
 
             tskcoll = project.Tasks;
 
+
+
             if (tskcoll.Count > 0)
             {
-                for (int startIndex = SIndex; startIndex < inDexToVal; startIndex++)
+                if (Completed == true)
                 {
-                    var SubtitleVal = "";
-                    PublishedTask tsk = tskcoll[startIndex];
-                    string TaskName = tsk.Name;
-                    string TaskDuration = tsk.Duration;
-                    string TaskPercentCompleted = tsk.PercentComplete.ToString();
-                    string TaskStartDate = tsk.Start.ToString();
-                    string TaskFinishDate = tsk.Finish.ToString();
-
-                    SubtitleVal += "Task Duration\n" + TaskDuration + "</br>";
-                    SubtitleVal += "Task Percent Completed\n" + TaskPercentCompleted + "</br>";
-                    SubtitleVal += "Task Start Date\n" + TaskStartDate + "</br>";
-                    SubtitleVal += "Task Finish Date\n" + TaskFinishDate + "</br>";
-
-                    HeroCard plCard = new HeroCard()
+                    IEnumerable<PublishedTask> completedlist = project.Tasks.Where(p => p.PercentComplete == 100).ToList();
+                    if (completedlist.Count() > 0)
                     {
-                        Title = TaskName,
-                        Subtitle = SubtitleVal
-                    };
+                        inDexToVal = SIndex + 10;
+                        Counter = completedlist.Count();
+                        if (inDexToVal >= completedlist.Count())
+                            inDexToVal = completedlist.Count();
 
-                    reply.Attachments.Add(plCard.ToAttachment());
+                        int startIndex = SIndex;
+                        foreach (PublishedTask tsk in completedlist)
+                        {
+                            if (startIndex >= inDexToVal)
+                                break;
+                            var SubtitleVal = "";
+                            string TaskName = tsk.Name;
+                            string TaskDuration = tsk.Duration;
+                            string TaskPercentCompleted = tsk.PercentComplete.ToString();
+                            string TaskStartDate = tsk.Start.ToString();
+                            string TaskFinishDate = tsk.Finish.ToString();
+
+                            SubtitleVal += "Task Duration\n" + TaskDuration + "</br>";
+                            SubtitleVal += "Task Percent Completed\n" + TaskPercentCompleted + "</br>";
+                            SubtitleVal += "Task Start Date\n" + TaskStartDate + "</br>";
+                            SubtitleVal += "Task Finish Date\n" + TaskFinishDate + "</br>";
+
+                            HeroCard plCard = new HeroCard()
+                            {
+                                Title = TaskName,
+                                Subtitle = SubtitleVal
+                            };
+
+                            reply.Attachments.Add(plCard.ToAttachment());
+                            startIndex++;
+
+                        }
+                    }
+                }
+                else if (NotCompleted == true)
+                {
+                    IEnumerable<PublishedTask> completedlist = project.Tasks.Where(p => p.PercentComplete < 100).ToList();
+                    if (completedlist.Count() > 0)
+                    {
+                        inDexToVal = SIndex + 10;
+                        Counter = completedlist.Count();
+                        if (inDexToVal >= completedlist.Count())
+                            inDexToVal = completedlist.Count();
+
+                        int startIndex = SIndex;
+                        foreach (PublishedTask tsk in completedlist)
+                        {
+                            if (startIndex >= inDexToVal)
+                                break;
+                            var SubtitleVal = "";
+                            string TaskName = tsk.Name;
+                            string TaskDuration = tsk.Duration;
+                            string TaskPercentCompleted = tsk.PercentComplete.ToString();
+                            string TaskStartDate = tsk.Start.ToString();
+                            string TaskFinishDate = tsk.Finish.ToString();
+
+                            SubtitleVal += "Task Duration\n" + TaskDuration + "</br>";
+                            SubtitleVal += "Task Percent Completed\n" + TaskPercentCompleted + "</br>";
+                            SubtitleVal += "Task Start Date\n" + TaskStartDate + "</br>";
+                            SubtitleVal += "Task Finish Date\n" + TaskFinishDate + "</br>";
+
+                            HeroCard plCard = new HeroCard()
+                            {
+                                Title = TaskName,
+                                Subtitle = SubtitleVal
+                            };
+
+                            reply.Attachments.Add(plCard.ToAttachment());
+                            startIndex++;
+
+                        }
+                    }
+                }
+                else if (delayed == true)
+                {
+                    IEnumerable<PublishedTask> completedlist = project.Tasks.Where(p => p.ActualDuration == p.ScheduledDuration).ToList();
+                    if (completedlist.Count() > 0)
+                    {
+                        inDexToVal = SIndex + 10;
+                        Counter = completedlist.Count();
+                        if (inDexToVal >= completedlist.Count())
+                            inDexToVal = completedlist.Count();
+
+                        int startIndex = SIndex;
+                        foreach (PublishedTask tsk in completedlist)
+                        {
+                            if (startIndex >= inDexToVal)
+                                break;
+                            var SubtitleVal = "";
+                            string TaskName = tsk.Name;
+                            string TaskDuration = tsk.Duration;
+                            string TaskPercentCompleted = tsk.PercentComplete.ToString();
+                            string TaskStartDate = tsk.Start.ToString();
+                            string TaskFinishDate = tsk.Finish.ToString();
+
+                            SubtitleVal += "Task Duration\n" + TaskDuration + "</br>";
+                            SubtitleVal += "Task Percent Completed\n" + TaskPercentCompleted + "</br>";
+                            SubtitleVal += "Task Start Date\n" + TaskStartDate + "</br>";
+                            SubtitleVal += "Task Finish Date\n" + TaskFinishDate + "</br>";
+
+                            HeroCard plCard = new HeroCard()
+                            {
+                                Title = TaskName,
+                                Subtitle = SubtitleVal
+                            };
+
+                            reply.Attachments.Add(plCard.ToAttachment());
+                            startIndex++;
+
+                        }
+                    }
+                }
+                else
+                {
+
+                    for (int startIndex = SIndex; startIndex < inDexToVal; startIndex++)
+                    {
+                        var SubtitleVal = "";
+                        PublishedTask tsk = tskcoll[startIndex];
+                        string TaskName = tsk.Name;
+                        string TaskDuration = tsk.Duration;
+                        string TaskPercentCompleted = tsk.PercentComplete.ToString();
+                        string TaskStartDate = tsk.Start.ToString();
+                        string TaskFinishDate = tsk.Finish.ToString();
+
+
+
+                        SubtitleVal += "Task Duration\n" + TaskDuration + "</br>";
+                        SubtitleVal += "Task Percent Completed\n" + TaskPercentCompleted + "</br>";
+                        SubtitleVal += "Task Start Date\n" + TaskStartDate + "</br>";
+                        SubtitleVal += "Task Finish Date\n" + TaskFinishDate + "</br>";
+
+                        HeroCard plCard = new HeroCard()
+                        {
+                            Title = TaskName,
+                            Subtitle = SubtitleVal
+                        };
+
+                        reply.Attachments.Add(plCard.ToAttachment());
+                    }
                 }
 
             }
@@ -907,7 +1403,64 @@ namespace Common
             return reply;
         }
 
-        private IMessageActivity GetResourceLoggedInTasks(IDialogContext dialogContext, int SIndex, ProjectContext context, PublishedProject proj, out int Counter)
+        private IMessageActivity GetProjectMilestones(IDialogContext dialogContext, int SIndex, PublishedTaskCollection tskcoll, PublishedProject project, out int Counter)
+        {
+            IMessageActivity reply = null;
+            reply = dialogContext.MakeMessage();
+            reply.AttachmentLayout = AttachmentLayoutTypes.Carousel;
+
+
+            int inDexToVal = SIndex + 10;
+            Counter = project.Tasks.Count;
+            if (inDexToVal >= project.Tasks.Count)
+                inDexToVal = project.Tasks.Count;
+
+            tskcoll = project.Tasks;
+            if (tskcoll.Count > 0)
+            {
+                IEnumerable<PublishedTask> cmilestonelist = project.Tasks.Where(p => p.Duration == "0d").ToList();
+                if (cmilestonelist.Count() > 0)
+                {
+                    inDexToVal = SIndex + 10;
+                    Counter = cmilestonelist.Count();
+                    if (inDexToVal >= cmilestonelist.Count())
+                        inDexToVal = cmilestonelist.Count();
+
+                    int startIndex = SIndex;
+                    foreach (PublishedTask tsk in cmilestonelist)
+                    {
+                        if (startIndex >= inDexToVal)
+                            break;
+                        var SubtitleVal = "";
+                        string TaskName = tsk.Name;
+                        string TaskPercentCompleted = tsk.PercentComplete.ToString();
+                        string TaskStartDate = tsk.Start.ToString();
+                        string TaskFinishDate = tsk.Finish.ToString();
+
+                        SubtitleVal += "Task Percent Completed\n" + TaskPercentCompleted + "</br>";
+                        SubtitleVal += "Task Start Date\n" + TaskStartDate + "</br>";
+                        SubtitleVal += "Task Finish Date\n" + TaskFinishDate + "</br>";
+
+                        HeroCard plCard = new HeroCard()
+                        {
+                            Title = TaskName,
+                            Subtitle = SubtitleVal
+                        };
+
+                        reply.Attachments.Add(plCard.ToAttachment());
+                        startIndex++;
+
+                    }
+                }
+            }
+
+
+
+
+            return reply;
+        }
+
+        private IMessageActivity GetResourceLoggedInTasks(IDialogContext dialogContext, int SIndex, ProjectContext context, PublishedProject proj, bool Completed, bool NotCompleted, bool delayed, out int Counter)
         {
             var SubtitleVal = "";
             IMessageActivity reply = null;
@@ -1120,6 +1673,7 @@ namespace Common
 
             return reply;
         }
+
         private IMessageActivity GetResourceLoggedInRisks(IDialogContext dialogContext, ListItemCollection itemsRisk, int SIndex, out int Counter)
         {
             IMessageActivity reply = null;
@@ -1250,8 +1804,6 @@ namespace Common
             return reply;
         }
 
-
-
         private IMessageActivity GetAllAssignments(IDialogContext dialogContext, ProjectContext context, PublishedAssignmentCollection itemsAssignments, int SIndex, out int Counter)
         {
             IMessageActivity reply = null;
@@ -1291,7 +1843,6 @@ namespace Common
             }
             return reply;
         }
-
 
         public IMessageActivity GetResourceAssignments(IDialogContext dialogContext, int SIndex, string ResourceName, out int Counter)
         {
@@ -1384,7 +1935,6 @@ namespace Common
             }
 
         }
-
 
         public IMessageActivity GetResourceLoggedInAssignments(IDialogContext dialogContext, ProjectContext context, PublishedAssignmentCollection itemsAssignments, int SIndex, string ResourceName, out int Counter)
         {
@@ -1555,7 +2105,7 @@ namespace Common
                         }
                         HeroCard plCardCounter = new HeroCard()
                         {
-                            Title = "Total Number Of availabel Projects :\n" + Counter,
+                            Title = "Total Number Of Available  Projects :\n" + Counter,
                             Subtitle = subTitle,
                             //  Buttons = cardButtons,
                         };
@@ -1566,7 +2116,7 @@ namespace Common
                     {
                         HeroCard plCardCounter = new HeroCard()
                         {
-                            Title = "Total Number Of availabel Projects :\n" + Counter,
+                            Title = "Total Number Of Available  Projects :\n" + Counter,
                         };
                         reply.Attachments.Add(plCardCounter.ToAttachment());
                     }
@@ -1574,7 +2124,7 @@ namespace Common
                 else
                 {
                     HeroCard plCardNoData = new HeroCard()
-                    { Title = "No Availabel Projects\n\n" };
+                    { Title = "No Available  Projects\n\n" };
                     reply.Attachments.Add(plCardNoData.ToAttachment());
                 }
             }
@@ -1594,7 +2144,7 @@ namespace Common
                         }
                         HeroCard plCardCounter = new HeroCard()
                         {
-                            Title = "Total Number Of availabel Tasks :\n" + Counter,
+                            Title = "Total Number Of Available  Tasks :\n" + Counter,
                             Subtitle = subTitle,
                             //  Buttons = cardButtons,
                         };
@@ -1605,7 +2155,7 @@ namespace Common
                     {
                         HeroCard plCardCounter = new HeroCard()
                         {
-                            Title = "Total Number Of availabel Tasks :\n" + Counter,
+                            Title = "Total Number Of Available  Tasks :\n" + Counter,
                         };
                         reply.Attachments.Add(plCardCounter.ToAttachment());
                     }
@@ -1613,7 +2163,7 @@ namespace Common
                 else
                 {
                     HeroCard plCardNoData = new HeroCard()
-                    { Title = "No Availabel Tasks\n\n" };
+                    { Title = "No Available Tasks\n\n" };
                     reply.Attachments.Add(plCardNoData.ToAttachment());
                 }
             }
@@ -1633,7 +2183,7 @@ namespace Common
                         }
                         HeroCard plCardCounter = new HeroCard()
                         {
-                            Title = "Total Number Of availabel Issues :\n" + Counter,
+                            Title = "Total Number Of Available  Issues :\n" + Counter,
                             Subtitle = subTitle,
                             //  Buttons = cardButtons,
                         };
@@ -1644,7 +2194,7 @@ namespace Common
                     {
                         HeroCard plCardCounter = new HeroCard()
                         {
-                            Title = "Total Number Of availabel Issues :\n" + Counter,
+                            Title = "Total Number Of Available  Issues :\n" + Counter,
                         };
                         reply.Attachments.Add(plCardCounter.ToAttachment());
                     }
@@ -1652,7 +2202,7 @@ namespace Common
                 else
                 {
                     HeroCard plCardNoData = new HeroCard()
-                    { Title = "No Availabel Issues\n\n" };
+                    { Title = "No Available  Issues\n\n" };
                     reply.Attachments.Add(plCardNoData.ToAttachment());
                 }
             }
@@ -1672,7 +2222,7 @@ namespace Common
                         }
                         HeroCard plCardCounter = new HeroCard()
                         {
-                            Title = "Total Number Of availabel Assignments :\n" + Counter,
+                            Title = "Total Number Of Available  Assignments :\n" + Counter,
                             Subtitle = subTitle,
                             //  Buttons = cardButtons,
                         };
@@ -1683,7 +2233,7 @@ namespace Common
                     {
                         HeroCard plCardCounter = new HeroCard()
                         {
-                            Title = "Total Number Of availabel Assignments :\n" + Counter,
+                            Title = "Total Number Of Available  Assignments :\n" + Counter,
                         };
                         reply.Attachments.Add(plCardCounter.ToAttachment());
                     }
@@ -1691,7 +2241,7 @@ namespace Common
                 else
                 {
                     HeroCard plCardNoData = new HeroCard()
-                    { Title = "No Availabel Assignments\n\n" };
+                    { Title = "No Available Assignments\n\n" };
                     reply.Attachments.Add(plCardNoData.ToAttachment());
                 }
             }
@@ -1711,7 +2261,7 @@ namespace Common
                         }
                         HeroCard plCardCounter = new HeroCard()
                         {
-                            Title = "Total Number Of availabel Risks :\n" + Counter,
+                            Title = "Total Number Of Available  Risks :\n" + Counter,
                             Subtitle = subTitle,
                             //  Buttons = cardButtons,
                         };
@@ -1722,7 +2272,7 @@ namespace Common
                     {
                         HeroCard plCardCounter = new HeroCard()
                         {
-                            Title = "Total Number Of availabel Risks :\n" + Counter,
+                            Title = "Total Number Of Available  Risks :\n" + Counter,
                         };
                         reply.Attachments.Add(plCardCounter.ToAttachment());
                     }
@@ -1730,7 +2280,7 @@ namespace Common
                 else
                 {
                     HeroCard plCardNoData = new HeroCard()
-                    { Title = "No Availabel Risks\n\n" };
+                    { Title = "No Available  Risks\n\n" };
                     reply.Attachments.Add(plCardNoData.ToAttachment());
                 }
             }
@@ -1750,7 +2300,7 @@ namespace Common
                         }
                         HeroCard plCardCounter = new HeroCard()
                         {
-                            Title = "Total Number Of availabel Deliverables :\n" + Counter,
+                            Title = "Total Number Of Available  Deliverables :\n" + Counter,
                             Subtitle = subTitle,
                             //  Buttons = cardButtons,
                         };
@@ -1761,7 +2311,7 @@ namespace Common
                     {
                         HeroCard plCardCounter = new HeroCard()
                         {
-                            Title = "Total Number Of availabel Deliverables :\n" + Counter,
+                            Title = "Total Number Of Available  Deliverables :\n" + Counter,
                         };
                         reply.Attachments.Add(plCardCounter.ToAttachment());
                     }
@@ -1769,7 +2319,7 @@ namespace Common
                 else
                 {
                     HeroCard plCardNoData = new HeroCard()
-                    { Title = "No Availabel Deliverables\n\n" };
+                    { Title = "No Available  Deliverables\n\n" };
                     reply.Attachments.Add(plCardNoData.ToAttachment());
                 }
             }
@@ -1789,7 +2339,7 @@ namespace Common
                         }
                         HeroCard plCardCounter = new HeroCard()
                         {
-                            Title = "Total Number Of availabel Projects :\n" + Counter,
+                            Title = "Total Number Of Available  Projects :\n" + Counter,
                             Subtitle = subTitle,
                             //  Buttons = cardButtons,
                         };
@@ -1800,7 +2350,7 @@ namespace Common
                     {
                         HeroCard plCardCounter = new HeroCard()
                         {
-                            Title = "Total Number Of availabel Projects :\n" + Counter,
+                            Title = "Total Number Of Available  Projects :\n" + Counter,
                         };
                         reply.Attachments.Add(plCardCounter.ToAttachment());
                     }
@@ -1808,7 +2358,7 @@ namespace Common
                 else
                 {
                     HeroCard plCardNoData = new HeroCard()
-                    { Title = "No Availabel Projects\n\n" };
+                    { Title = "No Available  Projects\n\n" };
                     reply.Attachments.Add(plCardNoData.ToAttachment());
                 }
             }
@@ -1847,7 +2397,46 @@ namespace Common
                 else
                 {
                     HeroCard plCardNoData = new HeroCard()
-                    { Title = "No availabel assignments\n\n" };
+                    { Title = "No Available  assignments\n\n" };
+                    reply.Attachments.Add(plCardNoData.ToAttachment());
+                }
+            }
+            else if (ListName == Enums.ListName.Milestones.ToString())
+            {
+                if (Counter > 0)
+                {
+                    if (Counter >= 10)
+                    {
+                        string subTitle = string.Empty;
+                        if (SIndex == 0)
+                            subTitle = "You are viwing the first page , each page view 10 Milestones";
+                        else if (SIndex > 0)
+                        {
+                            int pagenumber = SIndex / 10 + 1;
+                            subTitle = "You are viwing the page number " + pagenumber + " , each page view 10 Milestones";
+                        }
+                        HeroCard plCardCounter = new HeroCard()
+                        {
+                            Title = "Total Number Of Available  Milestones :\n" + Counter,
+                            Subtitle = subTitle,
+                            //  Buttons = cardButtons,
+                        };
+                        reply.AttachmentLayout = AttachmentLayoutTypes.Carousel;
+                        reply.Attachments.Add(plCardCounter.ToAttachment());
+                    }
+                    else
+                    {
+                        HeroCard plCardCounter = new HeroCard()
+                        {
+                            Title = "Total Number Of Available  Milestones :\n" + Counter,
+                        };
+                        reply.Attachments.Add(plCardCounter.ToAttachment());
+                    }
+                }
+                else
+                {
+                    HeroCard plCardNoData = new HeroCard()
+                    { Title = "No Available  Milestones\n\n" };
                     reply.Attachments.Add(plCardNoData.ToAttachment());
                 }
             }
@@ -1950,7 +2539,16 @@ namespace Common
                             valuebutton = query + " at index " + i * 10;
 
                     }
+                    else if (ListName == Enums.ListName.Milestones.ToString())
+                    {
+                        if (i == 0)
+                        {
+                            valuebutton = "show a list of " + projectName + " milestones at index 0";
+                        }
+                        else
+                            valuebutton = "show a list of " + projectName + " milestones at index " + i * 10;
 
+                    }
                     CurrentNumber = Convert.ToString(i + 1);
                     CardAction CardButton = new CardAction()
                     {
@@ -1974,6 +2572,88 @@ namespace Common
 
 
 
+
+            return reply;
+        }
+
+        public IMessageActivity DataSuggestions(IDialogContext dialogContext, string ListName, string ProjectName)
+        {
+            IMessageActivity reply = null;
+            reply = dialogContext.MakeMessage();
+            reply.AttachmentLayout = AttachmentLayoutTypes.Carousel;
+
+            if (ListName == Enums.ListName.Tasks.ToString())
+            {
+                List<CardAction> cardactions = new List<CardAction>();
+                CardAction btnNotCompltedTasks = new CardAction()
+                {
+                    Type = ActionTypes.PostBack,
+                    Title = "Not Completed Tasks",
+                    Value = "show a list of " + ProjectName + " not completed tasks",
+                    Text = "show a list of " + ProjectName + " not completed tasks",
+                };
+                cardactions.Add(btnNotCompltedTasks);
+
+                CardAction btnCompltedTasks = new CardAction()
+                {
+                    Type = ActionTypes.PostBack,
+                    Title = "Completed Tasks",
+                    Value = "show a list of " + ProjectName + " completed tasks",
+                    Text = "show a list of " + ProjectName + " completed tasks",
+                };
+                cardactions.Add(btnCompltedTasks);
+                CardAction btnDelayedTasks = new CardAction()
+                {
+                    Type = ActionTypes.PostBack,
+                    Title = "Delayed Tasks",
+                    Value = "show a list of " + ProjectName + " delayed tasks",
+                    Text = "show a list of " + ProjectName + " delayed tasks",
+                };
+                cardactions.Add(btnDelayedTasks);
+                HeroCard plCard = new HeroCard()
+                {
+                    Title = "Suggestions",
+                    Subtitle = "Because of large numnber of tasks, We have the below suggestions to get your tasks",
+                    Buttons = cardactions,
+                };
+                reply.Attachments.Add(plCard.ToAttachment());
+            }
+            else if (ListName == Enums.ListName.Projects.ToString())
+            {
+                List<CardAction> cardactions = new List<CardAction>();
+                CardAction btnClosedProjects = new CardAction()
+                {
+                    Type = ActionTypes.PostBack,
+                    Title = "Closed Projects",
+                    Value = "get all projects where compeleted percentage is 100%",
+                    Text = "get all projects where compeleted percentage is 100%",
+                };
+                cardactions.Add(btnClosedProjects);
+
+                CardAction btnCompltedPcurrentYear = new CardAction()
+                {
+                    Type = ActionTypes.PostBack,
+                    Title = "Completed Projects This Year",
+                    Value = "get all projects closed this year",
+                    Text = "get all projects closed this year",
+                };
+                cardactions.Add(btnCompltedPcurrentYear);
+                CardAction btnStartedPcurrentYear = new CardAction()
+                {
+                    Type = ActionTypes.PostBack,
+                    Title = "Started Projects This Year",
+                    Value = "get all projects started this year",
+                    Text = "get all projects started this year",
+                };
+                cardactions.Add(btnStartedPcurrentYear);
+                HeroCard plCard = new HeroCard()
+                {
+                    Title = "Suggestions",
+                    Subtitle = "Because of large numnber of projects, We have the below suggestions to get your projects",
+                    Buttons = cardactions,
+                };
+                reply.Attachments.Add(plCard.ToAttachment());
+            }
 
             return reply;
         }

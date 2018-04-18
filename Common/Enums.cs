@@ -16,7 +16,7 @@ namespace Common
             Deliverables = 4,
             Assignments = 5,
             Projects = 6,
-
+            Milestones = 7,
 
         }
     }
